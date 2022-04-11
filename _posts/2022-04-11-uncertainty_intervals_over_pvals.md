@@ -46,6 +46,8 @@ I'm going to simulate fake data for this experiment where
 
 For examples sake we'll pretend we don't know that the variant is worse
 
+{::options parse_block_html="true" /}
+<details><summary markdown="span">Click here for code</summary>
 
 ```python
 # Settings
@@ -69,6 +71,10 @@ def simulate_experiment(pA, pB, N_per_group):
 
 df = simulate_experiment(pA, pB, N)
 ```
+</details>
+<br/>
+{::options parse_block_html="true" /}  
+
 
 <p align="center">
   <img src="/docs/assets/img/uncertainty_fig1.png"/>

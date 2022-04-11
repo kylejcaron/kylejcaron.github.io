@@ -18,6 +18,21 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
+# BUILD SETTINGS
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+#   input: GFM
+#   syntax_highlighter: github
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
 title: Kyle's Data Science Blog
 description: >- # this means to ignore newlines until "baseurl:"
   Personal blog about Data Science
