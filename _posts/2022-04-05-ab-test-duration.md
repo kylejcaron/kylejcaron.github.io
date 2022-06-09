@@ -53,7 +53,7 @@ As we move from left to right, our estimated distribution converges closer and c
 
 
 <p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig3.png"/>
+  <img src="/docs/assets/img/how_long_ab_test/fig4.png"/>
 </p>
 
 
