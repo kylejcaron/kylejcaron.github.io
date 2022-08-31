@@ -1,0 +1,48 @@
+---
+about:
+  template: jolla
+  links:
+    - text: Blog
+      href: blog.qmd 
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/in/kylecaron
+    - icon: github
+      text: Github
+      href: https://github.com/kylejcaron
+page-layout: full
+---
+
+
+
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+![](profile.png)
+:::
+
+
+::: {.g-col-6}
+# About Me
+I'm a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to practice what I learn, but hopefully others find this helpful as well! 
+:::
+
+:::
+</br>
+</br>
+</br>
+
+---
+listing:
+  contents: posts/**/*.qmd
+  sort: "date desc"
+  type: default
+  categories: false
+  sort-ui: true
+  filter-ui: true
+  fields: [date, title, reading-time, description, categories]
+  feed: true
+page-layout: full
+title-block-banner: false
+---
