@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Kyle Caron</title>
+<title>Kyle Caron – blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -35,6 +35,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
@@ -71,7 +72,7 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-date','listing-title','listing-reading-time','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -92,7 +93,7 @@ ul.task-list li input[type="checkbox"] {
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="theme.scss">
-<link rel="alternate" type="application/rss+xml" title="Kyle Caron" href="index.xml"></head>
+<link rel="alternate" type="application/rss+xml" title="Kyle Caron" href="blog.xml"></head>
 
 <body class="nav-fixed">
 
@@ -111,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html">Blog</a>
+    <a class="nav-link active" href="./blog.html" aria-current="page">Blog</a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/kylejcaron"><i class="bi bi-github" role="img">
@@ -133,20 +134,16 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div></div></div>
 <!-- main -->
-<div class="quarto-about-jolla column-page">
- <main class="content column-page" id="quarto-document-content">
-<div class="grid">
-<div class="g-col-12 g-col-md-6">
-<p><img src="profile.png" class="img-fluid"></p>
-</div>
-<section id="about-me" class="level1 g-col-6">
-<h1>About Me</h1>
-<p>I’m a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to practice what I learn, but hopefully others find this helpful as well!</p>
-</section>
-</div>
-<p><br> <br> <br></p>
+<main class="content column-page-left" id="quarto-document-content">
+
+
+
+
+
 
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
@@ -180,6 +177,7 @@ ul.task-list li input[type="checkbox"] {
 Making out of sample predictions with PyMC
 </h3>
 <div class="listing-subtitle">
+
 </div>
 <div class="listing-description">
 A cool thing about hierarchical models is that its easy to predict out of sample - i.e.&nbsp;if you want to make a prediction on a new zipcode, just sample from the state’s distribution (composed of the state average and variance across zip codes in that state).
@@ -204,6 +202,7 @@ Apr 17, 2022
 How long should you run an A/B test for?
 </h3>
 <div class="listing-subtitle">
+
 </div>
 <div class="listing-description">
 For some people in industry new to A/B testing, they might wonder “Why cant we just run an A/B test for 2 days and be done with it?”. Even those familiar with it might wonder why their team’s Data Scientist is insisting on so much. And even Data Scientists may be looking for easier ways to explain the need to them. The goal of this article is to cover just that, from a naive and explainable point of view.
@@ -228,6 +227,7 @@ Apr 15, 2022
 Uncertainty Intervals or p-values?
 </h3>
 <div class="listing-subtitle">
+
 </div>
 <div class="listing-description">
 Uncertainty Intervals are better than p-values. Sure, its better to use both, but p-values are just a point estimate and they bring no concept of uncertainty in our estimate - this can lead to situations where we expose ourselves to high downside risk.
@@ -252,6 +252,7 @@ Apr 11, 2022
 Explainable AI is not Causal Inference
 </h3>
 <div class="listing-subtitle">
+
 </div>
 <div class="listing-description">
 Explainable AI is all the rage these days. Black box ML models come along with some fun tools such as LIME, SHAP, or Partial Depence Plots that try to give visibility into how the model is interpreting data and making predictions. It’s a common misconception that these are causal inference techniques - sadly we’ve all been mislead.
@@ -273,23 +274,7 @@ Apr 3, 2022
 <div class="listing-no-matching d-none">
 No matching items
 </div>
-</div></main> 
-  <hr class="about-sep">
-   <div class="about-links">
-  <a href="/blog.html" class="about-link">
-     <span class="about-link-text">Blog</span>
-  </a>
-  <a href="https://linkedin.com/in/kylecaron" class="about-link">
-    <i class="bi bi-linkedin"></i>
-     <span class="about-link-text">LinkedIn</span>
-  </a>
-  <a href="https://github.com/kylejcaron" class="about-link">
-    <i class="bi bi-github"></i>
-     <span class="about-link-text">Github</span>
-  </a>
-</div>
-</div>
- <!-- /main -->
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -310,6 +295,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
   toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
   const clipboard = new window.ClipboardJS('.code-copy-button', {
     target: function(trigger) {
       return trigger.previousElementSibling;

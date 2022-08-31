@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.163">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-04-15">
+
+<title>Kyle Caron - How long should you run an A/B test for?</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../theme.scss">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Kyle Caron</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html">Blog</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/kylejcaron"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">How long should you run an A/B test for?</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 15, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#simulating-a-fake-scenario" id="toc-simulating-a-fake-scenario" class="nav-link active" data-scroll-target="#simulating-a-fake-scenario">Simulating a fake scenario</a></li>
+  <li><a href="#what-happened" id="toc-what-happened" class="nav-link" data-scroll-target="#what-happened">What happened?</a>
+  <ul class="collapse">
+  <li><a href="#how-does-this-tie-back-to-ab-testing" id="toc-how-does-this-tie-back-to-ab-testing" class="nav-link" data-scroll-target="#how-does-this-tie-back-to-ab-testing">How does this tie back to A/B testing?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>For some people in industry new to A/B testing, they might wonder “Why cant we just run an A/B test for 2 days and be done with it?”. Even those familiar with it might wonder why their team’s Data Scientist is insisting on so much. And even Data Scientists may be looking for easier ways to explain the need to them. The goal of this article is to cover just that, from a naive and explainable point of view.</p>
+<p>So, <strong>How long should you run an A/B test for?</strong> Well let’s say you step into a casino with $5000 and you walk away with $6000. You just made a 20% return. Is it fair to say that a night out in the casino leads to a 20% return? Is it fair to say that our A/B test we ran for 2 days leads to a 20% lift in conversion? How do we know for sure?</p>
+<p><strong>We should run an A/B test for as long as it takes to rule out random chance.</strong></p>
+<p>While vague, and technically not the full picture, your friendly neightborhood data scientist should be able to answer this for you. The code for this blogpost can be found <a href="https://github.com/kylejcaron/case_studies/blob/master/How%20long%20should%20you%20run%20an%20AB%20Test%20for%3F.ipynb">here</a>.</p>
+<p><br></p>
+<section id="simulating-a-fake-scenario" class="level3">
+<h3 class="anchored" data-anchor-id="simulating-a-fake-scenario">Simulating a fake scenario</h3>
+<p>Let’s play out the casino example from above. I’m going to simulate out an entirely fake, but entirely possible scenario.</p>
+<p>You go to the casino one night with $5000 and decide roulette is your game of choice. You get a little into it and play 500 rounds (in one night?? for examples sake, yes). Little do you know the real probability of winning is 48.5%</p>
+<p>The plot below shows the total money you had at the start of each round of roulette</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/how_long_ab_test/fig1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>This is great - after 500 rounds of this you’ve made 122% return on your initial investment of $5000 and you’re winning 51% of the time.</p>
+<p>Playing roulette must lead to a 20% return right? Commited to your strategy you decide to come back over the next few weeks and play another 3000 rounds, shown below.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/how_long_ab_test/fig2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>Alright you’ve played 3500 rounds now and you have $5400 total. You’ve definitely had some runs of bad luck, but you’re still seeing a win percentage above 50% (50.1% in fact) and right now you’re heating up. You stay determined and play until you reach 15000 rounds.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/how_long_ab_test/fig3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="what-happened" class="level1">
+<h1>What happened?</h1>
+<p>We started off on a hot streak winning 51% of our rounds, but as we played more and more rounds, it became more obvious we were losing money. This is a demonstration of the law of large numbers - as we play more and more rounds, the truth comes out</p>
+<p>We can visualize this process via the beta distribution below. These plots visualize all of the possible values that the true win percentage could be (the x axis), and their relative plausibilities (the y axis). The first plot can be read as follows:</p>
+<blockquote class="blockquote">
+<p>The win percentage is likely to be somewhere between 42.5% and 60%, with the most likely value being around 51%</p>
+</blockquote>
+<p>As we move from left to right, our estimated distribution converges closer and closer to the true probability of winning a round</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/how_long_ab_test/fig4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>We can also visualize this as a time series, which really makes it clear how the uncertainty becomes smaller over time and the estimated value converges to the true value.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/how_long_ab_test/fig5.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p><br></p>
+<section id="how-does-this-tie-back-to-ab-testing" class="level3">
+<h3 class="anchored" data-anchor-id="how-does-this-tie-back-to-ab-testing">How does this tie back to A/B testing?</h3>
+<p>If we don’t choose our sample size for an experiment properly, we can end up making the wrong decisions!<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The larger the sample size we choose, the more likely we’ll make the right choice.</p>
+<p>We can use <strong>power analyses</strong> (sometimes referred to as simulation studies) to estimate what sample size is needed for an experiment given the desired outcome.</p>
+<hr>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Unless you’re using bayesian inference, which can really mitigate this risk.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/kylejcaron/kylejcaron.github.io/index.html</loc>
-    <lastmod>2022-08-30T11:18:08.280Z</lastmod>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-17-out-of-sample-pymc.html</loc>
+    <lastmod>2022-08-31T10:59:04.100Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/kylejcaron/kylejcaron.github.io/about.html</loc>
-    <lastmod>2022-08-30T11:18:08.588Z</lastmod>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-11-uncertainty_intervals_over_pvals.html</loc>
+    <lastmod>2022-08-31T10:59:04.513Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-03-explainable-ai-is-not-causal.html</loc>
+    <lastmod>2022-08-31T10:59:04.881Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-05-ab-test-duration.html</loc>
+    <lastmod>2022-08-31T10:59:05.227Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/archive.html</loc>
+    <lastmod>2022-08-31T10:59:05.567Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/index.html</loc>
+    <lastmod>2022-08-31T10:59:05.908Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/blog.html</loc>
+    <lastmod>2022-08-31T10:59:06.217Z</lastmod>
   </url>
 </urlset>

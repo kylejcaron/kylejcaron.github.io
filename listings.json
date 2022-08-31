@@ -1,0 +1,29 @@
+[
+  {
+    "listing": "/archive.html",
+    "items": [
+      "/posts/2022-04-17-out-of-sample-pymc.html",
+      "/posts/2022-04-05-ab-test-duration.html",
+      "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
+      "/posts/2022-04-03-explainable-ai-is-not-causal.html"
+    ]
+  },
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/2022-04-17-out-of-sample-pymc.html",
+      "/posts/2022-04-05-ab-test-duration.html",
+      "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
+      "/posts/2022-04-03-explainable-ai-is-not-causal.html"
+    ]
+  },
+  {
+    "listing": "/blog.html",
+    "items": [
+      "/posts/2022-04-17-out-of-sample-pymc.html",
+      "/posts/2022-04-05-ab-test-duration.html",
+      "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
+      "/posts/2022-04-03-explainable-ai-is-not-causal.html"
+    ]
+  }
+]
