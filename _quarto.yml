@@ -1,0 +1,20 @@
+project:
+  type: website
+
+website:
+  title: "Kyle Caron"
+  description: "Welcome to my blog! I'm a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to formalize what I learn, but hopefully others find it helpful as well."
+  navbar:
+    right:
+      - text: Blog
+        href: blog.qmd
+      - icon: github
+        href: https://github.com/kylejcaron
+      - icon: twitter
+        href: https://twitter.com
+format:
+  html:
+    css: theme.scss
+
+
+

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "How long should you run an A/B test for?"
+date: "2022-04-15"
 ---
 
 For some people in industry new to A/B testing, they might wonder "Why cant we just run an A/B test for 2 days and be done with it?". Even those familiar with it might wonder why their team's Data Scientist is insisting on so much. And even Data Scientists may be looking for easier ways to explain the need to them. The goal of this article is to cover just that, from a naive and explainable point of view.
@@ -21,24 +22,19 @@ You go to the casino one night with $5000 and decide roulette is your game of ch
 
 The plot below shows the total money you had at the start of each round of roulette
 
-<p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig1.png"/>
-</p>
+![](/assets/img/how_long_ab_test/fig1.png){fig-align="center"}
 
 This is great - after 500 rounds of this you've made 122% return on your initial investment of $5000 and you're winning 51% of the time. 
 
 Playing roulette must lead to a 20% return right? Commited to your strategy you decide to come back over the next few weeks and play another 3000 rounds, shown below.
 
+![](/assets/img/how_long_ab_test/fig2.png){fig-align="center"}
 
-<p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig2.png"/>
-</p>
 
 Alright you've played 3500 rounds now and you have $5400 total. You've definitely had some runs of bad luck, but you're still seeing a win percentage above 50% (50.1% in fact) and right now you're heating up. You stay determined and play until you reach 15000 rounds.
 
-<p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig3.png"/>
-</p>
+![](/assets/img/how_long_ab_test/fig3.png){fig-align="center"}
+
 
 # What happened?
 
@@ -52,16 +48,14 @@ We can visualize this process via the beta distribution below. These plots visua
 As we move from left to right, our estimated distribution converges closer and closer to the true probability of winning a round
 
 
-<p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig4.png"/>
-</p>
+![](/assets/img/how_long_ab_test/fig4.png){fig-align="center"}
+
 
 
 We can also visualize this as a time series, which really makes it clear how the uncertainty becomes smaller over time and the estimated value converges to the true value. 
 
-<p align="center">
-  <img src="/docs/assets/img/how_long_ab_test/fig5.png"/>
-</p>
+![](/assets/img/how_long_ab_test/fig5.png){fig-align="center"}
+
 
 <br>
 

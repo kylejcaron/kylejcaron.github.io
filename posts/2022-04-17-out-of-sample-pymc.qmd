@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Making out of sample predictions with PyMC"
+date: "2022-04-17"
 ---
 
 # Introduction
@@ -11,9 +12,9 @@ In pymc3, it's somewhat easy to accomplish this, but not as straightforward as w
 # Simulating data
 I simulated a 2 level hierarchical model - for interpretability, I set it up as a state > zipcode model. You can following along with the notebook [here](https://github.com/kylejcaron/case_studies/blob/main/PyMC%20out%20of%20sample%20predictions.ipynb). The data is as follows
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig1.png"/>
-</p>
+
+![](/assets/img/out_of_sample/fig1.png){fig-align="center"}
+
 
 # Using categorical variables
 
@@ -83,17 +84,15 @@ So we fit our model, lets take a quick look at the state level coefficients
 pm.plot_forest(trace_nc, var_names=["mu_state"])
 ```
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig2.png"/>
-</p>
+![](/assets/img/out_of_sample/fig2.png){fig-align="center"}
+
 
 Great, that out of sample variable seems to represent the `global` distribution across states - i.e. if we were to make a prediction for a new state we'd potentially use that distribtion (we'll confirm further down). 
 
 We'll check the zip code level below as well, looking at Maine specifically
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig3.png"/>
-</p>
+![](/assets/img/out_of_sample/fig3.png){fig-align="center"}
+
 
 As we can see, the `out_of_sample` variable has a sampled value despite there being no observed data for it. Now the question is, does this align with how we'd predict new data?
 
@@ -129,9 +128,7 @@ zip_idx_trick = (post["mu_zipcode"]
 ```
 We can compare these results by plotting their distributions below
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig4.png"/>
-</p>
+![](/assets/img/out_of_sample/fig4.png){fig-align="center"}
 
 Notice that the manual prediction and the indexing trick are basically identical. There's a slight difference from the ground truth, but thats to be expected since we're fitting a model on limited data (and anyway, it's still quite close).
 
@@ -143,13 +140,12 @@ Let's go ahead and actually make prediction now - we'll make predictions for the
  * The second example is in sample for state, out of sample for zipcode
  * The third example is out of sample entirely
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig5.png"/>
-</p>
+![](/assets/img/out_of_sample/fig5.png){fig-align="center"}
+
 
 And finally we'll use the model to make predictions on this new data. Notice the `pm.set_data()` function - remember our `pm.Data()` calls from before? This tells PyMC to override that with new data, so when we sample from the posterior predictive it makes predictions on the new data instead of the data used to fit the model.
 
-{::options parse_block_html="true" /}
+
 <details><summary markdown="span">Click here for helper function code</summary>
 
 ```python
@@ -167,7 +163,6 @@ def labels_to_index(series, lookup):
 ```
 </details>
 <br/>
-{::options parse_block_html="true" /}  
 
 ```python
 with model_nc:
@@ -181,9 +176,8 @@ with model_nc:
     preds = pm.sample_posterior_predictive(trace_nc)
 ```
 
-<p align="center">
-  <img src="/docs/assets/img/out_of_sample/fig6.png"/>
-</p>
+
+![](/assets/img/out_of_sample/fig6.png){fig-align="center"}
 
 
 This is exactly what we were looking for - and prediction is easy, just map any out of sample states or zipcodes to the `out_of_sample` category. Notice how in sample predictions have smaller uncertainty intervals and out of sample data is more uncertain - this is exactly what we'd expect. This trick makes it much easier to make predictions compared to having to write out a custom prediction function that follows the same logic as the model.

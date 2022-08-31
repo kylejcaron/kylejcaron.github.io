@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Explainable AI is not Causal Inference"
+date: "2022-04-03"
 ---
 
 Explainable AI is all the rage these days. Black box ML models come along with some fun tools such as LIME, SHAP, or Partial Depence Plots that try to give visibility into how the model is interpreting data and making predictions. It's a common misconception that these are causal inference techniques - sadly we've all been mislead.
@@ -13,9 +14,8 @@ The code for this blogpost can be found [here](https://github.com/kylejcaron/cas
 
 Let's start with a simple scenario. Our goal is to estimate some causal effects. We're going to simulate out data ourself so we know the true causal effects. We can see how good some popular "explainable AI" algorithms actually are at causal inference. We'll simulate data from the following DAG:
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_dag1.png"/>
-</p>
+![](/assets/img/explainable_ai_dag1.png){fig-align="center"}
+
 ---
 
 __What's a DAG?__ A dag is a directed acyclic graph, or fancy talk for a flowchart that goes in 1 direction. It's really just a diagram of a true data generating process. __They're typically assumed based on domain knowledge__ (like all models), although ocassionally there are some validation checks you can perform.
@@ -36,15 +36,15 @@ Ok back on track. We'll get out one of the more popular Explainable AI tools now
 
 We know for a fact that X1 influences Y. Let's see how well Partial Dependence Plots and SHAP values do at identifying the true causal effect
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig2.png"/>
-</p>
+
+![](/assets/img/explainable_ai_fig2.png){fig-align="center"}
+
 
 These SHAP values arent just wrong, but the effect is in the wrong direction. The reason for this: there's a __Fork Confound.__
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig3.png"/>
-</p>
+
+![](/assets/img/explainable_ai_fig3.png){fig-align="center"}
+
 
 Some variable `Z` confounds `X`s true effect on `Y`. 
 
@@ -57,9 +57,9 @@ Luckily in this case, statistics can solve this problem.
 
 Using some domain knowledge about the generating process, we notice an instrument, `X5`, that can be used to estimate the causal effect of `X1` on `Y`
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig4.png"/>
-</p>
+
+![](/assets/img/explainable_ai_fig4.png){fig-align="center"}
+
 
 I won't go into the details of instrumental variable analysis since the goal of this article is to highlight that Explainable AI can't replace causal inference. To learn more about it, see [Scott Cunningham's Causal Inference the Mixtape](https://mixtape.scunning.com/instrumental-variables.html?panelset=python-code&panelset1=python-code2).
 
@@ -81,28 +81,25 @@ ax.set_title("Instrumental Variable Analysis\nRecovers True effect")
 plot_model_estimate(iv_model, true_effect=true_effect, feat="X1", ax=ax)
 ```
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig5.png"/>
-</p>
+![](/assets/img/explainable_ai_fig5.png){fig-align="center"}
+
 As we can see, a simple statistics technique succeeds where explainable AI fails.
 
 # What about estimating the effect of X4 on Y?
 
 This relationship is slightly more complicated, but certainly measurable. `X4` influences `X2` which influences `Y`. Here's the DAG again for reference
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_dag1.png"/>
-</p>
+![](/assets/img/explainable_ai_dag1.png){fig-align="center"}
+
 The plots below show how well explainable AI does at estimating the causal effect of this relationship. 
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig6.png"/>
-</p>
+
+![](/assets/img/explainable_ai_fig6.png){fig-align="center"}
+
 Unfortunately, they don't pick up an effect at all! And if our goal was to increase `Y` we'd end up missing a pretty good lever for it. There's another simple explanation here for why explainable AI: there's a __Pipe Confound__
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig7.png"/>
-</p>
+![](/assets/img/explainable_ai_fig7.png){fig-align="center"}
+
 When trying to measure the effect of `X -> Y`, conditioning on `Z` (aka including it in a model as a covariate with X) ends up blocking inference. 
 
 For more details on how a Pipe confound works, I recommend chapters 5 and 6 of [Richard McElreath's Statistical Rethinking v2](https://xcelab.net/rm/statistical-rethinking/) (where I borrowed the example from as well).
@@ -124,17 +121,15 @@ ax.set_title("Instrumental Variable Analysis\nRecovers True effect")
 plot_model_estimate(model, true_effect=true_effect, feat="X4", ax=ax)
 ```
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig8.png"/>
-</p>
+![](/assets/img/explainable_ai_fig8.png){fig-align="center"}
+
 
 # Can we use Explainable AI for causal inference at all?
 
 We can! We just need to be deliberate in which variables we include in our models, and the only way to do that right is to use DAGs! The example below looks at an XGBoost model that doesnt condition on `X2` (allowing us to estimate the causal effect of `X4 -> Y`).
 
-<p align="center">
-  <img src="/docs/assets/img/explainable_ai_fig9.png"/>
-</p>
+![](/assets/img/explainable_ai_fig9.png]{fig-align="center"}
+
 
 # Take Aways
 

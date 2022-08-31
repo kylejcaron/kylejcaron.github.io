@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Uncertainty Intervals or p-values?"
+date: "2022-04-11"
 ---
 
 Uncertainty Intervals are better than p-values. Sure, its better to use both, but p-values are just a point estimate and they bring no concept of uncertainty in our estimate - this can lead to situations where we expose ourselves to high downside risk.
@@ -46,7 +47,6 @@ I'm going to simulate fake data for this experiment where
 
 For examples sake we'll pretend we don't know that the variant is worse
 
-{::options parse_block_html="true" /}
 <details><summary markdown="span">Click here for code</summary>
 
 ```python
@@ -73,12 +73,10 @@ df = simulate_experiment(pA, pB, N)
 ```
 </details>
 <br/>
-{::options parse_block_html="true" /}  
 
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig1.png"/>
-</p>
+![](/assets/img/uncertainty_fig1.png){fig-align="center"}
+
 
 Looking at the data above, we're seeing a better conversion rate in group B. We run a two-proportions z-test and we find that there's a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.
 
@@ -119,9 +117,7 @@ It's output is easy to interpret: Its a distribution of plausible probabilities 
 
 So we can simply count our successes and failures from out observed data, plug it into a beta distribution to simulate outcomes, and visualize it as a density plot to understand uncertainty
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig2.png"/>
-</p>
+![](/assets/img/uncertainty_fig2.png){fig-align="center"}
 
 It's also easy to work with - if we want to understand the plausible differences between groups, we can just take the differences in our estimates
 
@@ -129,9 +125,7 @@ $$
 \delta = \hat{p_B} - \hat{p_A}
 $$
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig3.png"/>
-</p>
+![](/assets/img/uncertainty_fig3.png){fig-align="center"}
 
 With visualization, we get a very different picture than our non-significant p-value. We see that there's plenty of plausibility that the control could be worse.
 
@@ -152,17 +146,15 @@ Unless we feel very confident in our choice of testing for a 1/2% drop and know 
 
 This is particularly important with higher uncertainty As we can see in the example below, where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig4.png"/>
-</p>
+![](/assets/img/uncertainty_fig4.png){fig-align="center"}
+
 
 $$
 p = 0.59
 $$
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig5.png"/>
-</p>
+![](/assets/img/uncertainty_fig5.png){fig-align="center"}
+
 
 # Another Example: Which Metric?
 
@@ -201,15 +193,12 @@ If you chose option 2, you weren't alone. Option 1 makes it seem like there's a 
 
 Not quite. Check out the uncertainties. The downside risk option 2 is much worse than option 1. 
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig6.png"/>
-</p>
+![](/assets/img/uncertainty_fig6.png){fig-align="center"}
 
 We can take this one step further and add our effects to compare (remember we assumed the metrics are equally important), and see if it's overall net positive
 
-<p align="center">
-  <img src="/docs/assets/img/uncertainty_fig7.png"/>
-</p>
+![](/assets/img/uncertainty_fig7.png){fig-align="center"}
+
 
 As shown above, the non significant p value option has a higher probability of being negative, AND it gives more plausibility to more negative possible effects
 
