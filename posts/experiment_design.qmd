@@ -1,0 +1,347 @@
+---
+layout: post
+title:  "Why do we need A/B tests? The Potential Outcomes Model"
+date: "2022-09-17"
+categories:
+ - experimentation
+---
+
+# Overview
+
+This blog post introduces the Potential Outcomes Model and introduces why experiments are often necessary to measure what we want. 
+This topic is already covered extensively in other more rigorous resources. This post provides just another example.
+
+# The Potential Outcomes Model 
+
+Let's say we want to know the effect of of a customer support product on a customer outcome such as customer lifetime value LTV. 
+Customers who might seem particularly upset when on the phone with customer support will be more likely to 
+receive a promo code from the customer support staff, which we label as $T=1$ (or treatment = True). We 
+represent the outcome, their customer lifetime value (assuming we can observe their full LTV), as $Y(1)$, 
+which really just means _"what is the outcome Y for customers who had the treatment"_. 
+
+## A Hypothetical world
+What if we envision some hypothetical world we can observe the outcome for each customer 
+who reached out to customer support, with and without having the treatment of receiving a promo?
+
+
+```{python}
+#| code-fold: true
+
+import pandas as pd
+import numpy as np
+import scipy.special as sp
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+
+rng = np.random.default_rng(100)
+
+N=100_000
+upset = rng.normal(0, 1, N)
+
+def sim_treatment(upset, rng, return_prob=False):
+    beta = 1.5
+    p_treatment = sp.expit( -2.5 + upset * beta)
+    if return_prob:
+        return p_treatment
+    return rng.binomial(1, p_treatment)
+
+def sim_outcome(upset, treatment, rng):
+    eps = rng.normal(0, 150, size=len(upset))
+    ltv = 2500 + 500*treatment + -500*upset + eps 
+    return ltv.round(2)
+
+data = pd.DataFrame({
+    "Person": np.arange(N),
+    "upset": upset,
+    "T": sim_treatment(upset, rng),
+    "Y(0)": sim_outcome(upset, np.zeros(N), rng),
+    "Y(1)": sim_outcome(upset, np.ones(N), rng)
+}).set_index("Person")\
+  .assign(ITE = lambda d: d["Y(1)"] - d["Y(0)"])\
+  .assign(Y = lambda d: np.where(d["T"] == 1, d["Y(1)"], d["Y(0)"]) )
+
+data.head()[["T", "Y(0)", "Y(1)", "ITE"]]
+```
+
+As shown above, in this hypothetical world we can see the exact __individual treatment effect (ITE)__ for every customer. 
+    
+    - Person 0 would have spent $475.25 more over their lifetime  if they received the promo
+    - Person 2 would have spend $203.02 more over their lifetime if they received the promo
+
+If we want to know the __Average Treatment Effect (ATE, often denoted $\tau$)__, all we have to do is take the
+mean of all of the individual treatment effects. As we can see, the ATE is about $500
+
+$$
+\tau = \frac{1}{N} \sum^{N}_{i=0} Y_i(1) - Y_i(0)
+$$
+
+```{python}
+data.ITE.mean()
+```
+
+We can also represent this in hypothetical terms that will be useful later - the __average treatment effect of the treated (ATT)__,
+and the __average treatment effect of the untreated (ATU)__. The true ATE ends up being the weighted average of these terms, weighted by
+the proportion of individuals seeing the treatment, $\pi$
+
+$$
+\begin{align}
+\tau & = \pi \cdot E[\tau | T=1] + (1-\pi) \cdot E[\tau | T= 0] \\
+     & = \pi \cdot \text{ATT} + (1-\pi) \cdot \text{ATU}
+\end{align}
+$$
+
+We can confirm that this is equivalent to the ATE from above with code
+
+```{python}
+pi = data["T"].value_counts(normalize=True)
+(pi * data.groupby("T").mean()["ITE"]).sum()
+```
+
+## Getting hit with the real world
+
+So how can we create a scenario where we can observe each person with and without having received the promo? 
+Sadly, we can't. But is there a way to make use of data we already have? Here's the actual data we might have access to.
+Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).
+
+```{python}
+#| code-fold: true
+
+# Real world data
+df = (
+    data[["upset", "T", "Y(0)", "Y(1)", "ITE", "Y"]]
+    .assign(**{
+        "Y(0)":lambda d: np.where(d["T"]==1, np.NaN, d["Y(0)"]),
+        "Y(1)":lambda d: np.where(d["T"]==0, np.NaN, d["Y(1)"]),
+        "ITE": np.NAN
+        })
+)
+
+df.iloc[:,1:].head()
+```
+
+One (unfortunately incorrect) idea might be take the average of Y(1) and subtract the average of Y(0), also known as the __simple difference in outcomes (SDO)__.
+
+$$
+\text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
+$$
+
+> Notice that I use the terms
+> $E[ Y(0) | T = 0 ]$ and $E[ Y(1) | T = 1 ]$. Reading these as plain english "the expected value (aka mean) 
+> of Y(0) given no treatment" and "the expected value (aka mean) of Y(1) given a treatment"
+
+```{python}
+(
+    df.groupby("T")
+    .mean()[["Y"]].T
+    .assign(tau = lambda d: d[1] - d[0])
+    .rename(columns={0:"E[ Y(0) | T = 0 ]", 1:"E[ Y(1) | T = 1 ]"})
+    .rename_axis(None, axis=1)
+    .round(2)
+    .reset_index(drop=True)
+)
+```
+
+__Under the SDO it looks like the treatment has a negative effect__ - this is saying that
+giving customers a promo makes their LTV $88 worse? That seems seriously wrong, and is a huge problem.
+It should be $500 like we saw in our hypothetical world. So what went wrong?
+
+## Selection Bias
+
+We can illustrate the problem by bringing another variable into the mix - customer unhappiness 
+(we're pretending we can measure it directly for examples sake).
+
+```{python}
+fig, ax = plt.subplots(1,2, figsize=(8,3))
+ax[0].set_title("Histogram of\nCustomer unhappiness")
+df.upset.hist(ax=ax[0])
+
+ax[1].set_title("More upset customers are\nmore likely to receive a promo")
+ax[1].set_ylabel("Proportion Receiving Promo")
+df.groupby(df.upset//0.25*0.25).mean()["T"].plot(ax=ax[1])
+plt.tight_layout()
+
+df.head()
+```
+
+It looks like the most unhappy customers are the most likely to receive a treatment as shown in the DAG below.
+
+```{dot}
+digraph G {
+
+  node [shape=oval fontname=Arial];
+
+  a  [label="unhappy customer"]
+  b  [label="receive promo"]
+  c  [label="lifetime value"]
+
+  a -> b;
+  c -> {a,b}
+}
+``` 
+
+This is an example of __selection bias__ (more specifically, its __collider bias__, a common confound).  When comparing customers who had the treatment vs.
+didnt have the treatment, we accidentally also end up comparing unhappy customers vs. happier customers,
+and obviously unhappier customers tend to have worse lifetime value. __We need to find a way to
+compare the impact of the treatment while controlling for the happiness of customers so that we are 
+making a more fair comparison.__ For example, if we had 2 equally unhappy customers and 1 received the treatment while the
+other didnt, we'd get a more reasonable comparison for evaluating the treatment effect.
+
+## Identification Under Selection bias
+
+How can we represent the scenario above with math? This is where the Potential Outcomes model starts coming into play. 
+_Note I'm borrowing this directly from Scott Cunningham. For the full proof, see his book, [Causal Inference the Mixtape](https://mixtape.scunning.com/)_. 
+
+$$
+\begin{align}
+\text{Simple Difference in Outcomes}
+&= \underbrace{E[Y(1)] - E[Y(0)]}_{ \text{Average Treatment Effect}}\\
+&+ \underbrace{E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]}_{ \text{Selection bias}}\\
+& + \underbrace{(1-\pi)(ATT - ATU)}_{ \text{Heterogeneous treatment effect bias}}
+\end{align}
+$$
+
+This equation for the Potential Outcomes model basically says that anytime
+you make a comparison on observational data, it ends up being the sum of the 
+true average treatment effect, selection bias, and Heterogeneous Treatment effect (HTE) bias.
+HTEs are just a fancy way of saying the personalized effect, aka promos might be more impactful
+for some users than others. 
+
+So how does this relate to what we did before? Well when we tried to compare
+users who saw the treatment vs. those that didnt
+
+$$
+\text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
+$$
+
+we didnt take into account the fact that users who saw the treatment tend to be different
+than those who didn't. Users who saw the treatment tend to be more unhappy by design.
+
+So if we subtract out the __selection bias__ from the SDO (I got this via simple algebra), aka we control for the unhappiness between customers,
+we can get closer to identifying the true ATE.
+
+Note that selection bias was
+$$
+E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
+$$
+
+This is just saying selection bias is the fundamental difference between users who get picked for treatment vs. those who dont.
+
+In our case, the fundamental difference between whether users are selected for treatment
+is based upon their unhappiness. So if we can subtract out the effect of unhappiness, we can subtract
+out the selection bias 
+
+```{python}
+df.groupby("T").mean()[["upset"]].T
+```
+
+We can do this with OLS. The most obvious way is to fit a model relating unhappiness to
+LTV, and then subtract out that effect. 
+
+```{python}
+model1 = sm.OLS.from_formula("Y ~ upset", data=df.loc[lambda d: d["T"]==0]).fit()
+Y0_hat = model1.predict(df)
+
+selection_bias = (
+    df.assign(selection_bias = Y0_hat)
+    .groupby("T").mean()
+    [["selection_bias"]]
+)
+selection_bias.T.round(2)
+```
+
+And finally we can subtract out the effect, ending up with an estimate very close to the true ATE of 500
+
+```{python}
+(
+    df.assign(selection_bias = Y0_hat)
+    .groupby("T").mean()[["Y", "selection_bias"]].T
+    .assign(difference = lambda d: d[1] - d[0])
+    [["difference"]].T
+    .reset_index(drop=True)
+    .rename(columns={"Y":"SDO"})
+    .assign(tau = lambda d: d.SDO - d.selection_bias)
+    .round(2)
+)
+```
+
+There's actually an even more simple way to control for selection bias - it can just be included as a term in an OLS
+regression model.
+
+```{python}
+def statsmodels_to_df(model):
+    table = np.array(model.summary().tables[1].data)
+    return pd.DataFrame(table[1:, 1:], columns=table[0,1:], index=table[1:,0])
+
+model2 = sm.OLS.from_formula(" Y ~ T + upset", data=df).fit()
+statsmodels_to_df(model2)
+```
+
+As we can see above the estimate of the treatment effect is the beta coefficient for `T` and it closely matches
+our manual estimate above.
+
+## A quick note on Heterogeneous Treatment Effects
+
+We've controlled for selection bias, what about Heterogeneous Treatment Effect bias? We actually don't need to 
+control for these once we've controlled for selection bias. These average treatment effect ends up being the 
+average of all of the HTEs of individuals, which is fine because as long as we've accounted for selection bias,
+the HTEs tend to cancel out. They're essentially captured by the error term, $\epsilon$ in OLS
+$$
+y = \alpha + \beta X + \epsilon
+$$
+
+We can also see that in our code, where the distribution of true HTE bias from our hypothetical dataset is centered at zero.
+Any time we've accounted for all selection bias, the HTE should be zero centered and cancel itself out as N increases.
+
+```{python}
+ATE = data["ITE"].mean()
+HTE = data.ITE.values - ATE
+sns.histplot(HTE)
+plt.xlabel("HTE")
+plt.title("Distribution of HTEs (each customers difference from the ATE)")
+plt.show()
+```
+
+The bias of HTEs for each person is just the distance their treatment effect is from the average treatment effect.
+Again, this follows the same property as the error term in OLS regression, which is why it can be such a powerful tool for causal inference
+_when used correctly_.
+
+# Why are A/B tests needed?
+
+We saw that when taking a simple difference in outcomes that we can end up with biased inference. Controlling
+for selection bias can help fix this, but we may not always be able to do so.
+
+For instance, consider if we didn't have data on customer unhappiness (which is more likely true than not in the real world)
+- how would we control for it?
+
+In many cases we can't, or even if we can (such as with Instrumental Variable Analysis), it's very difficult.
+This is where randomization and A/B testing come into play. 
+
+Remember that the whole reason we had issues with measuring the ATE was because users 
+treated ended up being fundamentally different from those that weren't. But what if we made it so that
+its purely random who receives the treatment and who doesn't? Then we'd expect the same level of unhappiness 
+in each group, cancelling out any selection bias. HTEs would cancel out as well like before,
+and __by randomizing, we find that the simple difference in outcomes equals the true average treatment effect__. 
+
+$$
+\begin{align}
+\text{Simple Difference in Outcomes}
+&= \underbrace{E[Y(1)] - E[Y(0)]}_{ \text{Average Treatment Effect}}\\
+&+ \underbrace{ \cancel{E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]}}_{ \text{Selection bias}}\\
+& + \underbrace{\cancel{(1-\pi)(ATT - ATU)}}_{ \text{Heterogeneous treatment effect bias}}
+\end{align}
+$$
+
+This is why randomization is so powerful, and why many people say A/B tests are the gold standard.
+
+# Summary
+
+In this post we walked through the Potential Outcomes Model, showed how it applies to a fake data scenario,
+and then used it to tie back to why randomization works for A/B testing.
+
+# Additional Reading
+
+This is just one example of many that exist out there. Here are some other examples I've come across:
+ 
+ * Scott Cunningham's ["The Perfect Doctor" example](https://mixtape.scunning.com/04-potential_outcomes) from [Causal Inference: the Mixtape](https://mixtape.scunning.com/)
+ * Matheus Facure's [Causal Inference for the Brave and True](https://matheusfacure.github.io/python-causality-handbook/landing-page.html)
