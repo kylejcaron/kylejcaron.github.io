@@ -2,6 +2,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",
       "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
@@ -11,6 +12,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",
       "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
@@ -20,6 +22,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",
       "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",

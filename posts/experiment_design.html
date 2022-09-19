@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.163">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-09-17">
+
+<title>Kyle Caron - Why do we need A/B tests? The Potential Outcomes Model</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../theme.scss">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Kyle Caron</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html">Blog</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/kylejcaron"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Why do we need A/B tests? The Potential Outcomes Model</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">experimentation</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 17, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#the-potential-outcomes-model" id="toc-the-potential-outcomes-model" class="nav-link" data-scroll-target="#the-potential-outcomes-model">The Potential Outcomes Model</a>
+  <ul class="collapse">
+  <li><a href="#a-hypothetical-world" id="toc-a-hypothetical-world" class="nav-link" data-scroll-target="#a-hypothetical-world">A Hypothetical world</a></li>
+  <li><a href="#getting-hit-with-the-real-world" id="toc-getting-hit-with-the-real-world" class="nav-link" data-scroll-target="#getting-hit-with-the-real-world">Getting hit with the real world</a></li>
+  <li><a href="#selection-bias" id="toc-selection-bias" class="nav-link" data-scroll-target="#selection-bias">Selection Bias</a></li>
+  <li><a href="#identification-under-selection-bias" id="toc-identification-under-selection-bias" class="nav-link" data-scroll-target="#identification-under-selection-bias">Identification Under Selection bias</a></li>
+  <li><a href="#a-quick-note-on-heterogeneous-treatment-effects" id="toc-a-quick-note-on-heterogeneous-treatment-effects" class="nav-link" data-scroll-target="#a-quick-note-on-heterogeneous-treatment-effects">A quick note on Heterogeneous Treatment Effects</a></li>
+  </ul></li>
+  <li><a href="#why-are-ab-tests-needed" id="toc-why-are-ab-tests-needed" class="nav-link" data-scroll-target="#why-are-ab-tests-needed">Why are A/B tests needed?</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>This blog post introduces the Potential Outcomes Model and introduces why experiments are often necessary to measure what we want. This topic is already covered extensively in other more rigorous resources. This post provides just another example.</p>
+</section>
+<section id="the-potential-outcomes-model" class="level1">
+<h1>The Potential Outcomes Model</h1>
+<p>Let’s say we want to know the effect of of a customer support product on a customer outcome such as LTV. Customers who might seem particularly upset when on the phone with customer support will be more likely to receive a promo code from the customer support staff, which we label as <span class="math inline">\(T=1\)</span> (or treatment = True). We represent the outcome, their customer lifetime value (assuming we can observe their full LTV), as <span class="math inline">\(Y(1)\)</span>, which really just means <em>“what is the outcome Y for customers who had the treatment”</em>.</p>
+<section id="a-hypothetical-world" class="level2">
+<h2 class="anchored" data-anchor-id="a-hypothetical-world">A Hypothetical world</h2>
+<p>What if we envision some hypothetical world we can observe the outcome for each customer who reached out to customer support, with and without having the treatment of receiving a promo?</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.special <span class="im">as</span> sp</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">100</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>N<span class="op">=</span><span class="dv">100_000</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>upset <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sim_treatment(upset, rng, return_prob<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> <span class="fl">1.5</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    p_treatment <span class="op">=</span> sp.expit( <span class="op">-</span><span class="fl">2.5</span> <span class="op">+</span> upset <span class="op">*</span> beta)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> return_prob:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> p_treatment</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rng.binomial(<span class="dv">1</span>, p_treatment)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sim_outcome(upset, treatment, rng):</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    eps <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="dv">150</span>, size<span class="op">=</span><span class="bu">len</span>(upset))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    ltv <span class="op">=</span> <span class="dv">2500</span> <span class="op">+</span> <span class="dv">500</span><span class="op">*</span>treatment <span class="op">+</span> <span class="op">-</span><span class="dv">500</span><span class="op">*</span>upset <span class="op">+</span> eps </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ltv.<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Person"</span>: np.arange(N),</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"upset"</span>: upset,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"T"</span>: sim_treatment(upset, rng),</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Y(0)"</span>: sim_outcome(upset, np.zeros(N), rng),</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Y(1)"</span>: sim_outcome(upset, np.ones(N), rng)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>}).set_index(<span class="st">"Person"</span>)<span class="op">\</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  .assign(ITE <span class="op">=</span> <span class="kw">lambda</span> d: d[<span class="st">"Y(1)"</span>] <span class="op">-</span> d[<span class="st">"Y(0)"</span>])<span class="op">\</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  .assign(Y <span class="op">=</span> <span class="kw">lambda</span> d: np.where(d[<span class="st">"T"</span>] <span class="op">==</span> <span class="dv">1</span>, d[<span class="st">"Y(1)"</span>], d[<span class="st">"Y(0)"</span>]) )</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>data.head()[[<span class="st">"T"</span>, <span class="st">"Y(0)"</span>, <span class="st">"Y(1)"</span>, <span class="st">"ITE"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="1">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>T</th>
+      <th>Y(0)</th>
+      <th>Y(1)</th>
+      <th>ITE</th>
+    </tr>
+    <tr>
+      <th>Person</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>3108.62</td>
+      <td>3583.87</td>
+      <td>475.25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2347.01</td>
+      <td>2878.23</td>
+      <td>531.22</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>2176.28</td>
+      <td>2379.30</td>
+      <td>203.02</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>2146.09</td>
+      <td>2559.96</td>
+      <td>413.87</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>2806.50</td>
+      <td>3623.16</td>
+      <td>816.66</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>As shown above, in this hypothetical world we can see the exact <strong>individual treatment effect (ITE)</strong> for every customer.</p>
+<pre><code>- Person 0 would have spent $475.25 more over their lifetime  if they received the promo
+- Person 2 would have spend $203.02 more over their lifetime if they received the promo</code></pre>
+<p>If we want to know the <strong>Average Treatment Effect (ATE, often denoted <span class="math inline">\(\tau\)</span>)</strong>, all we have to do is take the mean of all of the individual treatment effects. As we can see, the ATE is about $500</p>
+<p><span class="math display">\[
+\tau = \frac{1}{N} \sum^{N}_{i=0} Y_i(1) - Y_i(0)
+\]</span></p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data.ITE.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>500.09949529999994</code></pre>
+</div>
+</div>
+<p>We can also represent this in hypothetical terms that will be useful later - the <strong>average treatment effect of the treated (ATT)</strong>, and the <strong>average treatment effect of the untreated (ATU)</strong>. The true ATE ends up being the weighted average of these terms, weighted by the proportion of individuals seeing the treatment, <span class="math inline">\(\pi\)</span></p>
+<p><span class="math display">\[
+\begin{align}
+\tau &amp; = \pi \cdot E[\tau | T=1] + (1-\pi) \cdot E[\tau | T= 0] \\
+     &amp; = \pi \cdot \text{ATT} + (1-\pi) \cdot \text{ATU}
+\end{align}
+\]</span></p>
+<p>We can confirm that this is equivalent to the ATE from above with code</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> data[<span class="st">"T"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(pi <span class="op">*</span> data.groupby(<span class="st">"T"</span>).mean()[<span class="st">"ITE"</span>]).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>500.0994953</code></pre>
+</div>
+</div>
+</section>
+<section id="getting-hit-with-the-real-world" class="level2">
+<h2 class="anchored" data-anchor-id="getting-hit-with-the-real-world">Getting hit with the real world</h2>
+<p>So how can we create a scenario where we can observe each person with and without having receive the promo? Sadly, we can’t. But is there a way to make use of data we already have? Here’s the actual data we might have access to. Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).</p>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Real world data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    data[[<span class="st">"upset"</span>, <span class="st">"T"</span>, <span class="st">"Y(0)"</span>, <span class="st">"Y(1)"</span>, <span class="st">"ITE"</span>, <span class="st">"Y"</span>]]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    .assign(<span class="op">**</span>{</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Y(0)"</span>:<span class="kw">lambda</span> d: np.where(d[<span class="st">"T"</span>]<span class="op">==</span><span class="dv">1</span>, np.NaN, d[<span class="st">"Y(0)"</span>]),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Y(1)"</span>:<span class="kw">lambda</span> d: np.where(d[<span class="st">"T"</span>]<span class="op">==</span><span class="dv">0</span>, np.NaN, d[<span class="st">"Y(1)"</span>]),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"ITE"</span>: np.NAN</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>df.iloc[:,<span class="dv">1</span>:].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>T</th>
+      <th>Y(0)</th>
+      <th>Y(1)</th>
+      <th>ITE</th>
+      <th>Y</th>
+    </tr>
+    <tr>
+      <th>Person</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>3108.62</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3108.62</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2347.01</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2347.01</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>NaN</td>
+      <td>2379.3</td>
+      <td>NaN</td>
+      <td>2379.30</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>2146.09</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2146.09</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>2806.50</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2806.50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>One (unfortunately incorrect) idea might be take the average of Y(1) and subtract the average of Y(0), also known as the <strong>simple difference in outcomes (SDO)</strong>.</p>
+<p><span class="math display">\[
+\text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
+\]</span></p>
+<blockquote class="blockquote">
+<p>Notice that I use the terms <span class="math inline">\(E[ Y(0) | T = 0 ]\)</span> and <span class="math inline">\(E[ Y(1) | T = 1 ]\)</span>. Reading these as plain english “the expected value (aka mean) of Y(0) given no treatment” and “the expected value (aka mean) of Y(1) given receiving a treatment”</p>
+</blockquote>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">"T"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .mean()[[<span class="st">"Y"</span>]].T</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .assign(tau <span class="op">=</span> <span class="kw">lambda</span> d: d[<span class="dv">1</span>] <span class="op">-</span> d[<span class="dv">0</span>])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="dv">0</span>:<span class="st">"E[ Y(0) | T = 0 ]"</span>, <span class="dv">1</span>:<span class="st">"E[ Y(1) | T = 1 ]"</span>})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    .rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>E[ Y(0) | T = 0 ]</th>
+      <th>E[ Y(1) | T = 1 ]</th>
+      <th>tau</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2579.46</td>
+      <td>2491.48</td>
+      <td>-87.98</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>Under the SDO it looks like the treatment has a negative effect</strong> - this is saying that giving customers a promo makes their LTV worse? That seems seriously wrong, and is a huge problem. It should be $500 like we saw in our hypothetical world. So what went wrong?</p>
+</section>
+<section id="selection-bias" class="level2">
+<h2 class="anchored" data-anchor-id="selection-bias">Selection Bias</h2>
+<p>We can illustrate the problem by bringing another variable into the mix - customer unhappiness (we’re pretending we can measure it directly for examples sake).</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">3</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Histogram of</span><span class="ch">\n</span><span class="st">Customer unhappiness"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df.upset.hist(ax<span class="op">=</span>ax[<span class="dv">0</span>])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"More upset customers are</span><span class="ch">\n</span><span class="st">more likely to receive a promo"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Proportion Receiving Promo"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>df.groupby(df.upset<span class="op">//</span><span class="fl">0.25</span><span class="op">*</span><span class="fl">0.25</span>).mean()[<span class="st">"T"</span>].plot(ax<span class="op">=</span>ax[<span class="dv">1</span>])</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>upset</th>
+      <th>T</th>
+      <th>Y(0)</th>
+      <th>Y(1)</th>
+      <th>ITE</th>
+      <th>Y</th>
+    </tr>
+    <tr>
+      <th>Person</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-1.157550</td>
+      <td>0</td>
+      <td>3108.62</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3108.62</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.289756</td>
+      <td>0</td>
+      <td>2347.01</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2347.01</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.780854</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>2379.3</td>
+      <td>NaN</td>
+      <td>2379.30</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.543974</td>
+      <td>0</td>
+      <td>2146.09</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2146.09</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.961383</td>
+      <td>0</td>
+      <td>2806.50</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2806.50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="experiment_design_files/figure-html/cell-7-output-2.png" width="758" height="279"></p>
+</div>
+</div>
+<p>It looks like the most unhappy customers are the most likely to receive a treatment as shown in the DAG below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<p>
+<svg width="672" height="480" viewbox="0.00 0.00 229.71 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>
+G
+</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 225.71,-184 225.71,4 -4,4"></polygon> <!-- a --> <g id="node1" class="node">
+<title>
+a
+</title>
+<ellipse fill="none" stroke="black" cx="90.48" cy="-90" rx="90.47" ry="18"></ellipse> <text text-anchor="middle" x="90.48" y="-85.8" font-family="Arial" font-size="14.00">unhappy customer</text> </g> <!-- b --> <g id="node2" class="node">
+<title>
+b
+</title>
+<ellipse fill="none" stroke="black" cx="149.48" cy="-18" rx="72.45" ry="18"></ellipse> <text text-anchor="middle" x="149.48" y="-13.8" font-family="Arial" font-size="14.00">receive promo</text> </g> <!-- a&#45;&gt;b --> <g id="edge1" class="edge">
+<title>
+a-&gt;b
+</title>
+<path fill="none" stroke="black" d="M104.77,-72.05C111.94,-63.54 120.77,-53.07 128.68,-43.68"></path> <polygon fill="black" stroke="black" points="131.57,-45.69 135.33,-35.79 126.21,-41.18 131.57,-45.69"></polygon> </g> <!-- c --> <g id="node3" class="node">
+<title>
+c
+</title>
+<ellipse fill="none" stroke="black" cx="149.48" cy="-162" rx="67.29" ry="18"></ellipse> <text text-anchor="middle" x="149.48" y="-157.8" font-family="Arial" font-size="14.00">lifetime value</text> </g> <!-- c&#45;&gt;a --> <g id="edge2" class="edge">
+<title>
+c-&gt;a
+</title>
+<path fill="none" stroke="black" d="M135.2,-144.05C128.03,-135.54 119.2,-125.07 111.29,-115.68"></path> <polygon fill="black" stroke="black" points="113.76,-113.18 104.64,-107.79 108.4,-117.69 113.76,-113.18"></polygon> </g> <!-- c&#45;&gt;b --> <g id="edge3" class="edge">
+<title>
+c-&gt;b
+</title>
+<path fill="none" stroke="black" d="M166.38,-144.53C175.11,-134.83 184.87,-121.77 189.48,-108 194.57,-92.83 194.57,-87.17 189.48,-72 186.08,-61.83 179.87,-52.06 173.34,-43.73"></path> <polygon fill="black" stroke="black" points="175.91,-41.35 166.8,-35.93 170.54,-45.84 175.91,-41.35"></polygon> </g> </g>
+</svg>
+</p>
+</div>
+</div>
+</div>
+<p>This is an example of <strong>selection bias</strong> (more specifically, its <strong>collider bias</strong>, a common confound). When comparing customers who had the treatment vs. didnt have the treatment, we accidentally also end up comparing unhappy customers vs.&nbsp;happier customers, and obviously unhappier customers tend to have worse lifetime value. <strong>We need to find a way to compare the impact of the treatment while controlling for the happiness of customers so that we are making a more fair comparison.</strong> For example, if we had 2 equally unhappy customers and 1 received the treatment while the other didnt, we’d get a more reasonable comparison for evaluating the treatment effect.</p>
+</section>
+<section id="identification-under-selection-bias" class="level2">
+<h2 class="anchored" data-anchor-id="identification-under-selection-bias">Identification Under Selection bias</h2>
+<p>How can we represent the scenario above with math? This is where the Potential Outcomes model starts coming into play. <em>Note I’m borrowing this directly from Scott Cunningham. For the full proof, see his book, Causal Inference the Mixtape</em>.</p>
+<p><span class="math display">\[
+\begin{align}
+\text{Simple Difference in Outcomes}
+&amp;= \underbrace{E[Y^1] - E[Y^0]}_{ \text{Average Treatment Effect}}\\
+&amp;+ \underbrace{E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]}_{ \text{Selection bias}}\\
+&amp; + \underbrace{(1-\pi)(ATT - ATU)}_{ \text{Heterogeneous treatment effect bias}}
+\end{align}
+\]</span></p>
+<p>This equation for the Potential Outcomes model basically says that anytime you make a comparison on observational data, it ends up being the sum of the true average treatment effect, selection bias, and Heterogeneous Treatment effect (HTE) bias. HTEs are just a fancy way of saying the personalized effect, aka promos might be more impactful for some users than others.</p>
+<p>So how does this relate to what we did before? Well when we tried to compare users who saw the treatment vs.&nbsp;those that didnt</p>
+<p><span class="math display">\[
+\text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
+\]</span></p>
+<p>we didnt take into account the fact that users who saw the treatment tend to be different than those who dont. Users who saw the treatment tend to be more unhappy by design.</p>
+<p>So if we subtract out the <strong>selection bias</strong> from the SDO, aka we control for the unhappiness between customers, we can get closer to identifying the true ATE.</p>
+<p>Note that selection bias was <span class="math display">\[
+E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
+\]</span></p>
+<p>This is just saying selection bias is the fundamental difference between users who get picked for treatment vs.&nbsp;those who dont.</p>
+<p>In our case, the fundamental difference between whether users are selected for treatment is based upon their unhappiness. So if we can subtract out the effect of unhappiness, we can subtract out the selection bias</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"T"</span>).mean()[[<span class="st">"upset"</span>]].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>T</th>
+      <th>0</th>
+      <th>1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>upset</th>
+      <td>-0.159046</td>
+      <td>1.018004</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>We can do this with OLS. The most obvious way is to fit a model relating unhappiness to LTV, and then subtract out that effect.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"Y ~ upset"</span>, data<span class="op">=</span>df.loc[<span class="kw">lambda</span> d: d[<span class="st">"T"</span>]<span class="op">==</span><span class="dv">0</span>]).fit()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>Y0_hat <span class="op">=</span> model1.predict(df)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>selection_bias <span class="op">=</span> (</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    df.assign(selection_bias <span class="op">=</span> Y0_hat)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"T"</span>).mean()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"selection_bias"</span>]]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>selection_bias.T.<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>T</th>
+      <th>0</th>
+      <th>1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>selection_bias</th>
+      <td>2579.46</td>
+      <td>1990.96</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>And finally we can subtract out the effect, ending up with an estimate very close to the true ATE of 500</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df.assign(selection_bias <span class="op">=</span> Y0_hat)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .assign(bias_corrected_Y <span class="op">=</span> <span class="kw">lambda</span> d: d.Y <span class="op">-</span> d.selection_bias)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"T"</span>).mean()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"bias_corrected_Y"</span>]].T</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    .assign(tau <span class="op">=</span> <span class="kw">lambda</span> d: d[<span class="dv">1</span>] <span class="op">-</span> d[<span class="dv">0</span>])</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="dv">0</span>:<span class="st">"bias corrected E[Y|T=0] "</span>,<span class="dv">1</span>:<span class="st">"bias corrected  E[Y|T=1]"</span>})</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    .rename_axis(columns<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>bias corrected E[Y|T=0]</th>
+      <th>bias corrected  E[Y|T=1]</th>
+      <th>tau</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-5.925096e-13</td>
+      <td>500.524691</td>
+      <td>500.524691</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>There’s actually an even more simple way to control for selection bias - it can just be included as a term in an OLS regression model.</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">" Y ~ T + upset"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> np.array(model2.summary().tables[<span class="dv">1</span>].data)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(table[<span class="dv">1</span>:, <span class="dv">1</span>:], columns<span class="op">=</span>table[<span class="dv">0</span>,<span class="dv">1</span>:], index<span class="op">=</span>table[<span class="dv">1</span>:,<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>coef</th>
+      <th>std err</th>
+      <th>t</th>
+      <th>P&gt;|t|</th>
+      <th>[0.025</th>
+      <th>0.975]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Intercept</th>
+      <td>2499.9363</td>
+      <td>0.516</td>
+      <td>4847.317</td>
+      <td>0.000</td>
+      <td>2498.925</td>
+      <td>2500.947</td>
+    </tr>
+    <tr>
+      <th>T</th>
+      <td>500.5529</td>
+      <td>1.502</td>
+      <td>333.191</td>
+      <td>0.000</td>
+      <td>497.608</td>
+      <td>503.497</td>
+    </tr>
+    <tr>
+      <th>upset</th>
+      <td>-500.0068</td>
+      <td>0.518</td>
+      <td>-965.940</td>
+      <td>0.000</td>
+      <td>-501.021</td>
+      <td>-498.992</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>As we can see above the estimate of the treatment effect is the beta coefficient for <code>T</code> and it closely matches our manual estimate above.</p>
+</section>
+<section id="a-quick-note-on-heterogeneous-treatment-effects" class="level2">
+<h2 class="anchored" data-anchor-id="a-quick-note-on-heterogeneous-treatment-effects">A quick note on Heterogeneous Treatment Effects</h2>
+<p>We’ve controlled for selection bias, what about Heterogeneous Treatment Effect bias? We actually don’t need to control for these once we’ve controlled for selection bias. These average treatment effect ends up being the average of all of the HTEs of individuals, which is fine because as long as we’ve accounted for selection bias, the HTEs tend to cancel out. They’re essentially captured by the error term, <span class="math inline">\(\epsilon\)</span> in OLS <span class="math display">\[
+y = \alpha + \beta X + \epsilon
+\]</span></p>
+<p>We can also see that in our code, where the distribution of true HTE bias from our hypothetical dataset is centered at zero. Any time we’ve accounted for all selection bias, the HTE should be zero centered and cancel itself out as N increases.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ATE <span class="op">=</span> data[<span class="st">"ITE"</span>].mean()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>HTE <span class="op">=</span> data.ITE.values <span class="op">-</span> ATE</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>sns.histplot(HTE)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"HTE"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of HTEs (each customers difference from the ATE)"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="experiment_design_files/figure-html/cell-12-output-1.png" width="601" height="442"></p>
+</div>
+</div>
+<p>The bias of HTEs for each person is just the distance their treatment effect is from the average treatment effect. Again, this follows the same property as the error term in OLS regression, which is why it can be such a powerful tool for causal inference <em>when used correctly</em>.</p>
+</section>
+</section>
+<section id="why-are-ab-tests-needed" class="level1">
+<h1>Why are A/B tests needed?</h1>
+<p>We saw that when taking a simple difference in outcomes that we can end up with biased inference. Controlling for selection bias can help fix this, but we may not always be able to do so.</p>
+<p>For instance, consider if we didn’t have data on customer unhappiness (which is more likely true than not in the real world) - how would we control for it?</p>
+<p>In many cases we can’t, or even if we can (such as with Instrumental Variable Analysis), it’s very difficult. This is where randomization and A/B testing come into play.</p>
+<p>Remember that the whole reason we had issues with measuring the ATE was because users treated ended up being fundamentally different from those that weren’t. But what if we made it so that its purely random who receives the treatment and who doesn’t? Then we’d expect the same level of unhappiness in each group, cancelling out any selection bias. HTEs would cancel out as well like before, and <strong>by randomizing, we find that the simple difference in outcomes equals the true average treatment effect</strong>.</p>
+<p><span class="math display">\[
+\begin{align}
+\text{Simple Difference in Outcomes}
+&amp;= \underbrace{E[Y^1] - E[Y^0]}_{ \text{Average Treatment Effect}}\\
+&amp;+ \underbrace{ \cancel{E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]}}_{ \text{Selection bias}}\\
+&amp; + \underbrace{\cancel{(1-\pi)(ATT - ATU)}}_{ \text{Heterogeneous treatment effect bias}}
+\end{align}
+\]</span></p>
+<p>This is why randomization is so powerful, and why many people say A/B tests are the gold standard.</p>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>In this post we walked through the Potential Outcomes Model, showed how it applies to a fake data scenario, and then used it to tie back to why randomization works for A/B testing.</p>
+<p>This is just one example of many that exist out there. Here are some other examples I’ve come across:</p>
+<ul>
+<li>Scott Cunningham’s “The Perfect Doctor” example from Causal Inference: the Mixtape</li>
+<li>Matheus Facure’s Causal Inference for the Brave and True</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
