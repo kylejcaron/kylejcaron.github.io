@@ -175,8 +175,8 @@ digraph G {
   b  [label="receive promo"]
   c  [label="lifetime value"]
 
-  a -> b;
-  c -> {a,b}
+  a -> {b.c};
+  b -> c
 }
 ``` 
 
