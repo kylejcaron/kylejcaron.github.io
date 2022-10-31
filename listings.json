@@ -2,6 +2,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",
@@ -12,6 +13,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",
@@ -22,6 +24,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
       "/posts/2022-04-05-ab-test-duration.html",

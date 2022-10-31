@@ -210,6 +210,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#why-are-ab-tests-needed" id="toc-why-are-ab-tests-needed" class="nav-link" data-scroll-target="#why-are-ab-tests-needed">Why are A/B tests needed?</a></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#additional-reading" id="toc-additional-reading" class="nav-link" data-scroll-target="#additional-reading">Additional Reading</a></li>
   </ul>
 </nav>
     </div>
@@ -225,7 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="the-potential-outcomes-model" class="level1">
 <h1>The Potential Outcomes Model</h1>
-<p>Let’s say we want to know the effect of of a customer support product on a customer outcome such as LTV. Customers who might seem particularly upset when on the phone with customer support will be more likely to receive a promo code from the customer support staff, which we label as <span class="math inline">\(T=1\)</span> (or treatment = True). We represent the outcome, their customer lifetime value (assuming we can observe their full LTV), as <span class="math inline">\(Y(1)\)</span>, which really just means <em>“what is the outcome Y for customers who had the treatment”</em>.</p>
+<p>Let’s say we want to know the effect of of a customer support product on a customer outcome such as customer lifetime value LTV. Customers who might seem particularly upset when on the phone with customer support will be more likely to receive a promo code from the customer support staff, which we label as <span class="math inline">\(T=1\)</span> (or treatment = True). We represent the outcome, their customer lifetime value (assuming we can observe their full LTV), as <span class="math inline">\(Y(1)\)</span>, which really just means <em>“what is the outcome Y for customers who had the treatment”</em>.</p>
 <section id="a-hypothetical-world" class="level2">
 <h2 class="anchored" data-anchor-id="a-hypothetical-world">A Hypothetical world</h2>
 <p>What if we envision some hypothetical world we can observe the outcome for each customer who reached out to customer support, with and without having the treatment of receiving a promo?</p>
@@ -268,7 +269,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>data.head()[[<span class="st">"T"</span>, <span class="st">"Y(0)"</span>, <span class="st">"Y(1)"</span>, <span class="st">"ITE"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="12">
 
 <div>
 
@@ -339,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \]</span></p>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data.ITE.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>500.09949529999994</code></pre>
 </div>
 </div>
@@ -354,14 +355,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> data[<span class="st">"T"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(pi <span class="op">*</span> data.groupby(<span class="st">"T"</span>).mean()[<span class="st">"ITE"</span>]).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>500.0994953</code></pre>
 </div>
 </div>
 </section>
 <section id="getting-hit-with-the-real-world" class="level2">
 <h2 class="anchored" data-anchor-id="getting-hit-with-the-real-world">Getting hit with the real world</h2>
-<p>So how can we create a scenario where we can observe each person with and without having receive the promo? Sadly, we can’t. But is there a way to make use of data we already have? Here’s the actual data we might have access to. Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).</p>
+<p>So how can we create a scenario where we can observe each person with and without having received the promo? Sadly, we can’t. But is there a way to make use of data we already have? Here’s the actual data we might have access to. Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).</p>
 <div class="cell" data-execution_count="4">
 <details>
 <summary>Code</summary>
@@ -377,7 +378,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>df.iloc[:,<span class="dv">1</span>:].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="15">
 
 <div>
 
@@ -451,7 +452,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
 \]</span></p>
 <blockquote class="blockquote">
-<p>Notice that I use the terms <span class="math inline">\(E[ Y(0) | T = 0 ]\)</span> and <span class="math inline">\(E[ Y(1) | T = 1 ]\)</span>. Reading these as plain english “the expected value (aka mean) of Y(0) given no treatment” and “the expected value (aka mean) of Y(1) given receiving a treatment”</p>
+<p>Notice that I use the terms <span class="math inline">\(E[ Y(0) | T = 0 ]\)</span> and <span class="math inline">\(E[ Y(1) | T = 1 ]\)</span>. Reading these as plain english “the expected value (aka mean) of Y(0) given no treatment” and “the expected value (aka mean) of Y(1) given a treatment”</p>
 </blockquote>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(</span>
@@ -463,7 +464,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="16">
 
 <div>
 
@@ -488,7 +489,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
-<p><strong>Under the SDO it looks like the treatment has a negative effect</strong> - this is saying that giving customers a promo makes their LTV worse? That seems seriously wrong, and is a huge problem. It should be $500 like we saw in our hypothetical world. So what went wrong?</p>
+<p><strong>Under the SDO it looks like the treatment has a negative effect</strong> - this is saying that giving customers a promo makes their LTV $88 worse? That seems seriously wrong, and is a huge problem. It should be $500 like we saw in our hypothetical world. So what went wrong?</p>
 </section>
 <section id="selection-bias" class="level2">
 <h2 class="anchored" data-anchor-id="selection-bias">Selection Bias</h2>
@@ -504,7 +505,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="17">
 
 <div>
 
@@ -588,36 +589,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output-display">
 <div>
 <p>
-<svg width="672" height="480" viewbox="0.00 0.00 229.71 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
+<svg width="672" height="480" viewbox="0.00 0.00 220.71 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
 <title>
 G
 </title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 225.71,-184 225.71,4 -4,4"></polygon> <!-- a --> <g id="node1" class="node">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 216.71,-184 216.71,4 -4,4"></polygon> <!-- a --> <g id="node1" class="node">
 <title>
 a
 </title>
-<ellipse fill="none" stroke="black" cx="90.48" cy="-90" rx="90.47" ry="18"></ellipse> <text text-anchor="middle" x="90.48" y="-85.8" font-family="Arial" font-size="14.00">unhappy customer</text> </g> <!-- b --> <g id="node2" class="node">
+<ellipse fill="none" stroke="black" cx="122.22" cy="-162" rx="90.47" ry="18"></ellipse> <text text-anchor="middle" x="122.22" y="-157.8" font-family="Arial" font-size="14.00">unhappy customer</text> </g> <!-- b --> <g id="node2" class="node">
 <title>
 b
 </title>
-<ellipse fill="none" stroke="black" cx="149.48" cy="-18" rx="72.45" ry="18"></ellipse> <text text-anchor="middle" x="149.48" y="-13.8" font-family="Arial" font-size="14.00">receive promo</text> </g> <!-- a&#45;&gt;b --> <g id="edge1" class="edge">
+<ellipse fill="none" stroke="black" cx="72.22" cy="-90" rx="72.45" ry="18"></ellipse> <text text-anchor="middle" x="72.22" y="-85.8" font-family="Arial" font-size="14.00">receive promo</text> </g> <!-- a&#45;&gt;b --> <g id="edge1" class="edge">
 <title>
 a-&gt;b
 </title>
-<path fill="none" stroke="black" d="M104.77,-72.05C111.94,-63.54 120.77,-53.07 128.68,-43.68"></path> <polygon fill="black" stroke="black" points="131.57,-45.69 135.33,-35.79 126.21,-41.18 131.57,-45.69"></polygon> </g> <!-- c --> <g id="node3" class="node">
+<path fill="none" stroke="black" d="M110.12,-144.05C104.1,-135.63 96.71,-125.28 90.06,-115.97"></path> <polygon fill="black" stroke="black" points="92.87,-113.89 84.21,-107.79 87.18,-117.96 92.87,-113.89"></polygon> </g> <!-- c --> <g id="node3" class="node">
 <title>
 c
 </title>
-<ellipse fill="none" stroke="black" cx="149.48" cy="-162" rx="67.29" ry="18"></ellipse> <text text-anchor="middle" x="149.48" y="-157.8" font-family="Arial" font-size="14.00">lifetime value</text> </g> <!-- c&#45;&gt;a --> <g id="edge2" class="edge">
+<ellipse fill="none" stroke="black" cx="122.22" cy="-18" rx="67.29" ry="18"></ellipse> <text text-anchor="middle" x="122.22" y="-13.8" font-family="Arial" font-size="14.00">lifetime value</text> </g> <!-- a&#45;&gt;c --> <g id="edge2" class="edge">
 <title>
-c-&gt;a
+a-&gt;c
 </title>
-<path fill="none" stroke="black" d="M135.2,-144.05C128.03,-135.54 119.2,-125.07 111.29,-115.68"></path> <polygon fill="black" stroke="black" points="113.76,-113.18 104.64,-107.79 108.4,-117.69 113.76,-113.18"></polygon> </g> <!-- c&#45;&gt;b --> <g id="edge3" class="edge">
+<path fill="none" stroke="black" d="M135.37,-143.91C142.14,-134.01 149.71,-120.96 153.22,-108 157.41,-92.56 157.41,-87.44 153.22,-72 150.64,-62.48 145.88,-52.92 140.84,-44.59"></path> <polygon fill="black" stroke="black" points="143.73,-42.6 135.37,-36.09 137.84,-46.39 143.73,-42.6"></polygon> </g> <!-- b&#45;&gt;c --> <g id="edge3" class="edge">
 <title>
-c-&gt;b
+b-&gt;c
 </title>
-<path fill="none" stroke="black" d="M166.38,-144.53C175.11,-134.83 184.87,-121.77 189.48,-108 194.57,-92.83 194.57,-87.17 189.48,-72 186.08,-61.83 179.87,-52.06 173.34,-43.73"></path> <polygon fill="black" stroke="black" points="175.91,-41.35 166.8,-35.93 170.54,-45.84 175.91,-41.35"></polygon> </g> </g>
+<path fill="none" stroke="black" d="M84.33,-72.05C90.34,-63.63 97.74,-53.28 104.39,-43.97"></path> <polygon fill="black" stroke="black" points="107.27,-45.96 110.23,-35.79 101.57,-41.89 107.27,-45.96"></polygon> </g> </g>
 </svg>
 </p>
 </div>
@@ -627,12 +628,12 @@ c-&gt;b
 </section>
 <section id="identification-under-selection-bias" class="level2">
 <h2 class="anchored" data-anchor-id="identification-under-selection-bias">Identification Under Selection bias</h2>
-<p>How can we represent the scenario above with math? This is where the Potential Outcomes model starts coming into play. <em>Note I’m borrowing this directly from Scott Cunningham. For the full proof, see his book, Causal Inference the Mixtape</em>.</p>
+<p>How can we represent the scenario above with math? This is where the Potential Outcomes model starts coming into play. <em>Note I’m borrowing this directly from Scott Cunningham. For the full proof, see his book, <a href="https://mixtape.scunning.com/">Causal Inference the Mixtape</a></em>.</p>
 <p><span class="math display">\[
 \begin{align}
 \text{Simple Difference in Outcomes}
-&amp;= \underbrace{E[Y^1] - E[Y^0]}_{ \text{Average Treatment Effect}}\\
-&amp;+ \underbrace{E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]}_{ \text{Selection bias}}\\
+&amp;= \underbrace{E[Y(1)] - E[Y(0)]}_{ \text{Average Treatment Effect}}\\
+&amp;+ \underbrace{E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]}_{ \text{Selection bias}}\\
 &amp; + \underbrace{(1-\pi)(ATT - ATU)}_{ \text{Heterogeneous treatment effect bias}}
 \end{align}
 \]</span></p>
@@ -641,16 +642,16 @@ c-&gt;b
 <p><span class="math display">\[
 \text{SDO} = E[ Y(1) | T = 1 ] - E[ Y(0) | T = 0 ]
 \]</span></p>
-<p>we didnt take into account the fact that users who saw the treatment tend to be different than those who dont. Users who saw the treatment tend to be more unhappy by design.</p>
-<p>So if we subtract out the <strong>selection bias</strong> from the SDO, aka we control for the unhappiness between customers, we can get closer to identifying the true ATE.</p>
+<p>we didnt take into account the fact that users who saw the treatment tend to be different than those who didn’t. Users who saw the treatment tend to be more unhappy by design.</p>
+<p>So if we subtract out the <strong>selection bias</strong> from the SDO (I got this via simple algebra), aka we control for the unhappiness between customers, we can get closer to identifying the true ATE.</p>
 <p>Note that selection bias was <span class="math display">\[
-E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
+E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 \]</span></p>
 <p>This is just saying selection bias is the fundamental difference between users who get picked for treatment vs.&nbsp;those who dont.</p>
 <p>In our case, the fundamental difference between whether users are selected for treatment is based upon their unhappiness. So if we can subtract out the effect of unhappiness, we can subtract out the selection bias</p>
 <div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"T"</span>).mean()[[<span class="st">"upset"</span>]].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="18">
 
 <div>
 
@@ -684,7 +685,7 @@ E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"selection_bias"</span>]]</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>selection_bias.T.<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="19">
 
 <div>
 
@@ -711,15 +712,15 @@ E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
 <div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df.assign(selection_bias <span class="op">=</span> Y0_hat)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .assign(bias_corrected_Y <span class="op">=</span> <span class="kw">lambda</span> d: d.Y <span class="op">-</span> d.selection_bias)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"T"</span>).mean()</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"bias_corrected_Y"</span>]].T</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    .assign(tau <span class="op">=</span> <span class="kw">lambda</span> d: d[<span class="dv">1</span>] <span class="op">-</span> d[<span class="dv">0</span>])</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="dv">0</span>:<span class="st">"bias corrected E[Y|T=0] "</span>,<span class="dv">1</span>:<span class="st">"bias corrected  E[Y|T=1]"</span>})</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    .rename_axis(columns<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"T"</span>).mean()[[<span class="st">"Y"</span>, <span class="st">"selection_bias"</span>]].T</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .assign(difference <span class="op">=</span> <span class="kw">lambda</span> d: d[<span class="dv">1</span>] <span class="op">-</span> d[<span class="dv">0</span>])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"difference"</span>]].T</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"Y"</span>:<span class="st">"SDO"</span>})</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    .assign(tau <span class="op">=</span> <span class="kw">lambda</span> d: d.SDO <span class="op">-</span> d.selection_bias)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="20">
 
 <div>
 
@@ -727,17 +728,17 @@ E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
   <thead>
     <tr>
       <th></th>
-      <th>bias corrected E[Y|T=0]</th>
-      <th>bias corrected  E[Y|T=1]</th>
+      <th>SDO</th>
+      <th>selection_bias</th>
       <th>tau</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>-5.925096e-13</td>
-      <td>500.524691</td>
-      <td>500.524691</td>
+      <td>-87.98</td>
+      <td>-588.5</td>
+      <td>500.52</td>
     </tr>
   </tbody>
 </table>
@@ -746,10 +747,13 @@ E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]
 </div>
 <p>There’s actually an even more simple way to control for selection bias - it can just be included as a term in an OLS regression model.</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">" Y ~ T + upset"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> np.array(model2.summary().tables[<span class="dv">1</span>].data)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(table[<span class="dv">1</span>:, <span class="dv">1</span>:], columns<span class="op">=</span>table[<span class="dv">0</span>,<span class="dv">1</span>:], index<span class="op">=</span>table[<span class="dv">1</span>:,<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> statsmodels_to_df(model):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> np.array(model.summary().tables[<span class="dv">1</span>].data)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(table[<span class="dv">1</span>:, <span class="dv">1</span>:], columns<span class="op">=</span>table[<span class="dv">0</span>,<span class="dv">1</span>:], index<span class="op">=</span>table[<span class="dv">1</span>:,<span class="dv">0</span>])</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>model2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">" Y ~ T + upset"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>statsmodels_to_df(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
 
 <div>
 
@@ -829,8 +833,8 @@ y = \alpha + \beta X + \epsilon
 <p><span class="math display">\[
 \begin{align}
 \text{Simple Difference in Outcomes}
-&amp;= \underbrace{E[Y^1] - E[Y^0]}_{ \text{Average Treatment Effect}}\\
-&amp;+ \underbrace{ \cancel{E\big[Y^0\mid T=1\big] - E\big[Y^0\mid T=0\big]}}_{ \text{Selection bias}}\\
+&amp;= \underbrace{E[Y(1)] - E[Y(0)]}_{ \text{Average Treatment Effect}}\\
+&amp;+ \underbrace{ \cancel{E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]}}_{ \text{Selection bias}}\\
 &amp; + \underbrace{\cancel{(1-\pi)(ATT - ATU)}}_{ \text{Heterogeneous treatment effect bias}}
 \end{align}
 \]</span></p>
@@ -839,10 +843,13 @@ y = \alpha + \beta X + \epsilon
 <section id="summary" class="level1">
 <h1>Summary</h1>
 <p>In this post we walked through the Potential Outcomes Model, showed how it applies to a fake data scenario, and then used it to tie back to why randomization works for A/B testing.</p>
+</section>
+<section id="additional-reading" class="level1">
+<h1>Additional Reading</h1>
 <p>This is just one example of many that exist out there. Here are some other examples I’ve come across:</p>
 <ul>
-<li>Scott Cunningham’s “The Perfect Doctor” example from Causal Inference: the Mixtape</li>
-<li>Matheus Facure’s Causal Inference for the Brave and True</li>
+<li>Scott Cunningham’s <a href="https://mixtape.scunning.com/04-potential_outcomes">“The Perfect Doctor” example</a> from <a href="https://mixtape.scunning.com/">Causal Inference: the Mixtape</a></li>
+<li>Matheus Facure’s <a href="https://matheusfacure.github.io/python-causality-handbook/landing-page.html">Causal Inference for the Brave and True</a></li>
 </ul>
 
 
