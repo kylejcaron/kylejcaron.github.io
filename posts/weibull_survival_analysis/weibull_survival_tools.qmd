@@ -253,10 +253,17 @@ print(f"Simulated Average Lifetime = {round(event_times.mean(),1)}")
 ```
 
 
-## Predicting Residual Remaining Life
+## Predicting Mean Residual Life
 Another common and useful prediction you may want to present is the remaining life. There are a few different ways to calculate this:
 
     1. Use the formula
+
+    
+$$
+MRL(t) = \frac{\lambda \: \Gamma(1+1/k, \: (\frac{t}{\lambda})^k)}{S(t)} - t
+$$
+
+And we can see it implemented in python below:
 
 ```python
 class Weibull:
@@ -268,8 +275,6 @@ class Weibull:
     ...
 
     def mean_residual_life(self, t: np.array) -> np.array:
-        '''
-        '''
         t = self._normalize_to_array(t)
         St = self.survival(t)
         numerator = (
@@ -287,6 +292,8 @@ class Weibull:
         # The code above returns negative values when St=0. This clipping corrects those cases
         return np.clip(result, 0, np.inf)
 ```
+
+And we can call that function like so:
 
 ```{python}
 curr_time = 40
