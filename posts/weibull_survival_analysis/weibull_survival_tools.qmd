@@ -121,6 +121,7 @@ ax.set_xlabel("Time", fontsize=16)
 ax.set_ylabel("Hazard Rate", fontsize=16)
 ax.set_title("Hazard Curves with Varying k Parameters", fontsize=16)
 ax.legend(fontsize=16)
+plt.show()
 ```
 
 As shown above, here's how different parameter values impact acceleration:
@@ -172,6 +173,7 @@ ax.set_xlabel("Time", fontsize=16)
 ax.set_ylabel("Hazard Rate", fontsize=16)
 ax.set_title("Hazard Curves with Varying k Parameters", fontsize=16)
 ax.legend(fontsize=12, loc="upper right")
+plt.show()
 ```
 
 # Using learned parameters for Applied Statistics
@@ -416,6 +418,7 @@ plt.plot(dist.survival(t=np.arange(40, 200+1), curr_time=curr_time), label="Cond
 plt.legend()
 plt.ylabel("Conditional Survival Rate")
 plt.title(f"Conditional Survival Given a Unit Reached Time={curr_time}")
+plt.show()
 ```
 
 
