@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Useful Tools for Weibull Survival Analysis"
-date: "2022-10-29"
+date: "2022-10-31"
 categories:
  - survival analysis
 ---
