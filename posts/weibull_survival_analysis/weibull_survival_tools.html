@@ -230,6 +230,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-survival-curves">A (quick) Recap on Survival Curves</h2>
 <p>Survival Curves model time to some event (such as a failure) - they can tell you the probability of a binary event occurring at each future time point in somethings lifetime. An example survival curve is shown below:</p>
 <div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> <span class="op">*</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymc <span class="im">as</span> pm</span>
@@ -275,6 +277,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        bbox<span class="op">=</span><span class="bu">dict</span>(boxstyle<span class="op">=</span><span class="st">"Round,pad=0.5"</span>, fc<span class="op">=</span><span class="st">"white"</span>, ec<span class="op">=</span><span class="st">"gray"</span>, lw<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <p><img src="weibull_survival_tools_files/figure-html/cell-2-output-1.png" width="697" height="457"></p>
 </div>
@@ -286,6 +289,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Hazard Curves are another way to think about survival analysis problems. A hazard curve tells you the instantaneous risk of an event occurring at each time point.</p>
 <p>Hazard Curves tend to be very informative as they allow you to see how risk changes over time - sometimes it might decelerate, or sometimes it might even accelerate exponentially. Here’s an example of a hazard curve below.</p>
 <div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="fl">1.5</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="dv">30</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -301,6 +306,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <p><img src="weibull_survival_tools_files/figure-html/cell-3-output-1.png" width="675" height="452"></p>
 </div>
@@ -314,6 +320,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="the-k-parameter">The <span class="math inline">\(k\)</span> Parameter</h2>
 <p>Sometimes also called <span class="math inline">\(\rho\)</span>, this parameter controls the degree of acceleration of the hazard curve.</p>
 <div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ks <span class="op">=</span> [<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="fl">1.5</span>, <span class="dv">2</span>, <span class="fl">2.5</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="dv">30</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">1</span>,<span class="dv">51</span>)</span>
@@ -329,8 +337,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Hazard Rate"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;matplotlib.legend.Legend at 0x140830820&gt;</code></pre>
+<pre><code>&lt;matplotlib.legend.Legend at 0x132d9f580&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="weibull_survival_tools_files/figure-html/cell-4-output-2.png" width="682" height="452"></p>
@@ -365,6 +374,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Let’s see this visually as well - if you look at the plot below, each survival curve indicates that there’s a 63.2% probability of an event having occurred at the exact time that <span class="math inline">\(t=\lambda\)</span></p>
 <div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ks <span class="op">=</span> <span class="fl">1.5</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>lambds <span class="op">=</span> [<span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">60</span>, <span class="dv">120</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">1</span>,<span class="dv">151</span>)</span>
@@ -384,8 +395,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Hazard Rate"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">12</span>, loc<span class="op">=</span><span class="st">"upper right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>&lt;matplotlib.legend.Legend at 0x1408c00d0&gt;</code></pre>
+<pre><code>&lt;matplotlib.legend.Legend at 0x132e538e0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="weibull_survival_tools_files/figure-html/cell-6-output-2.png" width="668" height="452"></p>
@@ -532,15 +544,18 @@ E[T] = \int_{t=0}^\infty S(t) \, dt
 </div>
 <p>Comparing all of these methods we end up with the following:</p>
 <div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Remaining Life (from formula) = </span><span class="sc">{:.4}</span><span class="ch">\n</span><span class="st">"</span>.<span class="bu">format</span>(remaining_life.ravel()[<span class="dv">0</span>]),</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Remaining Life (from simulation) = </span><span class="sc">{:.4}</span><span class="ch">\n</span><span class="st">"</span>.<span class="bu">format</span>(remaining_life_simulated),</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Remaining Life (from truncated simulation) = </span><span class="sc">{:.4}</span><span class="ch">\n</span><span class="st">"</span>.<span class="bu">format</span>(remaining_life_simulated2),</span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Remaining Life (manually calculated from hazard) = </span><span class="sc">{:.4}</span><span class="ch">\n</span><span class="st">"</span>.<span class="bu">format</span>(remaining_life_from_hazard)</span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Remaining Life (from formula) = 15.05
- Remaining Life (from simulation) = 15.04
+ Remaining Life (from simulation) = 15.06
  Remaining Life (from truncated simulation) = 15.05
  Remaining Life (manually calculated from hazard) = 14.14
 </code></pre>

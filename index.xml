@@ -27,6 +27,8 @@
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-survival-curves">A (quick) Recap on Survival Curves</h2>
 <p>Survival Curves model time to some event (such as a failure) - they can tell you the probability of a binary event occurring at each future time point in somethings lifetime. An example survival curve is shown below:</p>
 <div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">from</span> typing <span class="im" style="color: #00769E;">import</span> <span class="op" style="color: #5E5E5E;">*</span></span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pymc <span class="im" style="color: #00769E;">as</span> pm</span>
@@ -72,6 +74,7 @@
 <span id="cb1-43">        bbox<span class="op" style="color: #5E5E5E;">=</span><span class="bu" style="color: null;">dict</span>(boxstyle<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"Round,pad=0.5"</span>, fc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"white"</span>, ec<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"gray"</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
 <span id="cb1-44">)</span>
 <span id="cb1-45">plt.show()</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-2-output-1.png" width="697" height="457"></p>
 </div>
@@ -83,6 +86,8 @@
 <p>Hazard Curves are another way to think about survival analysis problems. A hazard curve tells you the instantaneous risk of an event occurring at each time point.</p>
 <p>Hazard Curves tend to be very informative as they allow you to see how risk changes over time - sometimes it might decelerate, or sometimes it might even accelerate exponentially. Here’s an example of a hazard curve below.</p>
 <div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">k <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
 <span id="cb2-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
 <span id="cb2-3"></span>
@@ -98,6 +103,7 @@
 <span id="cb2-13">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb2-14"></span>
 <span id="cb2-15">plt.show()</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-3-output-1.png" width="675" height="452"></p>
 </div>
@@ -111,6 +117,8 @@
 <h2 class="anchored" data-anchor-id="the-k-parameter">The <img src="https://latex.codecogs.com/png.latex?k"> Parameter</h2>
 <p>Sometimes also called <img src="https://latex.codecogs.com/png.latex?%5Crho">, this parameter controls the degree of acceleration of the hazard curve.</p>
 <div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">ks <span class="op" style="color: #5E5E5E;">=</span> [<span class="fl" style="color: #AD0000;">0.5</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="fl" style="color: #AD0000;">1.5</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="fl" style="color: #AD0000;">2.5</span>]</span>
 <span id="cb3-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
 <span id="cb3-3">t <span class="op" style="color: #5E5E5E;">=</span> np.arange(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">51</span>)</span>
@@ -126,8 +134,9 @@
 <span id="cb3-13">ax.set_ylabel(<span class="st" style="color: #20794D;">"Hazard Rate"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb3-14">ax.set_title(<span class="st" style="color: #20794D;">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb3-15">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;matplotlib.legend.Legend at 0x140830820&gt;</code></pre>
+<pre><code>&lt;matplotlib.legend.Legend at 0x132d9f580&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-4-output-2.png" width="682" height="452"></p>
@@ -162,6 +171,8 @@
 </div>
 <p>Let’s see this visually as well - if you look at the plot below, each survival curve indicates that there’s a 63.2% probability of an event having occurred at the exact time that <img src="https://latex.codecogs.com/png.latex?t=%5Clambda"></p>
 <div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">ks <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
 <span id="cb7-2">lambds <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">15</span>, <span class="dv" style="color: #AD0000;">30</span>, <span class="dv" style="color: #AD0000;">60</span>, <span class="dv" style="color: #AD0000;">120</span>]</span>
 <span id="cb7-3">t <span class="op" style="color: #5E5E5E;">=</span> np.arange(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">151</span>)</span>
@@ -181,8 +192,9 @@
 <span id="cb7-17">ax.set_ylabel(<span class="st" style="color: #20794D;">"Hazard Rate"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb7-18">ax.set_title(<span class="st" style="color: #20794D;">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb7-19">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">12</span>, loc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"upper right"</span>)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>&lt;matplotlib.legend.Legend at 0x1408c00d0&gt;</code></pre>
+<pre><code>&lt;matplotlib.legend.Legend at 0x132e538e0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-6-output-2.png" width="668" height="452"></p>
@@ -325,15 +337,18 @@
 </div>
 <p>Comparing all of these methods we end up with the following:</p>
 <div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="bu" style="color: null;">print</span>(</span>
 <span id="cb22-2">    <span class="st" style="color: #20794D;">"Remaining Life (from formula) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life.ravel()[<span class="dv" style="color: #AD0000;">0</span>]),</span>
 <span id="cb22-3">    <span class="st" style="color: #20794D;">"Remaining Life (from simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated),</span>
 <span id="cb22-4">    <span class="st" style="color: #20794D;">"Remaining Life (from truncated simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated2),</span>
 <span id="cb22-5">    <span class="st" style="color: #20794D;">"Remaining Life (manually calculated from hazard) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_from_hazard)</span>
 <span id="cb22-6">)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Remaining Life (from formula) = 15.05
- Remaining Life (from simulation) = 15.04
+ Remaining Life (from simulation) = 15.06
  Remaining Life (from truncated simulation) = 15.05
  Remaining Life (manually calculated from hazard) = 14.14
 </code></pre>
