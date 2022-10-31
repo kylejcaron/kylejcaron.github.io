@@ -18,6 +18,8 @@ Survival Curves model time to some event (such as a failure) - they can tell you
 
 
 ```{python}
+#| code-fold: true
+
 from typing import *
 import numpy as np
 import pymc as pm
@@ -74,6 +76,8 @@ Hazard Curves are another way to think about survival analysis problems. A hazar
 Hazard Curves tend to be very informative as they allow you to see how risk changes over time - sometimes it might decelerate, or sometimes it might even accelerate exponentially.  Here's an example of a hazard curve below.
 
 ```{python}
+#| code-fold: true
+
 k = 1.5
 lambd = 30
 
@@ -100,6 +104,8 @@ Let's quickly cover how to interpret the parameters - we'll do this via simulati
 Sometimes also called $\rho$, this parameter controls the degree of acceleration of the hazard curve. 
 
 ```{python}
+#| code-fold: true
+
 ks = [0.5, 1, 1.5, 2, 2.5]
 lambd = 30
 t = np.arange(1,51)
@@ -145,6 +151,8 @@ St = dist.survival(t)
 Let's see this visually as well - if you look at the plot below, each survival curve indicates that there's a 63.2% probability of an event having occurred at the exact time that $t=\lambda$
 
 ```{python}
+#| code-fold: true
+
 ks = 1.5
 lambds = [15, 30, 60, 120]
 t = np.arange(1,151)
@@ -331,6 +339,8 @@ remaining_life_from_hazard = scipy.integrate.simps(St)
 Comparing all of these methods we end up with the following:
 
 ```{python}
+#| code-fold: true
+
 print(
     "Remaining Life (from formula) = {:.4}\n".format(remaining_life.ravel()[0]),
     "Remaining Life (from simulation) = {:.4}\n".format(remaining_life_simulated),
