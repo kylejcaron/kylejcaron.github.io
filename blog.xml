@@ -133,13 +133,11 @@
 <span id="cb3-12">ax.set_xlabel(<span class="st" style="color: #20794D;">"Time"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb3-13">ax.set_ylabel(<span class="st" style="color: #20794D;">"Hazard Rate"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
 <span id="cb3-14">ax.set_title(<span class="st" style="color: #20794D;">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
-<span id="cb3-15">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span></code></pre></div>
+<span id="cb3-15">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb3-16">plt.show()</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;matplotlib.legend.Legend at 0x132d9f580&gt;</code></pre>
-</div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-4-output-2.png" width="682" height="452"></p>
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-4-output-1.png" width="682" height="452"></p>
 </div>
 </div>
 <p>As shown above, here’s how different parameter values impact acceleration:</p>
@@ -156,15 +154,15 @@
 <h2 class="anchored" data-anchor-id="the-lambda-parameter">The <img src="https://latex.codecogs.com/png.latex?%5Clambda"> Parameter</h2>
 <p>Sometimes also referred to as a <em>scale parameter</em>, this parameter represents the time point where there’s a 63.2% probability of an event having occurred. Weird, I know, its just an arbitrary thing quality</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">k <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
-<span id="cb5-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
-<span id="cb5-3">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambd)</span>
-<span id="cb5-4">t <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">100</span>, <span class="dv" style="color: #AD0000;">10000</span>)</span>
-<span id="cb5-5">St <span class="op" style="color: #5E5E5E;">=</span> dist.survival(t)</span>
-<span id="cb5-6"></span>
-<span id="cb5-7"><span class="co" style="color: #5E5E5E;"># choose the point in the survival curve where the time is t=30</span></span>
-<span id="cb5-8"><span class="co" style="color: #5E5E5E;"># take the inverse of it so that its the probability of an event having occurred by that time.</span></span>
-<span id="cb5-9">(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">-</span>St[t<span class="op" style="color: #5E5E5E;">&gt;=</span>lambd][<span class="dv" style="color: #AD0000;">0</span>]).<span class="bu" style="color: null;">round</span>(<span class="dv" style="color: #AD0000;">4</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">k <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
+<span id="cb4-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
+<span id="cb4-3">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambd)</span>
+<span id="cb4-4">t <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">100</span>, <span class="dv" style="color: #AD0000;">10000</span>)</span>
+<span id="cb4-5">St <span class="op" style="color: #5E5E5E;">=</span> dist.survival(t)</span>
+<span id="cb4-6"></span>
+<span id="cb4-7"><span class="co" style="color: #5E5E5E;"># choose the point in the survival curve where the time is t=30</span></span>
+<span id="cb4-8"><span class="co" style="color: #5E5E5E;"># take the inverse of it so that its the probability of an event having occurred by that time.</span></span>
+<span id="cb4-9">(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">-</span>St[t<span class="op" style="color: #5E5E5E;">&gt;=</span>lambd][<span class="dv" style="color: #AD0000;">0</span>]).<span class="bu" style="color: null;">round</span>(<span class="dv" style="color: #AD0000;">4</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>0.6321</code></pre>
 </div>
@@ -173,31 +171,29 @@
 <div class="cell" data-execution_count="5">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">ks <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
-<span id="cb7-2">lambds <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">15</span>, <span class="dv" style="color: #AD0000;">30</span>, <span class="dv" style="color: #AD0000;">60</span>, <span class="dv" style="color: #AD0000;">120</span>]</span>
-<span id="cb7-3">t <span class="op" style="color: #5E5E5E;">=</span> np.arange(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">151</span>)</span>
-<span id="cb7-4"></span>
-<span id="cb7-5">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">5</span>))</span>
-<span id="cb7-6"></span>
-<span id="cb7-7"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="bu" style="color: null;">len</span>(lambds)):</span>
-<span id="cb7-8">    dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambds[i])</span>
-<span id="cb7-9">    St <span class="op" style="color: #5E5E5E;">=</span> dist.survival(t)</span>
-<span id="cb7-10">    ax.plot(t, St, label<span class="op" style="color: #5E5E5E;">=</span><span class="ss" style="color: #20794D;">f"lambd=</span><span class="sc" style="color: #5E5E5E;">{</span>lambds[i]<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
-<span id="cb7-11">    ax.axvline(lambds[i],ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="ss" style="color: #20794D;">f'C</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">'</span>)</span>
-<span id="cb7-12"></span>
-<span id="cb7-13">ax.axhline(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.632</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"k"</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.75</span>,</span>
-<span id="cb7-14">    label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"Point where there's a 63.2% probability</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">of the event having occurred</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">by that time"</span>)</span>
-<span id="cb7-15"></span>
-<span id="cb7-16">ax.set_xlabel(<span class="st" style="color: #20794D;">"Time"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
-<span id="cb7-17">ax.set_ylabel(<span class="st" style="color: #20794D;">"Hazard Rate"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
-<span id="cb7-18">ax.set_title(<span class="st" style="color: #20794D;">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
-<span id="cb7-19">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">12</span>, loc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"upper right"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">ks <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
+<span id="cb6-2">lambds <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">15</span>, <span class="dv" style="color: #AD0000;">30</span>, <span class="dv" style="color: #AD0000;">60</span>, <span class="dv" style="color: #AD0000;">120</span>]</span>
+<span id="cb6-3">t <span class="op" style="color: #5E5E5E;">=</span> np.arange(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">151</span>)</span>
+<span id="cb6-4"></span>
+<span id="cb6-5">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">10</span>,<span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb6-6"></span>
+<span id="cb6-7"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="bu" style="color: null;">len</span>(lambds)):</span>
+<span id="cb6-8">    dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambds[i])</span>
+<span id="cb6-9">    St <span class="op" style="color: #5E5E5E;">=</span> dist.survival(t)</span>
+<span id="cb6-10">    ax.plot(t, St, label<span class="op" style="color: #5E5E5E;">=</span><span class="ss" style="color: #20794D;">f"lambd=</span><span class="sc" style="color: #5E5E5E;">{</span>lambds[i]<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
+<span id="cb6-11">    ax.axvline(lambds[i],ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="ss" style="color: #20794D;">f'C</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">'</span>)</span>
+<span id="cb6-12"></span>
+<span id="cb6-13">ax.axhline(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.632</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"k"</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.75</span>,</span>
+<span id="cb6-14">    label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"Point where there's a 63.2% probability</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">of the event having occurred</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">by that time"</span>)</span>
+<span id="cb6-15"></span>
+<span id="cb6-16">ax.set_xlabel(<span class="st" style="color: #20794D;">"Time"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb6-17">ax.set_ylabel(<span class="st" style="color: #20794D;">"Hazard Rate"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb6-18">ax.set_title(<span class="st" style="color: #20794D;">"Hazard Curves with Varying k Parameters"</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb6-19">ax.legend(fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">12</span>, loc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"upper right"</span>)</span>
+<span id="cb6-20">plt.show()</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>&lt;matplotlib.legend.Legend at 0x132e538e0&gt;</code></pre>
-</div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-6-output-2.png" width="668" height="452"></p>
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-6-output-1.png" width="816" height="452"></p>
 </div>
 </div>
 </section>
@@ -208,68 +204,68 @@
 <section id="easier-predictions-lifetime-survival-curves-and-hazard-curves" class="level2">
 <h2 class="anchored" data-anchor-id="easier-predictions-lifetime-survival-curves-and-hazard-curves">Easier Predictions: Lifetime, Survival Curves, and Hazard Curves</h2>
 <p>Average lifetime, Survival Curves, and Hazard Curves are the basic types of predictions for working with survival analysis. Most distributions have formulas that make these things easier to calculate. Below is the underlying code for these functions.</p>
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
-<span id="cb9-2"></span>
-<span id="cb9-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
-<span id="cb9-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
-<span id="cb9-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
-<span id="cb9-6"></span>
-<span id="cb9-7">    ...</span>
-<span id="cb9-8"></span>
-<span id="cb9-9">    <span class="kw" style="color: #003B4F;">def</span> expectation(<span class="va" style="color: #111111;">self</span>) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
-<span id="cb9-10">        <span class="co" style="color: #5E5E5E;">'''Calculates the expectation of the weibull distribution</span></span>
-<span id="cb9-11"><span class="co" style="color: #5E5E5E;">        '''</span></span>
-<span id="cb9-12">        <span class="cf" style="color: #003B4F;">return</span> <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">*</span> sp.gamma(<span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k)</span>
-<span id="cb9-13"></span>
-<span id="cb9-14">    <span class="kw" style="color: #003B4F;">def</span> survival(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
-<span id="cb9-15">        <span class="co" style="color: #5E5E5E;">'''Outputs the survival probability at each time point T. This is done with the survival function, </span></span>
-<span id="cb9-16"><span class="co" style="color: #5E5E5E;">        the complement of the Weibull Distribution's PDF.</span></span>
-<span id="cb9-17"></span>
-<span id="cb9-18"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
-<span id="cb9-19"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
-<span id="cb9-20"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
-<span id="cb9-21"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
-<span id="cb9-22"><span class="co" style="color: #5E5E5E;">        </span></span>
-<span id="cb9-23"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
-<span id="cb9-24"><span class="co" style="color: #5E5E5E;">        -------</span></span>
-<span id="cb9-25"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
-<span id="cb9-26"><span class="co" style="color: #5E5E5E;">        '''</span></span>
-<span id="cb9-27">        CDF <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> <span class="va" style="color: #111111;">self</span>.cdf(t)</span>
-<span id="cb9-28">        St <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> CDF</span>
-<span id="cb9-29">        <span class="cf" style="color: #003B4F;">return</span> St</span>
-<span id="cb9-30"></span>
-<span id="cb9-31">    <span class="kw" style="color: #003B4F;">def</span> hazard(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
-<span id="cb9-32">        <span class="co" style="color: #5E5E5E;">'''Outputs the hazard rate at each time point T.</span></span>
-<span id="cb9-33"></span>
-<span id="cb9-34"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
-<span id="cb9-35"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
-<span id="cb9-36"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
-<span id="cb9-37"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
-<span id="cb9-38"><span class="co" style="color: #5E5E5E;">        </span></span>
-<span id="cb9-39"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
-<span id="cb9-40"><span class="co" style="color: #5E5E5E;">        -------</span></span>
-<span id="cb9-41"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
-<span id="cb9-42"><span class="co" style="color: #5E5E5E;">        '''</span></span>
-<span id="cb9-43">        ht <span class="op" style="color: #5E5E5E;">=</span> (<span class="va" style="color: #111111;">self</span>.k<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">*</span>(t<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">**</span>(<span class="va" style="color: #111111;">self</span>.k<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb9-44">        <span class="cf" style="color: #003B4F;">return</span> ht</span>
-<span id="cb9-45">    </span>
-<span id="cb9-46">    ...</span></code></pre></div>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
+<span id="cb7-2"></span>
+<span id="cb7-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
+<span id="cb7-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
+<span id="cb7-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
+<span id="cb7-6"></span>
+<span id="cb7-7">    ...</span>
+<span id="cb7-8"></span>
+<span id="cb7-9">    <span class="kw" style="color: #003B4F;">def</span> expectation(<span class="va" style="color: #111111;">self</span>) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
+<span id="cb7-10">        <span class="co" style="color: #5E5E5E;">'''Calculates the expectation of the weibull distribution</span></span>
+<span id="cb7-11"><span class="co" style="color: #5E5E5E;">        '''</span></span>
+<span id="cb7-12">        <span class="cf" style="color: #003B4F;">return</span> <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">*</span> sp.gamma(<span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k)</span>
+<span id="cb7-13"></span>
+<span id="cb7-14">    <span class="kw" style="color: #003B4F;">def</span> survival(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
+<span id="cb7-15">        <span class="co" style="color: #5E5E5E;">'''Outputs the survival probability at each time point T. This is done with the survival function, </span></span>
+<span id="cb7-16"><span class="co" style="color: #5E5E5E;">        the complement of the Weibull Distribution's PDF.</span></span>
+<span id="cb7-17"></span>
+<span id="cb7-18"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
+<span id="cb7-19"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
+<span id="cb7-20"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
+<span id="cb7-21"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
+<span id="cb7-22"><span class="co" style="color: #5E5E5E;">        </span></span>
+<span id="cb7-23"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
+<span id="cb7-24"><span class="co" style="color: #5E5E5E;">        -------</span></span>
+<span id="cb7-25"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
+<span id="cb7-26"><span class="co" style="color: #5E5E5E;">        '''</span></span>
+<span id="cb7-27">        CDF <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> <span class="va" style="color: #111111;">self</span>.cdf(t)</span>
+<span id="cb7-28">        St <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> CDF</span>
+<span id="cb7-29">        <span class="cf" style="color: #003B4F;">return</span> St</span>
+<span id="cb7-30"></span>
+<span id="cb7-31">    <span class="kw" style="color: #003B4F;">def</span> hazard(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
+<span id="cb7-32">        <span class="co" style="color: #5E5E5E;">'''Outputs the hazard rate at each time point T.</span></span>
+<span id="cb7-33"></span>
+<span id="cb7-34"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
+<span id="cb7-35"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
+<span id="cb7-36"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
+<span id="cb7-37"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
+<span id="cb7-38"><span class="co" style="color: #5E5E5E;">        </span></span>
+<span id="cb7-39"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
+<span id="cb7-40"><span class="co" style="color: #5E5E5E;">        -------</span></span>
+<span id="cb7-41"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
+<span id="cb7-42"><span class="co" style="color: #5E5E5E;">        '''</span></span>
+<span id="cb7-43">        ht <span class="op" style="color: #5E5E5E;">=</span> (<span class="va" style="color: #111111;">self</span>.k<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">*</span>(t<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">**</span>(<span class="va" style="color: #111111;">self</span>.k<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb7-44">        <span class="cf" style="color: #003B4F;">return</span> ht</span>
+<span id="cb7-45">    </span>
+<span id="cb7-46">    ...</span></code></pre></div>
 <p>We already looked into hazard and survival curves - let’s take a look at estimating the average lifetime.</p>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">k <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
-<span id="cb10-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
-<span id="cb10-3"></span>
-<span id="cb10-4">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambd)</span>
-<span id="cb10-5">Et <span class="op" style="color: #5E5E5E;">=</span> dist.expectation()    </span>
-<span id="cb10-6"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"Expected Average Lifetime = </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(Et,<span class="dv" style="color: #AD0000;">1</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">k <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span></span>
+<span id="cb8-2">lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">30</span></span>
+<span id="cb8-3"></span>
+<span id="cb8-4">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k, lambd)</span>
+<span id="cb8-5">Et <span class="op" style="color: #5E5E5E;">=</span> dist.expectation()    </span>
+<span id="cb8-6"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"Expected Average Lifetime = </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(Et,<span class="dv" style="color: #AD0000;">1</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Expected Average Lifetime = 27.1</code></pre>
 </div>
 </div>
 <p>Does this align with reality? Lets simulate event times from the weibull distribution to find out</p>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">event_times <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1000000</span>)</span>
-<span id="cb12-2"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"Simulated Average Lifetime = </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(event_times.mean(),<span class="dv" style="color: #AD0000;">1</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">event_times <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1000000</span>)</span>
+<span id="cb10-2"><span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"Simulated Average Lifetime = </span><span class="sc" style="color: #5E5E5E;">{</span><span class="bu" style="color: null;">round</span>(event_times.mean(),<span class="dv" style="color: #AD0000;">1</span>)<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simulated Average Lifetime = 27.1</code></pre>
 </div>
@@ -279,49 +275,49 @@
 <h2 class="anchored" data-anchor-id="predicting-residual-remaining-life">Predicting Residual Remaining Life</h2>
 <p>Another common and useful prediction you may want to present is the remaining life. There are a few different ways to calculate this:</p>
 <pre><code>1. Use the formula</code></pre>
-<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
-<span id="cb15-2"></span>
-<span id="cb15-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
-<span id="cb15-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
-<span id="cb15-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
-<span id="cb15-6"></span>
-<span id="cb15-7">    ...</span>
-<span id="cb15-8"></span>
-<span id="cb15-9">    <span class="kw" style="color: #003B4F;">def</span> mean_residual_life(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
-<span id="cb15-10">        <span class="co" style="color: #5E5E5E;">'''</span></span>
-<span id="cb15-11"><span class="co" style="color: #5E5E5E;">        '''</span></span>
-<span id="cb15-12">        t <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>._normalize_to_array(t)</span>
-<span id="cb15-13">        St <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>.survival(t)</span>
-<span id="cb15-14">        numerator <span class="op" style="color: #5E5E5E;">=</span> (</span>
-<span id="cb15-15">            <span class="va" style="color: #111111;">self</span>.lambd </span>
-<span id="cb15-16">            <span class="op" style="color: #5E5E5E;">*</span> sp.gammaincc(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k, (t<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">**</span><span class="va" style="color: #111111;">self</span>.k)</span>
-<span id="cb15-17">            <span class="op" style="color: #5E5E5E;">*</span> sp.gamma(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k))</span>
-<span id="cb15-18"></span>
-<span id="cb15-19">        result <span class="op" style="color: #5E5E5E;">=</span> np.divide(</span>
-<span id="cb15-20">            numerator,</span>
-<span id="cb15-21">            St,</span>
-<span id="cb15-22">            out<span class="op" style="color: #5E5E5E;">=</span>np.zeros_like(numerator),</span>
-<span id="cb15-23">            where<span class="op" style="color: #5E5E5E;">=</span>St<span class="op" style="color: #5E5E5E;">!=</span><span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb15-24">        ) <span class="op" style="color: #5E5E5E;">-</span> t[:,<span class="va" style="color: #111111;">None</span>]</span>
-<span id="cb15-25">        </span>
-<span id="cb15-26">        <span class="co" style="color: #5E5E5E;"># The code above returns negative values when St=0. This clipping corrects those cases</span></span>
-<span id="cb15-27">        <span class="cf" style="color: #003B4F;">return</span> np.clip(result, <span class="dv" style="color: #AD0000;">0</span>, np.inf)</span></code></pre></div>
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
+<span id="cb13-2"></span>
+<span id="cb13-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
+<span id="cb13-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
+<span id="cb13-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
+<span id="cb13-6"></span>
+<span id="cb13-7">    ...</span>
+<span id="cb13-8"></span>
+<span id="cb13-9">    <span class="kw" style="color: #003B4F;">def</span> mean_residual_life(<span class="va" style="color: #111111;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
+<span id="cb13-10">        <span class="co" style="color: #5E5E5E;">'''</span></span>
+<span id="cb13-11"><span class="co" style="color: #5E5E5E;">        '''</span></span>
+<span id="cb13-12">        t <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>._normalize_to_array(t)</span>
+<span id="cb13-13">        St <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>.survival(t)</span>
+<span id="cb13-14">        numerator <span class="op" style="color: #5E5E5E;">=</span> (</span>
+<span id="cb13-15">            <span class="va" style="color: #111111;">self</span>.lambd </span>
+<span id="cb13-16">            <span class="op" style="color: #5E5E5E;">*</span> sp.gammaincc(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k, (t<span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.lambd)<span class="op" style="color: #5E5E5E;">**</span><span class="va" style="color: #111111;">self</span>.k)</span>
+<span id="cb13-17">            <span class="op" style="color: #5E5E5E;">*</span> sp.gamma(<span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span><span class="va" style="color: #111111;">self</span>.k))</span>
+<span id="cb13-18"></span>
+<span id="cb13-19">        result <span class="op" style="color: #5E5E5E;">=</span> np.divide(</span>
+<span id="cb13-20">            numerator,</span>
+<span id="cb13-21">            St,</span>
+<span id="cb13-22">            out<span class="op" style="color: #5E5E5E;">=</span>np.zeros_like(numerator),</span>
+<span id="cb13-23">            where<span class="op" style="color: #5E5E5E;">=</span>St<span class="op" style="color: #5E5E5E;">!=</span><span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb13-24">        ) <span class="op" style="color: #5E5E5E;">-</span> t[:,<span class="va" style="color: #111111;">None</span>]</span>
+<span id="cb13-25">        </span>
+<span id="cb13-26">        <span class="co" style="color: #5E5E5E;"># The code above returns negative values when St=0. This clipping corrects those cases</span></span>
+<span id="cb13-27">        <span class="cf" style="color: #003B4F;">return</span> np.clip(result, <span class="dv" style="color: #AD0000;">0</span>, np.inf)</span></code></pre></div>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">curr_time <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">40</span></span>
-<span id="cb16-2">k, lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span>, <span class="dv" style="color: #AD0000;">30</span></span>
-<span id="cb16-3">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k,lambd)</span>
-<span id="cb16-4">remaining_life <span class="op" style="color: #5E5E5E;">=</span> dist.mean_residual_life(curr_time)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">curr_time <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">40</span></span>
+<span id="cb14-2">k, lambd <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">1.5</span>, <span class="dv" style="color: #AD0000;">30</span></span>
+<span id="cb14-3">dist <span class="op" style="color: #5E5E5E;">=</span> Weibull(k,lambd)</span>
+<span id="cb14-4">remaining_life <span class="op" style="color: #5E5E5E;">=</span> dist.mean_residual_life(curr_time)</span></code></pre></div>
 </div>
 <pre><code>2. Simulate</code></pre>
 <div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">T <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000000</span>)</span>
-<span id="cb18-2">units_reached_curr_time <span class="op" style="color: #5E5E5E;">=</span> T[T<span class="op" style="color: #5E5E5E;">&gt;</span>curr_time] <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
-<span id="cb18-3">remaining_life_simulated <span class="op" style="color: #5E5E5E;">=</span> units_reached_curr_time.mean()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">T <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000000</span>)</span>
+<span id="cb16-2">units_reached_curr_time <span class="op" style="color: #5E5E5E;">=</span> T[T<span class="op" style="color: #5E5E5E;">&gt;</span>curr_time] <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
+<span id="cb16-3">remaining_life_simulated <span class="op" style="color: #5E5E5E;">=</span> units_reached_curr_time.mean()</span></code></pre></div>
 </div>
 <p>With truncated sampling, this can also be more efficient</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">T_cond <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000000</span>,left_trunc<span class="op" style="color: #5E5E5E;">=</span>curr_time) <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
-<span id="cb19-2">remaining_life_simulated2 <span class="op" style="color: #5E5E5E;">=</span> T_cond.mean()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">T_cond <span class="op" style="color: #5E5E5E;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000000</span>,left_trunc<span class="op" style="color: #5E5E5E;">=</span>curr_time) <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
+<span id="cb17-2">remaining_life_simulated2 <span class="op" style="color: #5E5E5E;">=</span> T_cond.mean()</span></code></pre></div>
 </div>
 <pre><code>3. Transform the hazard curve</code></pre>
 <p>There’s a convenient relationship between the hazard curves, survival curves, and expectations. It turns out that</p>
@@ -330,25 +326,25 @@
 <p><img src="https://latex.codecogs.com/png.latex?%0AE%5BT%5D%20=%20%5Cint_%7Bt=0%7D%5E%5Cinfty%20S(t)%20%5C,%20dt%0A"></p>
 <p>Using these relationships, we can 1. take the hazard curve from time 40 onwards 2. turn it into the cumulative hazard 3. transform that into a survival curve 4. integrate the survival curve into an expectation</p>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">ht <span class="op" style="color: #5E5E5E;">=</span> dist.hazard(np.arange(curr_time, curr_time<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1000</span>))</span>
-<span id="cb21-2">Ht <span class="op" style="color: #5E5E5E;">=</span> ht.cumsum()</span>
-<span id="cb21-3">St <span class="op" style="color: #5E5E5E;">=</span> np.exp(<span class="op" style="color: #5E5E5E;">-</span>Ht)</span>
-<span id="cb21-4">remaining_life_from_hazard <span class="op" style="color: #5E5E5E;">=</span> scipy.integrate.simps(St)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">ht <span class="op" style="color: #5E5E5E;">=</span> dist.hazard(np.arange(curr_time, curr_time<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1000</span>))</span>
+<span id="cb19-2">Ht <span class="op" style="color: #5E5E5E;">=</span> ht.cumsum()</span>
+<span id="cb19-3">St <span class="op" style="color: #5E5E5E;">=</span> np.exp(<span class="op" style="color: #5E5E5E;">-</span>Ht)</span>
+<span id="cb19-4">remaining_life_from_hazard <span class="op" style="color: #5E5E5E;">=</span> scipy.integrate.simps(St)</span></code></pre></div>
 </div>
 <p>Comparing all of these methods we end up with the following:</p>
 <div class="cell" data-execution_count="12">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="bu" style="color: null;">print</span>(</span>
-<span id="cb22-2">    <span class="st" style="color: #20794D;">"Remaining Life (from formula) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life.ravel()[<span class="dv" style="color: #AD0000;">0</span>]),</span>
-<span id="cb22-3">    <span class="st" style="color: #20794D;">"Remaining Life (from simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated),</span>
-<span id="cb22-4">    <span class="st" style="color: #20794D;">"Remaining Life (from truncated simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated2),</span>
-<span id="cb22-5">    <span class="st" style="color: #20794D;">"Remaining Life (manually calculated from hazard) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_from_hazard)</span>
-<span id="cb22-6">)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="bu" style="color: null;">print</span>(</span>
+<span id="cb20-2">    <span class="st" style="color: #20794D;">"Remaining Life (from formula) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life.ravel()[<span class="dv" style="color: #AD0000;">0</span>]),</span>
+<span id="cb20-3">    <span class="st" style="color: #20794D;">"Remaining Life (from simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated),</span>
+<span id="cb20-4">    <span class="st" style="color: #20794D;">"Remaining Life (from truncated simulation) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_simulated2),</span>
+<span id="cb20-5">    <span class="st" style="color: #20794D;">"Remaining Life (manually calculated from hazard) = </span><span class="sc" style="color: #5E5E5E;">{:.4}</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">"</span>.<span class="bu" style="color: null;">format</span>(remaining_life_from_hazard)</span>
+<span id="cb20-6">)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Remaining Life (from formula) = 15.05
- Remaining Life (from simulation) = 15.06
+ Remaining Life (from simulation) = 15.05
  Remaining Life (from truncated simulation) = 15.05
  Remaining Life (manually calculated from hazard) = 14.14
 </code></pre>
@@ -362,60 +358,58 @@
 <p>It turns out, all you have to do is calculate the survival curve and normalize it by the eligible area of the distirbution. This basically means calculating a survival curve past the current time, and then dividing it by the survival function at the current time of interest.</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AS(t%7C%5Ctext%7Bcurr%20time%7D=40)%20=%20S(t)/S(40)%0A"></p>
 <p>It was pretty easy to add that to the <code>Weibull.survival()</code> function from earlier:</p>
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
-<span id="cb24-2"></span>
-<span id="cb24-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
-<span id="cb24-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
-<span id="cb24-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
-<span id="cb24-6">    </span>
-<span id="cb24-7">    ...</span>
-<span id="cb24-8"></span>
-<span id="cb24-9">    <span class="kw" style="color: #003B4F;">def</span> survival(<span class="va" style="color: #111111;">self</span>, t: np.array, curr_time: Optional[<span class="bu" style="color: null;">int</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">None</span>) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
-<span id="cb24-10">        <span class="co" style="color: #5E5E5E;">'''Outputs the survival probability at each time point T. This is done with the survival function, </span></span>
-<span id="cb24-11"><span class="co" style="color: #5E5E5E;">        the complement of the Weibull Distribution's PDF.</span></span>
-<span id="cb24-12"></span>
-<span id="cb24-13"><span class="co" style="color: #5E5E5E;">        Can also be used to calculate conditional survival with the `curr_time` argument.</span></span>
-<span id="cb24-14"></span>
-<span id="cb24-15"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
-<span id="cb24-16"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
-<span id="cb24-17"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
-<span id="cb24-18"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
-<span id="cb24-19"><span class="co" style="color: #5E5E5E;">            curr_time: Used to calculate the survival curve given already reaching </span></span>
-<span id="cb24-20"><span class="co" style="color: #5E5E5E;">                some point in time, `curr_time`.</span></span>
-<span id="cb24-21"><span class="co" style="color: #5E5E5E;">        </span></span>
-<span id="cb24-22"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
-<span id="cb24-23"><span class="co" style="color: #5E5E5E;">        -------</span></span>
-<span id="cb24-24"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
-<span id="cb24-25"><span class="co" style="color: #5E5E5E;">        '''</span></span>
-<span id="cb24-26">        <span class="co" style="color: #5E5E5E;"># Normalizing constant used for conditional survival</span></span>
-<span id="cb24-27">        norm <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="cf" style="color: #003B4F;">if</span> curr_time <span class="kw" style="color: #003B4F;">is</span> <span class="va" style="color: #111111;">None</span> <span class="cf" style="color: #003B4F;">else</span> <span class="va" style="color: #111111;">self</span>.survival(curr_time)</span>
-<span id="cb24-28">        </span>
-<span id="cb24-29">        <span class="co" style="color: #5E5E5E;"># check inputs</span></span>
-<span id="cb24-30">        t <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>._normalize_to_array(t)</span>
-<span id="cb24-31">        <span class="cf" style="color: #003B4F;">if</span> curr_time <span class="kw" style="color: #003B4F;">is</span> <span class="kw" style="color: #003B4F;">not</span> <span class="va" style="color: #111111;">None</span> <span class="kw" style="color: #003B4F;">and</span> (t <span class="op" style="color: #5E5E5E;">&lt;</span> curr_time).<span class="bu" style="color: null;">sum</span>() <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">1</span>:</span>
-<span id="cb24-32">            <span class="cf" style="color: #003B4F;">raise</span> <span class="pp" style="color: #AD0000;">ValueError</span>(<span class="st" style="color: #20794D;">'t&lt;curr_time. t must be greater than or equal to curr_time'</span>)</span>
-<span id="cb24-33">        </span>
-<span id="cb24-34">        St <span class="op" style="color: #5E5E5E;">=</span> (<span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> <span class="va" style="color: #111111;">self</span>.cdf(t))<span class="op" style="color: #5E5E5E;">/</span>norm</span>
-<span id="cb24-35">        <span class="cf" style="color: #003B4F;">return</span> St</span></code></pre></div>
+<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="kw" style="color: #003B4F;">class</span> Weibull:</span>
+<span id="cb22-2"></span>
+<span id="cb22-3">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, k, lambd):</span>
+<span id="cb22-4">        <span class="va" style="color: #111111;">self</span>.k <span class="op" style="color: #5E5E5E;">=</span> k</span>
+<span id="cb22-5">        <span class="va" style="color: #111111;">self</span>.lambd <span class="op" style="color: #5E5E5E;">=</span> lambd</span>
+<span id="cb22-6">    </span>
+<span id="cb22-7">    ...</span>
+<span id="cb22-8"></span>
+<span id="cb22-9">    <span class="kw" style="color: #003B4F;">def</span> survival(<span class="va" style="color: #111111;">self</span>, t: np.array, curr_time: Optional[<span class="bu" style="color: null;">int</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">None</span>) <span class="op" style="color: #5E5E5E;">-&gt;</span> np.array:</span>
+<span id="cb22-10">        <span class="co" style="color: #5E5E5E;">'''Outputs the survival probability at each time point T. This is done with the survival function, </span></span>
+<span id="cb22-11"><span class="co" style="color: #5E5E5E;">        the complement of the Weibull Distribution's PDF.</span></span>
+<span id="cb22-12"></span>
+<span id="cb22-13"><span class="co" style="color: #5E5E5E;">        Can also be used to calculate conditional survival with the `curr_time` argument.</span></span>
+<span id="cb22-14"></span>
+<span id="cb22-15"><span class="co" style="color: #5E5E5E;">        Parameters</span></span>
+<span id="cb22-16"><span class="co" style="color: #5E5E5E;">        -----------</span></span>
+<span id="cb22-17"><span class="co" style="color: #5E5E5E;">            t: A numpy array with time points to calculate the survival curve,      </span></span>
+<span id="cb22-18"><span class="co" style="color: #5E5E5E;">                utilizing the distributions parameters</span></span>
+<span id="cb22-19"><span class="co" style="color: #5E5E5E;">            curr_time: Used to calculate the survival curve given already reaching </span></span>
+<span id="cb22-20"><span class="co" style="color: #5E5E5E;">                some point in time, `curr_time`.</span></span>
+<span id="cb22-21"><span class="co" style="color: #5E5E5E;">        </span></span>
+<span id="cb22-22"><span class="co" style="color: #5E5E5E;">        Returns</span></span>
+<span id="cb22-23"><span class="co" style="color: #5E5E5E;">        -------</span></span>
+<span id="cb22-24"><span class="co" style="color: #5E5E5E;">            St: A survival curve calculated over the inputted time period</span></span>
+<span id="cb22-25"><span class="co" style="color: #5E5E5E;">        '''</span></span>
+<span id="cb22-26">        <span class="co" style="color: #5E5E5E;"># Normalizing constant used for conditional survival</span></span>
+<span id="cb22-27">        norm <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="cf" style="color: #003B4F;">if</span> curr_time <span class="kw" style="color: #003B4F;">is</span> <span class="va" style="color: #111111;">None</span> <span class="cf" style="color: #003B4F;">else</span> <span class="va" style="color: #111111;">self</span>.survival(curr_time)</span>
+<span id="cb22-28">        </span>
+<span id="cb22-29">        <span class="co" style="color: #5E5E5E;"># check inputs</span></span>
+<span id="cb22-30">        t <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>._normalize_to_array(t)</span>
+<span id="cb22-31">        <span class="cf" style="color: #003B4F;">if</span> curr_time <span class="kw" style="color: #003B4F;">is</span> <span class="kw" style="color: #003B4F;">not</span> <span class="va" style="color: #111111;">None</span> <span class="kw" style="color: #003B4F;">and</span> (t <span class="op" style="color: #5E5E5E;">&lt;</span> curr_time).<span class="bu" style="color: null;">sum</span>() <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">1</span>:</span>
+<span id="cb22-32">            <span class="cf" style="color: #003B4F;">raise</span> <span class="pp" style="color: #AD0000;">ValueError</span>(<span class="st" style="color: #20794D;">'t&lt;curr_time. t must be greater than or equal to curr_time'</span>)</span>
+<span id="cb22-33">        </span>
+<span id="cb22-34">        St <span class="op" style="color: #5E5E5E;">=</span> (<span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">-</span> <span class="va" style="color: #111111;">self</span>.cdf(t))<span class="op" style="color: #5E5E5E;">/</span>norm</span>
+<span id="cb22-35">        <span class="cf" style="color: #003B4F;">return</span> St</span></code></pre></div>
 <p>And as we can see below, it lines up perfectly with an empirically calculated kaplan meier curve</p>
 <div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="im" style="color: #00769E;">from</span> lifelines <span class="im" style="color: #00769E;">import</span> KaplanMeierFitter</span>
-<span id="cb25-2"></span>
-<span id="cb25-3">curr_time <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">40</span></span>
-<span id="cb25-4">T_cond <span class="op" style="color: #5E5E5E;">=</span> dist.sample(<span class="dv" style="color: #AD0000;">1000000</span>, left_trunc<span class="op" style="color: #5E5E5E;">=</span>curr_time) <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
-<span id="cb25-5">kmf <span class="op" style="color: #5E5E5E;">=</span> KaplanMeierFitter()</span>
-<span id="cb25-6">kmf.fit(T_cond)</span>
-<span id="cb25-7">kmf.plot_survival_function(lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>)</span>
-<span id="cb25-8"></span>
-<span id="cb25-9">plt.plot(dist.survival(t<span class="op" style="color: #5E5E5E;">=</span>np.arange(<span class="dv" style="color: #AD0000;">40</span>, <span class="dv" style="color: #AD0000;">200</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>), curr_time<span class="op" style="color: #5E5E5E;">=</span>curr_time), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"Conditional Survival Curve"</span>)</span>
-<span id="cb25-10">plt.legend()</span>
-<span id="cb25-11">plt.ylabel(<span class="st" style="color: #20794D;">"Conditional Survival Rate"</span>)</span>
-<span id="cb25-12">plt.title(<span class="ss" style="color: #20794D;">f"Conditional Survival Given a Unit Reached Time=</span><span class="sc" style="color: #5E5E5E;">{</span>curr_time<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
-<pre><code>Text(0.5, 1.0, 'Conditional Survival Given a Unit Reached Time=40')</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="im" style="color: #00769E;">from</span> lifelines <span class="im" style="color: #00769E;">import</span> KaplanMeierFitter</span>
+<span id="cb23-2"></span>
+<span id="cb23-3">curr_time <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">40</span></span>
+<span id="cb23-4">T_cond <span class="op" style="color: #5E5E5E;">=</span> dist.sample(<span class="dv" style="color: #AD0000;">1000000</span>, left_trunc<span class="op" style="color: #5E5E5E;">=</span>curr_time) <span class="op" style="color: #5E5E5E;">-</span> curr_time</span>
+<span id="cb23-5">kmf <span class="op" style="color: #5E5E5E;">=</span> KaplanMeierFitter()</span>
+<span id="cb23-6">kmf.fit(T_cond)</span>
+<span id="cb23-7">kmf.plot_survival_function(lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"--"</span>)</span>
+<span id="cb23-8"></span>
+<span id="cb23-9">plt.plot(dist.survival(t<span class="op" style="color: #5E5E5E;">=</span>np.arange(<span class="dv" style="color: #AD0000;">40</span>, <span class="dv" style="color: #AD0000;">200</span><span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>), curr_time<span class="op" style="color: #5E5E5E;">=</span>curr_time), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"Conditional Survival Curve"</span>)</span>
+<span id="cb23-10">plt.legend()</span>
+<span id="cb23-11">plt.ylabel(<span class="st" style="color: #20794D;">"Conditional Survival Rate"</span>)</span>
+<span id="cb23-12">plt.title(<span class="ss" style="color: #20794D;">f"Conditional Survival Given a Unit Reached Time=</span><span class="sc" style="color: #5E5E5E;">{</span>curr_time<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span>
+<span id="cb23-13">plt.show()</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-14-output-2.png" width="662" height="478"></p>
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools_files/figure-html/cell-14-output-1.png" width="662" height="478"></p>
 </div>
 </div>
 <p>A convenient feature about survival curves is that if we want to know the probability of an event occurring in the next 1 time period, or 2 time periods, all we have to do is take the complement of the survival probability. So that means we can also use this method to calculate <em>“probability of an event occurring in the next 1 time period”</em></p>
