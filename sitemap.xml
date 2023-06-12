@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_design.html</loc>
-    <lastmod>2022-10-31T23:06:09.618Z</lastmod>
+    <lastmod>2023-06-12T13:00:49.349Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-17-out-of-sample-pymc.html</loc>
-    <lastmod>2022-10-31T23:06:10.012Z</lastmod>
+    <lastmod>2023-06-12T13:00:49.749Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools.html</loc>
-    <lastmod>2022-10-31T23:06:10.815Z</lastmod>
+    <lastmod>2023-06-12T13:00:50.397Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</loc>
+    <lastmod>2023-06-12T13:00:51.248Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-11-uncertainty_intervals_over_pvals.html</loc>
-    <lastmod>2022-10-31T23:06:11.171Z</lastmod>
+    <lastmod>2023-06-12T13:00:51.608Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-03-explainable-ai-is-not-causal.html</loc>
-    <lastmod>2022-10-31T23:06:11.509Z</lastmod>
+    <lastmod>2023-06-12T13:00:51.982Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/posts/2022-04-05-ab-test-duration.html</loc>
-    <lastmod>2022-10-31T23:06:11.810Z</lastmod>
+    <lastmod>2023-06-12T13:00:52.274Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/archive.html</loc>
-    <lastmod>2022-10-31T23:06:12.138Z</lastmod>
+    <lastmod>2023-06-12T13:00:52.635Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/index.html</loc>
-    <lastmod>2022-10-31T23:06:12.491Z</lastmod>
+    <lastmod>2023-06-12T13:00:53.027Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/kylejcaron/kylejcaron.github.io/blog.html</loc>
-    <lastmod>2022-10-31T23:06:12.815Z</lastmod>
+    <lastmod>2023-06-12T13:00:53.379Z</lastmod>
   </url>
 </urlset>

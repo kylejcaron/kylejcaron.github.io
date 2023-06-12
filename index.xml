@@ -10,7 +10,267 @@
 <atom:link href="https://github.com/kylejcaron/kylejcaron.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>Welcome to my blog! I'm a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to formalize what I learn, but hopefully others find it helpful as well.</description>
 <generator>quarto-1.1.163</generator>
-<lastBuildDate>Mon, 31 Oct 2022 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 12 Jun 2023 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Desiging an Experimentation Strategy</title>
+  <link>https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>Experiments have alot more use cases than many give them credit for. At their simplest, they’re a tool for mitigating risk when making product decisions. But at their best, they’re a tool that can help <a href="https://eng.lyft.com/causal-forecasting-at-lyft-part-1-14cca6ff3d6d">optimize an entire business</a>.</p>
+<p>Every business has its own unique problems and goals, and this post is a case study where strategy was made across experiments to fit the needs of the business.</p>
+<section id="tldr" class="level1">
+<h1>TLDR</h1>
+<ul>
+<li>Building Trust First</li>
+<li>More interesting questions come natually as the process improves</li>
+<li>How do we make sure our decisions help our long term outcome? –&gt; Surrogate index</li>
+</ul>
+<p>At the end of the day, the real strategy is building trust with stakeholders. Once that trust is built up, thats when you get the chance to start having a bigger influence on the business.</p>
+</section>
+<section id="part-1-identifying-the-business-problems-and-needs" class="level1">
+<h1>Part 1: Identifying the business problems and needs</h1>
+<p>Policygenius is an insurance marketplace that aims to help customers find insurance policies. Selling insurance isn’t quite the same as e-commerce; it’s a major life decision, and major life decisions take some time to decide on. In fact, customers typically took 3-6 months to purchase a life insurance policy (our true-north metric). Thats a long time to monetize a lead. Attempting to <a href="https://arxiv.org/pdf/2106.01421.pdf">improve a long-term outcome</a> like that can be difficult, but that wasn’t a problem that the business fully understood the implications of when I first started. The business needs changed over time and so did our strategy to addres them, but that one problem eventually became the focal point of our strategy.</p>
+<section id="early-stage-needs---starting-simple-building-trust" class="level2">
+<h2 class="anchored" data-anchor-id="early-stage-needs---starting-simple-building-trust">Early stage needs - Starting Simple, Building trust</h2>
+<p>When I joined the company, I was just the third data science hire, and there really wasn’t any experimentation practice in place beyond stakeholders watching an optimizely dashboard. Listening to stakeholders, there was a desire to build more trust in decision making and make sure their products decisions were actually improving things for the customer.</p>
+<p>We started simple - a google doc template where stakeholders could explain the product feature they wanted to implement and their hypothesis on what outcome the product feature might improve. From there we worked with them to design a measurement strategy to answer their question, which wasn’t always an experiment. At the end of the day, experimentation is just one of many tools for causal inference. Having this process and flexibility helped us earn buy-in - we weren’t just there to tell them what we could and couldn’t do. We were there to educate so that we weren’t just recommending solutions, but so that stakeholders were playing a really active role in what our measurement strategy should be.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/coach_beard.jpg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p>We also improved the experiment output from an optimizely dashboard to an in-house report. All of this built alot more trust in the results, and helped us move on to new questions like</p>
+<ul>
+<li>“Can we use different outcome metrics beyond conversion rate?”</li>
+<li>“Can we make experiments shorter?” (power analyses, <a href="https://www.exp-platform.com/Documents/2013-02-CUPED-ImprovingSensitivityOfControlledExperiments.pdf">variance reduction</a>)</li>
+<li>“Can we launch a feature without hurting the business even if we can’t confirm it’s better?”” (<a href="https://twitter.com/seanjtaylor/status/1488343062057152516">uncertainty quantification</a>)</li>
+<li>“What’s the right risk tolerance in terms of being able to detect an effect versus risking a false positive” (<a href="https://twitter.com/seanjtaylor/status/1169855647510253569">here’s a fun example</a>)</li>
+<li>“Can we start experimenting like this on our other products?”</li>
+<li>“Can we learn how our change in one part of the funnel may have an impact further downstream?”</li>
+<li>“How can we run experiments that mitigate regret?” (<a href="https://en.wikipedia.org/wiki/Multi-armed_bandit">Bandit algorithms</a>)</li>
+<li>“Can we stop an experiment early and still have confidence in the results?” (sequential testing, <a href="https://dpananos.github.io/posts/2022-07-06-gsd/">alpha spending</a>)</li>
+<li>“Who is the experiment working best for?” ( <a href="https://multithreaded.stitchfix.com/blog/2015/10/15/multiple-hypothesis-testing/">Multiple Hypothesis Testing</a>, <a href="https://matheusfacure.github.io/python-causality-handbook/18-Heterogeneous-Treatment-Effects-and-Personalization.html">Heterogeneous Treatment Effects</a> )</li>
+</ul>
+<p>Again, we weren’t just throwing cool implementations at them we thought they needed, we were listening to what our stakeholders wanted first and then prioritizing it. As we moved up the ladder in terms of trust, I was able to get buy in to build out scalable tooling for others in the company to start usin, and we were able to scale the process to other teams.</p>
+<p>There was also 1 key tenant I tried to keep in mind as our methodology became more advanced: <strong>could we directly observe the treatment effect?</strong> (<a href="https://mixtape.scunning.com/04-potential_outcomes">simple difference in outcomes</a>). No matter how advanced of a method we might consider, throwing some output from a blackbox model at a stakeholder was never the way to go. It can’t be understated how important directly observing the treatment effect is for trust.</p>
+</section>
+</section>
+<section id="part-2---new-problems" class="level1">
+<h1>Part 2 - New problems</h1>
+<p>Our early stage strategy for experiments was to try and optimize mid-funnel outcomes (with intermediate guardrail metrics), since it would take too long to observe lower funnel outcomes. We wanted to be running experiments at 1-2 week cadences, we couldnt afford to wait 3-6 months for experiments. This did come with risk however, so we had built some visibility to see how users who were exposed to some experiments were baking out months later. I’m not sure why <em>baking</em> is a professional term to wait and see an outcome over time, but it is.</p>
+<p>The opportunity for a long-term strategy arose as we began running into new problems.</p>
+<section id="problem-1-infrastructure" class="level3">
+<h3 class="anchored" data-anchor-id="problem-1-infrastructure">Problem 1: Infrastructure</h3>
+<p>Some pillars of the business had less established data models (the data engineering kind of data models) - so setting up different SQL queries for different experiments was a painpoint for some product pillars.</p>
+</section>
+<section id="problem-2-secondary-analyses-and-personalization" class="level3">
+<h3 class="anchored" data-anchor-id="problem-2-secondary-analyses-and-personalization">Problem 2: Secondary Analyses and personalization</h3>
+<p>The data team was getting burnout. With each experiment came what we called “secondary analysis”. Really, what stakeholders were interested in was heterogeneous treatment effects, or “who does the treatment work best for”, because the vision was to personalize the product flow based on the customer. But for the data team, the analysis that came with it was entirely manual and would drag on when there wasn’t a clear answer (often). It was also a risk for false positives from multiple hypothesis testing.</p>
+</section>
+<section id="problem-3-sample-size" class="level3">
+<h3 class="anchored" data-anchor-id="problem-3-sample-size">Problem 3: Sample Size</h3>
+<p>There are only so many customers interested in private insurance in this country, and that limited sample size quite a bit. We were already choosing power and false positive rate parameters for our tests that would allow us to move quicker across the company, but there was a real desire from stakeholders to move faster, especially since some experiments could take up to a month.</p>
+</section>
+<section id="problem-4-spillover-effects" class="level3">
+<h3 class="anchored" data-anchor-id="problem-4-spillover-effects">Problem 4: Spillover effects</h3>
+<p>A major step of our funnel involved sales agents, which we had a limited supply. This had the potential for spillover effects, where if we sent them too many leads from a successful variant, it would impact the control. This is a classic SUTVA violation, which can bias the observed treatment effect.</p>
+</section>
+<section id="problem-5-were-we-optimizing-the-wrong-thing" class="level3">
+<h3 class="anchored" data-anchor-id="problem-5-were-we-optimizing-the-wrong-thing">Problem 5: Were we optimizing the wrong thing?</h3>
+<p>My second quarter with the life-insurance team we smashed through our OKRs that were targeted at improving mid-funnel outcomes (we were scoped to work on the top half of the funnel). The problem was that 3 months later we weren’t seeing those results trickle down to the bottom half of the funnel in the way that we thought it would.</p>
+<p>In fact, in one of the most successful experiments we ran, we found that the customers who were exposed to the treatment fared worse in the long-term, despite seeming fine for the mid-funnel outcome and guardrail we were using.</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> matplotlib.ticker <span class="im" style="color: #00769E;">as</span> mtick</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;">import</span> pymc <span class="im" style="color: #00769E;">as</span> pm</span>
+<span id="cb1-6"></span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;"># Simulate out time to convert and conversion rate </span></span>
+<span id="cb1-9"><span class="kw" style="color: #003B4F;">def</span> sim_conversion(k, lambd, p, N<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1000</span>):</span>
+<span id="cb1-10">    ttc <span class="op" style="color: #5E5E5E;">=</span> np.ceil(pm.draw( pm.Weibull.dist(k, lambd), N))</span>
+<span id="cb1-11">    convert <span class="op" style="color: #5E5E5E;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;">1</span>,p, size<span class="op" style="color: #5E5E5E;">=</span>N)</span>
+<span id="cb1-12">    <span class="cf" style="color: #003B4F;">return</span> pd.DataFrame({<span class="st" style="color: #20794D;">"time"</span>:ttc, <span class="st" style="color: #20794D;">'convert'</span>:convert})</span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="kw" style="color: #003B4F;">def</span> cohort_table(df):</span>
+<span id="cb1-15">    <span class="cf" style="color: #003B4F;">return</span>     (</span>
+<span id="cb1-16">        df</span>
+<span id="cb1-17">        .groupby(<span class="st" style="color: #20794D;">"time"</span>)</span>
+<span id="cb1-18">        .convert.agg([<span class="st" style="color: #20794D;">'sum'</span>,<span class="st" style="color: #20794D;">'count'</span>])</span>
+<span id="cb1-19">        .assign(conversions<span class="op" style="color: #5E5E5E;">=</span><span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'sum'</span>].cumsum())</span>
+<span id="cb1-20">        .assign(N<span class="op" style="color: #5E5E5E;">=</span><span class="bu" style="color: null;">len</span>(df))</span>
+<span id="cb1-21">        .assign(cvr<span class="op" style="color: #5E5E5E;">=</span><span class="kw" style="color: #003B4F;">lambda</span> d: d.conversions<span class="op" style="color: #5E5E5E;">/</span>d.N)</span>
+<span id="cb1-22">    )</span>
+<span id="cb1-23"></span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;">def</span> censor(df, time):</span>
+<span id="cb1-25">    <span class="cf" style="color: #003B4F;">return</span> df.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d.time<span class="op" style="color: #5E5E5E;">&lt;</span>time]</span>
+<span id="cb1-26"></span>
+<span id="cb1-27"><span class="kw" style="color: #003B4F;">def</span> simple_cohort_plot(df, ax<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>, <span class="op" style="color: #5E5E5E;">**</span>plot_kwargs):</span>
+<span id="cb1-28">    </span>
+<span id="cb1-29">    <span class="cf" style="color: #003B4F;">if</span> ax <span class="kw" style="color: #003B4F;">is</span> <span class="va" style="color: #111111;">None</span>:</span>
+<span id="cb1-30">        fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">1</span>,figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">7</span>,<span class="dv" style="color: #AD0000;">4</span>))</span>
+<span id="cb1-31">    </span>
+<span id="cb1-32">    (df.pipe(censor, time<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">200</span>)</span>
+<span id="cb1-33">        .pipe(cohort_table)</span>
+<span id="cb1-34">        [<span class="st" style="color: #20794D;">'cvr'</span>]</span>
+<span id="cb1-35">        .plot(ax<span class="op" style="color: #5E5E5E;">=</span>ax, <span class="op" style="color: #5E5E5E;">**</span>plot_kwargs))</span>
+<span id="cb1-36"></span>
+<span id="cb1-37">    ax.<span class="bu" style="color: null;">set</span>(</span>
+<span id="cb1-38">        title<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Cumulative Conversion to Sale'</span>, </span>
+<span id="cb1-39">        xlabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Days Since Experiment Start'</span>, </span>
+<span id="cb1-40">        ylabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Conversion Rate'</span>)</span>
+<span id="cb1-41">    </span>
+<span id="cb1-42">  </span>
+<span id="cb1-43">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">1</span>,figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">7</span>,<span class="dv" style="color: #AD0000;">4</span>))</span>
+<span id="cb1-44">N <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">100_000</span></span>
+<span id="cb1-45">sim_conversion(<span class="fl" style="color: #AD0000;">1.5</span>, <span class="dv" style="color: #AD0000;">60</span>, <span class="fl" style="color: #AD0000;">0.2</span>, N).pipe(simple_cohort_plot,ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Control'</span>)</span>
+<span id="cb1-46">sim_conversion(<span class="fl" style="color: #AD0000;">1.5</span>, <span class="dv" style="color: #AD0000;">55</span>, <span class="fl" style="color: #AD0000;">0.18</span>, N).pipe(simple_cohort_plot,ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Variant'</span>)</span>
+<span id="cb1-47">ax.yaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv" style="color: #AD0000;">1</span>,<span class="dv" style="color: #AD0000;">1</span>,))</span>
+<span id="cb1-48">ax.legend()</span>
+<span id="cb1-49">plt.show()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy_files/figure-html/cell-2-output-1.png" width="610" height="370"></p>
+</div>
+</div>
+<p>It turns out we had gamed our metric. We could find great ways to boost our target metric and crush our OKRs, but what good did it do for the company?</p>
+<p>This was by far the biggest problem, and luckily thanks to all of the trust that we had built up and the co-ownership model we had adopted with our stakeholders this problem didn’t end up dissolving any trust we had. In fact, everyone was grateful it was caught. Thinking counterfactually, the business would have never know had we not adopted a rigorous experimentation process. The importance of this issue gave me the justification to come up with a plan and start addressing these problems we were running into.</p>
+</section>
+</section>
+<section id="part-3---designing-the-long-term-strategy" class="level1">
+<h1>Part 3 - Designing the long term strategy</h1>
+<section id="whats-a-surrogate-index" class="level2">
+<h2 class="anchored" data-anchor-id="whats-a-surrogate-index">What’s a surrogate index?</h2>
+<p>A surrogate index was a new piece of research from Susan Athey, basically a way to predict what a long term treatment effect would be given intermediate outcomes that could be observed sooner. It also neatly addressed the biggest problem we were facing.</p>
+<p>The basic idea is illustrated in the DAG below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<p>
+</p><pre class="mermaid" data-tooltip-selector="#mermaid-tooltip-1">flowchart LR
+  B(Treatment) --&gt; c(Outcome 1)
+  B(Treatment) --&gt; d(Outcome 2)
+  B(Treatment) --&gt; e(Outcome 3)
+  c(Outcome 1) --&gt; f(Long Term\nOutcome)
+  d(Outcome 2) --&gt; f(Long Term\nOutcome)
+  e(Outcome 3) --&gt; f(Long Term\nOutcome)
+</pre>
+<div id="mermaid-tooltip-1" class="mermaidTooltip">
+
+</div>
+<p></p>
+</div>
+</div>
+</div>
+<p>Let’s say the long term outcome can be entirely explained by 3 intermediate outcomes, such as mid-funnel metrics that can be observed sooner. A model can be fit to that relationship on historical data like so:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<p>
+</p><pre class="mermaid" data-tooltip-selector="#mermaid-tooltip-2">flowchart LR
+  c(Outcome 1) --&gt; f(Long Term\nOutcome)
+  d(Outcome 2) --&gt; f(Long Term\nOutcome)
+  e(Outcome 3) --&gt; f(Long Term\nOutcome)
+</pre>
+<div id="mermaid-tooltip-2" class="mermaidTooltip">
+
+</div>
+<p></p>
+</div>
+</div>
+</div>
+<p>The set of intermediate outcomes is known as a surrogate index; they’re a surrogate for the long term outcome. If you have a correct model for the DAG above, than all you need to do is observe outcomes 1-3. You could then just run an experiment as you normally would, but instead of using some game-able mid-funnel metric as the primary outcome, you could measure outcomes 1-3 for both the treatment and control group, and predict what the long-term outcome would be for each group. The difference in the prediction for the treatment group and the control group ends up being identical to the true long-term treatment effect (assuming that the model and dag are specified correctly).</p>
+<p>As always, it’s easier said than done. You need to make sure that the entire intermediate effect between the treatment and the long-term outcome is captured by the DAG and the model. Or in english, you need to understand the exact effect that the intermediate outcomes have on the long term outcome, and you need to be right about it; you can’t be missing anything.</p>
+<p>But there are ways to validate you’re on the right track. First, knowing something about DAGs and causal inference, you can call on the <strong>local markov property</strong>; the treatment should be conditionally independent of the long term outcome after conditioning on the surrogate index. That’s easy to test. One can alse make predictions on the long term outcome with their surrogate index and see if it ended up being correct when the long-term outcome gets observed (hopefully for repeated experiments). Also do-able. Even better, if you have many historical experiments, you could do this validation on that dataset across all of the experiments.</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># for simplicity, not actually simulating a true data generating process</span></span>
+<span id="cb2-2">np.random.seed(<span class="dv" style="color: #AD0000;">99</span>)</span>
+<span id="cb2-3">x <span class="op" style="color: #5E5E5E;">=</span> np.random.normal(<span class="dv" style="color: #AD0000;">0</span>,<span class="dv" style="color: #AD0000;">3</span>,size<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">25</span>)</span>
+<span id="cb2-4">true_north_metric <span class="op" style="color: #5E5E5E;">=</span> x<span class="op" style="color: #5E5E5E;">*</span><span class="fl" style="color: #AD0000;">1.4</span> <span class="op" style="color: #5E5E5E;">+</span> np.random.normal(<span class="dv" style="color: #AD0000;">0</span>, <span class="fl" style="color: #AD0000;">0.5</span>, size<span class="op" style="color: #5E5E5E;">=</span><span class="bu" style="color: null;">len</span>(x))</span>
+<span id="cb2-5">predicted_true_north <span class="op" style="color: #5E5E5E;">=</span> np.random.normal(true_north_metric, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">7</span>,<span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb2-8">ax.scatter(predicted_true_north, true_north_metric)</span>
+<span id="cb2-9">ax.plot([<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">7</span>], [<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">7</span>], ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span>
+<span id="cb2-10"></span>
+<span id="cb2-11">ax.set_xticks([])</span>
+<span id="cb2-12">ax.set_yticks([])</span>
+<span id="cb2-13">ax.<span class="bu" style="color: null;">set</span>(xlabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Predicted True North'</span>, ylabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'True North Metric'</span>, title<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Surrogate Index vs. Long Term Outcome over many experiments'</span>)</span>
+<span id="cb2-14">plt.show()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy_files/figure-html/cell-3-output-1.png" width="558" height="420"></p>
+</div>
+</div>
+<p>Unfortunately, we didn’t have a large dataset of historical experiments. For the experiments we did have, they didn’t have enough power to detect reasonably sized changes on our true-north bottom funnel metric. Those experiment had all been designed with mid-funnel metrics in mind, and therefore had smaller sample sizes.</p>
+</section>
+<section id="building-a-plan" class="level2">
+<h2 class="anchored" data-anchor-id="building-a-plan">Building a plan</h2>
+<p>In total there were 5 big problems to address, each with a different solution. There also weren’t alot of resources to devote to them. But if we could free up time for others running experiments, they could use some of that time to contribute to this roadmap.</p>
+<p>In the end, the biggest priority was to implement surrogate indices, because that was having the biggest painpoint on our business - we couldnt keep working with game-able metrics that weren’t improving the business.</p>
+<p>With that in mind, switchback experimentation was in direct conflict with that goal. Switchback experiments don’t allow you to observe long term outcomes because users arent the ones who are randomized, time periods are what is randomized. We could atleast monitor and set up guardrails to make sure there wasnt alot of spillover.</p>
+<p>This also meant that bandit algorithms shouldn’t be part of our toolkit any time soon, even though there had been alot of interest in them. Bandit algorithms wouldn’t be ideal for learning the impact on long term outcomes, and using them to learn a surrogate index would be really difficult since the treatment propensity would be constantly changing over time.</p>
+<p>I’ll summarize some of the easy and hard solutions I came up with:</p>
+<ol type="1">
+<li><strong>Infrastructure</strong>
+<ul>
+<li><strong>Solution</strong>: templated SQL for scalable experiment queries</li>
+</ul></li>
+<li><strong>“Who did the experiment work best for?”</strong>
+<ul>
+<li><strong>Easy solution(s):</strong> Scalable code for Multiple hypothesis testing with corrections</li>
+<li><strong>Hard solution:</strong> Heterogeneuous Treatment Effect models</li>
+</ul></li>
+<li><strong>Sample Size problems</strong>
+<ul>
+<li><strong>Easy solution(s):</strong> Quickly implement Informative priors. Since we had revenue as part of our overall evaluation criteria for some experiments, this provided a massive speedup</li>
+<li><strong>Hard solution(s):</strong> <a href="https://www.exp-platform.com/Documents/2013-02-CUPED-ImprovingSensitivityOfControlledExperiments.pdf">CUPED</a>, <a href="https://github.com/kylejcaron/case_studies/blob/main/Time%20to%20Conversion%20Matters.ipynb">Cohort Models</a></li>
+</ul></li>
+<li><strong>Spillover Effects</strong>
+<ul>
+<li><strong>Easy Solution(s):</strong> Monitoring, guardrails</li>
+<li><strong>Hard Solution(s):</strong> Switchback Experimentation Engine</li>
+</ul></li>
+<li>Optimizing for Long-term Outcomes
+<ul>
+<li><strong>Easy Solution(s):</strong> Cohort monitoring, Longer experiments, long term hold-out groups</li>
+<li><strong>Hard solution(s):</strong> Surrogate Index approach</li>
+</ul></li>
+</ol>
+<p>The final proposed plan ended up being the following:</p>
+<ol type="1">
+<li>Partner with the data team for each product pillar to build templated SQL for their experiments to save them time.</li>
+<li>Automate the secondary analysis of experiments so that stakeholders could understand who the experiments worked best for. We actually chose the easy solution for this, multiple hypothesis testing with corrections. It was easy to implement it and it aligned with our principle of making sure the treatment effect is observable. Plus, if we ever got the point of heterogenous treatment effect modeling, it’d be alot more believeable for stakeholders if they could also look at the multiple hypothesis test reporting. This was a low lift way to free up the teams time and help our stakeholders answer what they wanted. Importantly, we lumped in metric observability with this so that we could understand which experiments were impacting which metrics.</li>
+<li>Reduce experiment duration with informative priors and CUPED. Many experiments had an overall evaluation criteria that incorporated customer revenue, Customer revenue was wide-tailed (near lognormally distributed). Using priors was an incredibly easy and insanely effective way to reduce variance for experiments, speeding them up significantly. CUPED would be a way to take that even further. We planned for a data scientist to implement this with their newly freed up time after automating secondary analyses.</li>
+<li>Set up monitoring for spillover effects, but don’t implement switchback experiments.</li>
+<li>Center the life-insurance product’s experimentation strategy around a surrogate index. This meant running longer experiments so that there was enough power to detect effects on the true north metric. Hopefully after 6 months, we’d have enough information to build a correct surrogate index to start using.</li>
+</ol>
+<p>There was still a big red flag. We’d have to run longer experiments, and we’d have to wait atleast 6 months to even start using this. That was met with alot of hesitation. Deviating from 1-2 week experiment cadences admittedly sounds a bit nuts. Companies need to grow, and to do that they need to change and try new things. But at the same time we had a problem we couldn’t avoid - the simple fact of the matter was that if we wanted to have conviction in our product changes, we’d have to wait 3-6 months to actually observe its down funnel impact.</p>
+<p>We decided to compromise rigor for speed. We planned to immediately implement a surrogate index based on the small amount of data we had, begin running experiments with enough power to detect an effect on our true north metric (3-4 weeks), and use the surrogate index, a guardrail, and our usual mid-funnel outcome as joint primary outcome metrics for upcoming experiments. While not ideal, it’d allow us to start using these ideas immediately, and we’d also be able to build up a better dataset of experiments so that even if the first iteration of the surrogate index didn’t work, we could eventually learn the correct one. That, and we’d have enough power to observe treatment effects on the long term outcome (after waiting a long time).</p>
+<p>Really, our <strong>overall strategy was a shift to improving observability</strong>. We created better observability on how experiments were affecting different outcomes and different customers and we created better observability on how our experiments were impacting our true north metric. The funny part is, early in my career I thought this was a big red flag - the more you observe the more likely you could be to identify a false positive. But thats impractical advice. You really have to be looking at the whole picture, that way you can start to understand the business and learn more. Just do so responsibly.</p>
+</section>
+</section>
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>There’s alot that goes into experimentation beyond just a cool approach like a surrogate index, or CUPED, or HTE modeling. To even get to the point where people will believe in those things, trust needs to built up. The interesting problems we ran into at Policygenius were a huge motivation for me to learn more about recent research in experimentation and causal inference, but looking back I wouldn’t have gotten a chance to do any of that if we hadn’t already built strong foundations. That opened up the door to start influencing the long term strategy for how the business made product decisions.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>experimentation</category>
+  <guid>https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</guid>
+  <pubDate>Mon, 12 Jun 2023 04:00:00 GMT</pubDate>
+  <media:content url="https://github.com/kylejcaron/kylejcaron.github.io/posts/experiment_strategy/coach_beard.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Useful Tools for Weibull Survival Analysis</title>
   <link>https://github.com/kylejcaron/kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools.html</link>

@@ -2,6 +2,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
@@ -13,6 +14,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
@@ -24,6 +26,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
       "/posts/2022-04-17-out-of-sample-pymc.html",
