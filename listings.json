@@ -2,6 +2,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
@@ -14,6 +15,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
@@ -26,6 +28,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
       "/posts/experiment_design.html",
