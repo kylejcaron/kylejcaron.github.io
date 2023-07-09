@@ -37,16 +37,16 @@
 <li>Attempting multi-armed bandits for early optimization</li>
 </ul></li>
 </ol>
-<p>By simulating the data generating process from scratch, I hope this can also be a helpful tool for others to build on and simulate out answers to their own questions they may have about estimating Long Term Treatment Effects.</p>
+<p>By simulating the data generating process from scratch, I hope this can also be a helpful tool for others to build on so they can answer their own questions they may have about estimating Long Term Treatment Effects.</p>
 </section>
 <section id="background" class="level1">
 <h1>Background</h1>
 <p><strong>Surrogate indexes</strong> are an unbiased way to predict a long term treatment effect from an experiment, but of course they’re only unbiased if done correctly which is no easy feat.</p>
-<p>At Policygenius, customers would take a long time to convert to a sale, and we found that optimizing for middle of the funnel was too easy to game - often we’d have hugely successful experiments that improved the whole top half of the funnel and we wouldn’t see any improvement in our true-north metric 6 months later, conversion to sale. Surrogate indexes were a natural way to try and solve that problem. <a href="https://arxiv.org/pdf/2106.01421.pdf">LinkedIn also has a case study</a> on their need to optimize long term outcomes and how they’re using surrogate indexes which is worth a read.</p>
+<p>At Policygenius, customers would take a long time to convert to a sale, and we found that optimizing for middle of the funnel was too easy to game - often we’d have hugely successful experiments that improved the whole top half of the funnel but we wouldn’t see any improvement in our true-north metric 6 months later, conversion to sale. Surrogate indexes were a natural way to try and solve that problem. <a href="https://arxiv.org/pdf/2106.01421.pdf">LinkedIn also has a case study</a> on their need to optimize long term outcomes and how they’re using surrogate indexes which is worth a read.</p>
 </section>
 <section id="the-surrogate-index-approach" class="level1">
 <h1>The Surrogate Index Approach</h1>
-<p>Surrogate indexes are a way to use short term proxies to estimate long-term treatment effects. For instance, lets say you’re a subscription company and you want to see how some intervention improves retention. But churn takes a long time to observe, so your experiment could go on for months. <strong>TLDR;</strong> is that with this approach, instead of measuring churn as your <strong>overall evaluation criteria (OEC</strong>), you measure <code>predicted churn</code> as the OEC.</p>
+<p>Surrogate indexes are a way to use short term proxies to estimate long-term treatment effects. For instance, lets say you’re a subscription company and you want to see how some intervention improves retention. But churn takes a long time to observe, so your experiment could go on for months. <strong>TLDR;</strong> is that with this approach, instead of measuring churn as your <strong>overall evaluation criteria (OEC</strong>), you measure <code>predicted churn</code> (with some caveats) as the OEC.</p>
 <p>A common response might be “thats complicated, can we try something more simple for now?” Of course you can. You can always try to choose some single short term proxy as your OEC for an experiment. But be careful because you could end up over-optimizing that proxy and not seeing the improvement in your long term outcome that you want. Surrogate indexes instead have many short term proxies, and they are validated over a set of historical data to ensure they’re an unbiased estimator of long term treatment effects.</p>
 <p>How do they work? Let’s start with a DAG</p>
 <div class="cell">
@@ -93,7 +93,7 @@ Tx-&gt;S
 </div>
 </div>
 <p>DAGs are diagrams, where the arrows represent causal effects. In this case, there’s some set of customer features <img src="https://latex.codecogs.com/png.latex?X">, that influence some set of short term outcomes, <img src="https://latex.codecogs.com/png.latex?S"> (a surrogate index).</p>
-<p>There’s also a treatment, <img src="https://latex.codecogs.com/png.latex?T_x">, that influences <img src="https://latex.codecogs.com/png.latex?S">. It may influence different short term outcomes in S in different ways.</p>
+<p>There’s also a treatment, <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BTx%7D">, that influences <img src="https://latex.codecogs.com/png.latex?S">. It may influence different short term outcomes in S in different ways.</p>
 <p>Lastly there’s <img src="https://latex.codecogs.com/png.latex?Y">, our long-term outcome of interest. Notice that all of the effect of the treatment on <img src="https://latex.codecogs.com/png.latex?Y"> flows through <img src="https://latex.codecogs.com/png.latex?S">. This is saying that the entire causal effect of the treatment on <img src="https://latex.codecogs.com/png.latex?Y"> is explained by the effect of the treatment on <img src="https://latex.codecogs.com/png.latex?S">. Keep note of that, because its a key assumption for Surrogate Indexes to work.</p>
 <p>A more detailed way to show this is through the use of <a href="https://academic.oup.com/ije/article/50/2/613/5998421">IDAGs</a>, a newer way to represent DAGs with interactions</p>
 <div class="cell">
@@ -156,7 +156,11 @@ Y
 </div>
 </div>
 <p>The IDAG is shown on the right. The main difference is the new term, <img src="https://latex.codecogs.com/png.latex?%5CDelta%20S_%7B%5Ctext%7BTx%7D%7D"> It implies that <img src="https://latex.codecogs.com/png.latex?X"> impacts the effect of the treatment on <img src="https://latex.codecogs.com/png.latex?S">. More simply, the treatment will have different effects on <img src="https://latex.codecogs.com/png.latex?S"> for different people based on their background, <img src="https://latex.codecogs.com/png.latex?X">, also known as <strong>heterogeneous treatment effects (HTEs)</strong>.</p>
-<p>This DAG can be used to build a surrogate index. If you can identify a set, <img src="https://latex.codecogs.com/png.latex?S">, of shorter term proxies for <img src="https://latex.codecogs.com/png.latex?Y">, and the effect of the treatment on <img src="https://latex.codecogs.com/png.latex?Y"> is entirely explained by <img src="https://latex.codecogs.com/png.latex?S">, than you can use <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D%20=%20f(S,%20X,%20T)%20+%20%5Cepsilon"> as an unbiased estimator for <img src="https://latex.codecogs.com/png.latex?Y"> before <img src="https://latex.codecogs.com/png.latex?Y"> is actually observed. This also means that you can estimate the long term treatment effect by observing <img src="https://latex.codecogs.com/png.latex?S"> for each variant of an experiment and using it to predict <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D"> for each group, then taking the difference: <img src="https://latex.codecogs.com/png.latex?E%5B%5Cdelta_%7B%5Ctext%7BLTO%7D%7D%5D%20=%20E%5B%5Chat%7BY%7D%20%7C%20T=1%5D%20-%20E%5B%5Chat%7BY%7D%20%7C%20T=0%5D">, where <img src="https://latex.codecogs.com/png.latex?%5Cdelta_%7B%5Ctext%7BLTO%7D%7D"> is the treatment effect on the long term outcome.</p>
+<blockquote class="blockquote">
+<p>Typically we average over HTEs to just get a single average treatment effect (ATE) for experiments, and that’s what we’ll be doing here. But there are ways to estimate HTEs as well, and we’ll get to that in part 3 of this series.</p>
+</blockquote>
+<p>This DAG can be used to build a surrogate index. If you can identify a set, <img src="https://latex.codecogs.com/png.latex?S">, of shorter term proxies for <img src="https://latex.codecogs.com/png.latex?Y">, and the effect of the treatment on <img src="https://latex.codecogs.com/png.latex?Y"> is entirely explained by <img src="https://latex.codecogs.com/png.latex?S">, than you can use <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D%20=%20f(S,%20X,%20T)%20+%20%5Cepsilon"> as an unbiased estimator for <img src="https://latex.codecogs.com/png.latex?Y"> before <img src="https://latex.codecogs.com/png.latex?Y"> is actually observed. This also means that you can estimate the long term treatment effect by observing <img src="https://latex.codecogs.com/png.latex?S"> for each variant of an experiment and using it to predict <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D"> for each group, then taking the difference: <img src="https://latex.codecogs.com/png.latex?%0AE%5B%5Cdelta_%7B%5Ctext%7BLTO%7D%7D%5D%20=%20E%5B%5Chat%7BY%7D%20%7C%20T=1%5D%20-%20E%5B%5Chat%7BY%7D%20%7C%20T=0%5D%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5Cdelta_%7B%5Ctext%7BLTO%7D%7D"> is the treatment effect on the long term outcome.</p>
 <p>Lets start simulating to see that for ourselves</p>
 </section>
 <section id="showing-that-surrogate-index-works-with-simulated-data" class="level1">
@@ -316,23 +320,92 @@ Y
 </div>
 </div>
 </div>
+<p>The underlying simulation code is below if you’re interested</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;">from</span> typing <span class="im" style="color: #00769E;">import</span> Dict</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="kw" style="color: #003B4F;">def</span> transmitter(</span>
+<span id="cb2-4">    params: Dict,</span>
+<span id="cb2-5">    add_treatment: <span class="bu" style="color: null;">bool</span> <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">False</span>,</span>
+<span id="cb2-6">    n_users: <span class="bu" style="color: null;">int</span> <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span>,</span>
+<span id="cb2-7">    logit_link: <span class="bu" style="color: null;">bool</span> <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">False</span>,</span>
+<span id="cb2-8">    rng <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">None</span></span>
+<span id="cb2-9">) <span class="op" style="color: #5E5E5E;">-&gt;</span> pd.DataFrame:</span>
+<span id="cb2-10">    <span class="co" style="color: #5E5E5E;">'''Simulates outcomes based on some ground truth parameters. </span></span>
+<span id="cb2-11"></span>
+<span id="cb2-12"><span class="co" style="color: #5E5E5E;">    Parameters</span></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;">    -----------</span></span>
+<span id="cb2-14"><span class="co" style="color: #5E5E5E;">        params: The ground truth parameters (effects and biases) to simulate based off of</span></span>
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;">        add_treatment: adds a randomly allocated treatment when true, with effect `bTS`</span></span>
+<span id="cb2-16"><span class="co" style="color: #5E5E5E;">        n_users: The number of users to simulate</span></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;">        logit_link: whether the data generating process is a bernoulli outcome or not</span></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;">        rng: A numpy random generator </span></span>
+<span id="cb2-19"></span>
+<span id="cb2-20"><span class="co" style="color: #5E5E5E;">    Returns</span></span>
+<span id="cb2-21"><span class="co" style="color: #5E5E5E;">    --------</span></span>
+<span id="cb2-22"><span class="co" style="color: #5E5E5E;">        A pandas dataframe with simulated data, including pre-treatment covariates,</span></span>
+<span id="cb2-23"><span class="co" style="color: #5E5E5E;">         surrogate outcomes, a treatment indicator, and a long term outcome, Y</span></span>
+<span id="cb2-24"><span class="co" style="color: #5E5E5E;">    '''</span></span>
+<span id="cb2-25">    <span class="cf" style="color: #003B4F;">if</span> rng <span class="kw" style="color: #003B4F;">is</span> <span class="va" style="color: #111111;">None</span>:</span>
+<span id="cb2-26">        seed <span class="op" style="color: #5E5E5E;">=</span> np.random.choice(<span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>))</span>
+<span id="cb2-27">        rng <span class="op" style="color: #5E5E5E;">=</span> np.random.default_rng(seed<span class="op" style="color: #5E5E5E;">=</span>seed)</span>
+<span id="cb2-28"></span>
+<span id="cb2-29">    <span class="co" style="color: #5E5E5E;"># unpack params</span></span>
+<span id="cb2-30">    Zdims, Xdims, Sdims <span class="op" style="color: #5E5E5E;">=</span>  params[<span class="st" style="color: #20794D;">'bZX'</span>].shape[<span class="dv" style="color: #AD0000;">1</span>],  params[<span class="st" style="color: #20794D;">'bZX'</span>].shape[<span class="dv" style="color: #AD0000;">0</span>],  params[<span class="st" style="color: #20794D;">'bXS'</span>].shape[<span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb2-31">    alphaX,alphaS,alphaY  <span class="op" style="color: #5E5E5E;">=</span> params[<span class="st" style="color: #20794D;">'alphaX'</span>], params[<span class="st" style="color: #20794D;">'alphaS'</span>], params[<span class="st" style="color: #20794D;">'alphaY'</span>] <span class="co" style="color: #5E5E5E;"># bias terms</span></span>
+<span id="cb2-32">    bZX,bXS,bSY <span class="op" style="color: #5E5E5E;">=</span> params[<span class="st" style="color: #20794D;">'bZX'</span>], params[<span class="st" style="color: #20794D;">'bXS'</span>],params[<span class="st" style="color: #20794D;">'bSY'</span>] <span class="co" style="color: #5E5E5E;"># causal relationships</span></span>
+<span id="cb2-33">    bTS,bXTS <span class="op" style="color: #5E5E5E;">=</span> params[<span class="st" style="color: #20794D;">'bTS'</span>], params[<span class="st" style="color: #20794D;">'bXTS'</span>] <span class="co" style="color: #5E5E5E;"># tx effects</span></span>
+<span id="cb2-34"></span>
+<span id="cb2-35">    <span class="co" style="color: #5E5E5E;"># unobserved variable Z representing latent customer traits</span></span>
+<span id="cb2-36">    Z <span class="op" style="color: #5E5E5E;">=</span> rng.normal(<span class="dv" style="color: #AD0000;">0</span>,<span class="dv" style="color: #AD0000;">1</span>, size<span class="op" style="color: #5E5E5E;">=</span>(Zdims, n_users))</span>
+<span id="cb2-37"></span>
+<span id="cb2-38">    <span class="co" style="color: #5E5E5E;"># Some observed pre-TX measures</span></span>
+<span id="cb2-39">    X <span class="op" style="color: #5E5E5E;">=</span> alphaX[:,<span class="va" style="color: #111111;">None</span>] <span class="op" style="color: #5E5E5E;">+</span> (bZX <span class="op" style="color: #5E5E5E;">@</span> Z)</span>
+<span id="cb2-40"></span>
+<span id="cb2-41">    <span class="co" style="color: #5E5E5E;"># Intermediate outcomes</span></span>
+<span id="cb2-42">    S <span class="op" style="color: #5E5E5E;">=</span> alphaS[:,<span class="va" style="color: #111111;">None</span>] <span class="op" style="color: #5E5E5E;">+</span> (bXS <span class="op" style="color: #5E5E5E;">@</span> X) </span>
+<span id="cb2-43"></span>
+<span id="cb2-44">    <span class="co" style="color: #5E5E5E;"># Add in treatment effect if applicable</span></span>
+<span id="cb2-45">    T <span class="op" style="color: #5E5E5E;">=</span> rng.binomial(<span class="dv" style="color: #AD0000;">1</span>,<span class="fl" style="color: #AD0000;">0.5</span>,size<span class="op" style="color: #5E5E5E;">=</span>n_users) <span class="cf" style="color: #003B4F;">if</span> add_treatment <span class="cf" style="color: #003B4F;">else</span> np.zeros(n_users)        </span>
+<span id="cb2-46">    avg_tx_term <span class="op" style="color: #5E5E5E;">=</span> (bTS <span class="op" style="color: #5E5E5E;">*</span> T[:,<span class="va" style="color: #111111;">None</span>])        </span>
+<span id="cb2-47">    hetergeneous_tx_term <span class="op" style="color: #5E5E5E;">=</span> (bXTS <span class="op" style="color: #5E5E5E;">@</span> (X<span class="op" style="color: #5E5E5E;">*</span>T))</span>
+<span id="cb2-48">    S <span class="op" style="color: #5E5E5E;">+=</span> avg_tx_term.T <span class="op" style="color: #5E5E5E;">+</span> hetergeneous_tx_term</span>
+<span id="cb2-49"></span>
+<span id="cb2-50">    <span class="co" style="color: #5E5E5E;"># expectation of long term outcome</span></span>
+<span id="cb2-51">    eta <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">0</span> <span class="op" style="color: #5E5E5E;">+</span> (bSY <span class="op" style="color: #5E5E5E;">@</span> S)</span>
+<span id="cb2-52"></span>
+<span id="cb2-53">    <span class="co" style="color: #5E5E5E;"># Long term outcome</span></span>
+<span id="cb2-54">    <span class="cf" style="color: #003B4F;">if</span> logit_link:</span>
+<span id="cb2-55">        Y <span class="op" style="color: #5E5E5E;">=</span> rng.binomial(<span class="dv" style="color: #AD0000;">1</span>, sp.expit(eta) )</span>
+<span id="cb2-56">    <span class="cf" style="color: #003B4F;">else</span>:</span>
+<span id="cb2-57">        Y <span class="op" style="color: #5E5E5E;">=</span> rng.normal(eta, <span class="fl" style="color: #AD0000;">0.025</span>)</span>
+<span id="cb2-58"></span>
+<span id="cb2-59">    <span class="co" style="color: #5E5E5E;"># Output as dataframe</span></span>
+<span id="cb2-60">    Xdf <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(X.T, columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="ss" style="color: #20794D;">f'X</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">'</span> <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(Xdims)]).assign(T<span class="op" style="color: #5E5E5E;">=</span>T)</span>
+<span id="cb2-61">    Sdf <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(S.T, columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="ss" style="color: #20794D;">f'S</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">'</span> <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(Sdims)])</span>
+<span id="cb2-62">    Ydf <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(Y.ravel(), columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'Y'</span>])</span>
+<span id="cb2-63">    <span class="cf" style="color: #003B4F;">return</span> pd.concat((Xdf, Sdf, Ydf),axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
+</details>
+</div>
 </section>
 <section id="step-2-fitting-a-surrogate-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-fitting-a-surrogate-model">Step 2: Fitting a surrogate model</h2>
 <p>We’ll use the historical dataset to fit the surrogate index model, mapping <img src="https://latex.codecogs.com/png.latex?S%20%5Crightarrow%20Y"></p>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">S_vars <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">" + "</span>.join( historical_data.<span class="bu" style="color: null;">filter</span>(like<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"S"</span>).columns )</span>
-<span id="cb2-2">X_vars <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">" + "</span>.join( historical_data.<span class="bu" style="color: null;">filter</span>(like<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"X"</span>).columns )</span>
-<span id="cb2-3"></span>
-<span id="cb2-4"><span class="co" style="color: #5E5E5E;"># Step 2: fit a surrogate index model on complete historical data</span></span>
-<span id="cb2-5">surrogate_model <span class="op" style="color: #5E5E5E;">=</span> sm.OLS.from_formula(<span class="ss" style="color: #20794D;">f"Y ~ </span><span class="sc" style="color: #5E5E5E;">{</span>S_vars<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>, data<span class="op" style="color: #5E5E5E;">=</span>historical_data).fit()</span>
-<span id="cb2-6"></span>
-<span id="cb2-7"><span class="co" style="color: #5E5E5E;"># Estimate the variance in the estimator, \hat{sigma^2}. This is used for bias corrections later</span></span>
-<span id="cb2-8">predicted_sigma2 <span class="op" style="color: #5E5E5E;">=</span> np.var( surrogate_model.fittedvalues <span class="op" style="color: #5E5E5E;">-</span> historical_data.Y,  ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span> )</span>
-<span id="cb2-9"></span>
-<span id="cb2-10"><span class="co" style="color: #5E5E5E;"># Show the model summary</span></span>
-<span id="cb2-11">surrogate_model.summary()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">S_vars <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">" + "</span>.join( historical_data.<span class="bu" style="color: null;">filter</span>(like<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"S"</span>).columns )</span>
+<span id="cb3-2">X_vars <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">" + "</span>.join( historical_data.<span class="bu" style="color: null;">filter</span>(like<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"X"</span>).columns )</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;"># Step 2: fit a surrogate index model on complete historical data</span></span>
+<span id="cb3-5">surrogate_model <span class="op" style="color: #5E5E5E;">=</span> sm.OLS.from_formula(<span class="ss" style="color: #20794D;">f"Y ~ </span><span class="sc" style="color: #5E5E5E;">{</span>S_vars<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>, data<span class="op" style="color: #5E5E5E;">=</span>historical_data).fit()</span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;"># Estimate the variance in the estimator, \hat{sigma^2}. This is used for bias corrections later</span></span>
+<span id="cb3-8">predicted_sigma2 <span class="op" style="color: #5E5E5E;">=</span> np.var( surrogate_model.fittedvalues <span class="op" style="color: #5E5E5E;">-</span> historical_data.Y,  ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span> )</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;"># Show the model summary</span></span>
+<span id="cb3-11">surrogate_model.summary()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 
 <table class="simpletable">
 <caption>OLS Regression Results</caption>
@@ -349,7 +422,7 @@ Y
   <th>Date:</th>             <td>Sun, 09 Jul 2023</td> <th>  Prob (F-statistic):</th>  <td>  0.00</td>  
 </tr>
 <tr>
-  <th>Time:</th>                 <td>12:27:20</td>     <th>  Log-Likelihood:    </th> <td> -33395.</td> 
+  <th>Time:</th>                 <td>12:42:35</td>     <th>  Log-Likelihood:    </th> <td> -33395.</td> 
 </tr>
 <tr>
   <th>No. Observations:</th>      <td> 50000</td>      <th>  AIC:               </th> <td>6.680e+04</td>
@@ -423,8 +496,11 @@ Y
 <h2 class="anchored" data-anchor-id="step-3-estimate-long-term-treatment-effect">Step 3: Estimate Long Term Treatment Effect</h2>
 <p>We’ll now use the surrogate index to estimate a long term treatment effect</p>
 <p>Let’s take our experiment dataset and estimate <img src="https://latex.codecogs.com/png.latex?E%5B%5Cdelta_%7B%5Ctext%7BLTO%7D%7D%5D">, the average treatment effect on the long term outcome. Notice, the long term outcome, <img src="https://latex.codecogs.com/png.latex?Y">, hasn’t been observed yet.</p>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">display(experiment_data.head())</span></code></pre></div>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">display(experiment_data.head())</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 
 <div>
@@ -547,64 +623,70 @@ Y
 </div>
 </div>
 <p>First, we’ll do some visulation of the experiment data.</p>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>,<span class="bu" style="color: null;">int</span>(Xdims<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">2</span>),figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">5</span>),sharey<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="cf" style="color: #003B4F;">for</span> i, ax <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(<span class="bu" style="color: null;">range</span>(Xdims), axes.ravel()):</span>
-<span id="cb4-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>][<span class="ss" style="color: #20794D;">f"X</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Control'</span> )</span>
-<span id="cb4-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>][<span class="ss" style="color: #20794D;">f"X</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Treatment'</span> )</span>
-<span id="cb4-6"></span>
-<span id="cb4-7">plt.suptitle(<span class="st" style="color: #20794D;">"Histogram of Pre-Treatment Covariates</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">for the Treatment and Control groups"</span>)</span>
-<span id="cb4-8">plt.tight_layout()</span></code></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro_files/figure-html/cell-5-output-1.png" width="758" height="475"></p>
-</div>
-</div>
-<p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
-<p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>,<span class="bu" style="color: null;">int</span>(Sdims<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">2</span>),figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">5</span>), sharey<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>,<span class="bu" style="color: null;">int</span>(Xdims<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">2</span>),figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">5</span>),sharey<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
 <span id="cb5-2"></span>
-<span id="cb5-3"><span class="cf" style="color: #003B4F;">for</span> i, ax <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(<span class="bu" style="color: null;">range</span>(Sdims), axes.ravel()):</span>
-<span id="cb5-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>][<span class="ss" style="color: #20794D;">f"S</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Control'</span> )</span>
-<span id="cb5-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>][<span class="ss" style="color: #20794D;">f"S</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Treatment'</span> )</span>
+<span id="cb5-3"><span class="cf" style="color: #003B4F;">for</span> i, ax <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(<span class="bu" style="color: null;">range</span>(Xdims), axes.ravel()):</span>
+<span id="cb5-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>][<span class="ss" style="color: #20794D;">f"X</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Control'</span> )</span>
+<span id="cb5-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>][<span class="ss" style="color: #20794D;">f"X</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Treatment'</span> )</span>
 <span id="cb5-6"></span>
-<span id="cb5-7">plt.suptitle(<span class="st" style="color: #20794D;">"Histogram of Surrogate Outcomes</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">for the Treatment and Control groups"</span>)</span>
+<span id="cb5-7">plt.suptitle(<span class="st" style="color: #20794D;">"Histogram of Pre-Treatment Covariates</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">for the Treatment and Control groups"</span>)</span>
 <span id="cb5-8">plt.tight_layout()</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro_files/figure-html/cell-6-output-1.png" width="758" height="475"></p>
 </div>
 </div>
+<p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
+<p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>,<span class="bu" style="color: null;">int</span>(Sdims<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">2</span>),figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>,<span class="dv" style="color: #AD0000;">5</span>), sharey<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="cf" style="color: #003B4F;">for</span> i, ax <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(<span class="bu" style="color: null;">range</span>(Sdims), axes.ravel()):</span>
+<span id="cb6-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>][<span class="ss" style="color: #20794D;">f"S</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Control'</span> )</span>
+<span id="cb6-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>][<span class="ss" style="color: #20794D;">f"S</span><span class="sc" style="color: #5E5E5E;">{</span>i<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>],ax<span class="op" style="color: #5E5E5E;">=</span>ax, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Treatment'</span> )</span>
+<span id="cb6-6"></span>
+<span id="cb6-7">plt.suptitle(<span class="st" style="color: #20794D;">"Histogram of Surrogate Outcomes</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;">for the Treatment and Control groups"</span>)</span>
+<span id="cb6-8">plt.tight_layout()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="758" height="475"></p>
+</div>
+</div>
 <p>If our surrogate index estimator is correct, these observed surrogate outcomes should directly map to the Long Term Outcome deterministically, via <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D%20=%20f(S)">, where <img src="https://latex.codecogs.com/png.latex?f()"> is the surrogate index model.</p>
 <p>We can show that the surrogate index estimator recovers the true average treatment effect on the long term outcome</p>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="kw" style="color: #003B4F;">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
-<span id="cb6-2">    <span class="co" style="color: #5E5E5E;">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
-<span id="cb6-3"><span class="co" style="color: #5E5E5E;">    Returns the ATE estimate and its uncertainty</span></span>
-<span id="cb6-4"><span class="co" style="color: #5E5E5E;">    </span></span>
-<span id="cb6-5"><span class="co" style="color: #5E5E5E;">    '''</span></span>
-<span id="cb6-6">    Y_T1 <span class="op" style="color: #5E5E5E;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>])</span>
-<span id="cb6-7">    Y_T0 <span class="op" style="color: #5E5E5E;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>])</span>
-<span id="cb6-8">    </span>
-<span id="cb6-9">    <span class="co" style="color: #5E5E5E;"># Calculate the ATE</span></span>
-<span id="cb6-10">    ATE <span class="op" style="color: #5E5E5E;">=</span>  Y_T1.mean() <span class="op" style="color: #5E5E5E;">-</span> Y_T0.mean()</span>
-<span id="cb6-11">    <span class="co" style="color: #5E5E5E;"># calculate the variance </span></span>
-<span id="cb6-12">    var_surrogate <span class="op" style="color: #5E5E5E;">=</span> np.var(Y_T1,ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>) <span class="op" style="color: #5E5E5E;">/</span> <span class="bu" style="color: null;">len</span>(Y_T1) <span class="op" style="color: #5E5E5E;">+</span> np.var(Y_T0,ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>) <span class="op" style="color: #5E5E5E;">/</span> <span class="bu" style="color: null;">len</span>(Y_T0)</span>
-<span id="cb6-13">    <span class="co" style="color: #5E5E5E;"># Adjust the variance by the surrogate model error</span></span>
-<span id="cb6-14">    var_surrogate_adj <span class="op" style="color: #5E5E5E;">=</span> var_surrogate <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">*</span>predicted_sigma2<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(Y_T1)</span>
-<span id="cb6-15">    ATE_sd <span class="op" style="color: #5E5E5E;">=</span> np.sqrt(var_surrogate_adj)</span>
-<span id="cb6-16">    </span>
-<span id="cb6-17">    <span class="cf" style="color: #003B4F;">return</span> ATE, ATE_sd</span>
-<span id="cb6-18"></span>
-<span id="cb6-19">ATE, ATE_sd <span class="op" style="color: #5E5E5E;">=</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)</span>
-<span id="cb6-20">sns.histplot(np.random.normal(ATE, ATE_sd,size<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>), stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'probability'</span>)</span>
-<span id="cb6-21">plt.axvline( GROUND_TRUTH[<span class="st" style="color: #20794D;">'ATE'</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'True ATE'</span>)</span>
-<span id="cb6-22">plt.legend()</span>
-<span id="cb6-23">plt.xlabel(<span class="st" style="color: #20794D;">"ATE"</span>)</span>
-<span id="cb6-24">plt.title(<span class="st" style="color: #20794D;">"Estimated Treatment Effect vs. True Treatment Effect"</span>)</span>
-<span id="cb6-25">plt.show()</span></code></pre></div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="kw" style="color: #003B4F;">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
+<span id="cb7-2">    <span class="co" style="color: #5E5E5E;">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
+<span id="cb7-3"><span class="co" style="color: #5E5E5E;">    Returns the ATE estimate and its uncertainty</span></span>
+<span id="cb7-4"><span class="co" style="color: #5E5E5E;">    </span></span>
+<span id="cb7-5"><span class="co" style="color: #5E5E5E;">    '''</span></span>
+<span id="cb7-6">    Y_T1 <span class="op" style="color: #5E5E5E;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb7-7">    Y_T0 <span class="op" style="color: #5E5E5E;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;">lambda</span> d: d[<span class="st" style="color: #20794D;">'T'</span>]<span class="op" style="color: #5E5E5E;">==</span><span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb7-8">    </span>
+<span id="cb7-9">    <span class="co" style="color: #5E5E5E;"># Calculate the ATE</span></span>
+<span id="cb7-10">    ATE <span class="op" style="color: #5E5E5E;">=</span>  Y_T1.mean() <span class="op" style="color: #5E5E5E;">-</span> Y_T0.mean()</span>
+<span id="cb7-11">    <span class="co" style="color: #5E5E5E;"># calculate the variance </span></span>
+<span id="cb7-12">    var_surrogate <span class="op" style="color: #5E5E5E;">=</span> np.var(Y_T1,ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>) <span class="op" style="color: #5E5E5E;">/</span> <span class="bu" style="color: null;">len</span>(Y_T1) <span class="op" style="color: #5E5E5E;">+</span> np.var(Y_T0,ddof<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>) <span class="op" style="color: #5E5E5E;">/</span> <span class="bu" style="color: null;">len</span>(Y_T0)</span>
+<span id="cb7-13">    <span class="co" style="color: #5E5E5E;"># Adjust the variance by the surrogate model error</span></span>
+<span id="cb7-14">    var_surrogate_adj <span class="op" style="color: #5E5E5E;">=</span> var_surrogate <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">*</span>predicted_sigma2<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(Y_T1)</span>
+<span id="cb7-15">    ATE_sd <span class="op" style="color: #5E5E5E;">=</span> np.sqrt(var_surrogate_adj)</span>
+<span id="cb7-16">    </span>
+<span id="cb7-17">    <span class="cf" style="color: #003B4F;">return</span> ATE, ATE_sd</span>
+<span id="cb7-18"></span>
+<span id="cb7-19">ATE, ATE_sd <span class="op" style="color: #5E5E5E;">=</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)</span>
+<span id="cb7-20">sns.histplot(np.random.normal(ATE, ATE_sd,size<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>), stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'probability'</span>)</span>
+<span id="cb7-21">plt.axvline( GROUND_TRUTH[<span class="st" style="color: #20794D;">'ATE'</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'True ATE'</span>)</span>
+<span id="cb7-22">plt.legend()</span>
+<span id="cb7-23">plt.xlabel(<span class="st" style="color: #20794D;">"ATE"</span>)</span>
+<span id="cb7-24">plt.title(<span class="st" style="color: #20794D;">"Estimated Treatment Effect vs. True Treatment Effect"</span>)</span>
+<span id="cb7-25">plt.show()</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="597" height="442"></p>
+<p><img src="https://github.com/kylejcaron/kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro_files/figure-html/cell-8-output-1.png" width="597" height="442"></p>
 </div>
 </div>
 <p>There we are. The surrogate estimator recovers the true average treatment effect! We didn’t even have to wait and observe the true long term outcome.</p>
