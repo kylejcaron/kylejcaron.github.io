@@ -74,9 +74,14 @@ digraph {
 
 The IDAG is shown on the right. The main difference is the new term, $\Delta S_{\text{Tx}}$ It implies that $X$ impacts the effect of the treatment on $S$. More simply, the treatment will have different effects on $S$ for different people based on their background, $X$, also known as __heterogeneous treatment effects (HTEs)__.
 
-Typically we average over HTEs to just get a single average treatment effect (ATE) for experiments, and that's what we'll be doing here. But there are ways to estimate HTEs as well, and we'll get to that in part 3 of this series.
+> Typically we average over HTEs to just get a single average treatment effect (ATE) for experiments, and that's what we'll be doing here. But there are ways to estimate HTEs as well, and we'll get to that in part 3 of this series.
 
-This DAG can be used to build a surrogate index. If you can identify a set, $S$, of shorter term proxies for $Y$, and the effect of the treatment on $Y$ is entirely explained by $S$, than you can use $\hat{Y} = f(S, X, T) + \epsilon$  as an unbiased estimator for $Y$ before $Y$ is actually observed. This also means that you can estimate the long term treatment effect by observing $S$ for each variant of an experiment and using it to predict $\hat{Y}$ for each group, then taking the difference: $E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]$, where $\delta_{\text{LTO}}$ is the treatment effect on the long term outcome. 
+This DAG can be used to build a surrogate index. If you can identify a set, $S$, of shorter term proxies for $Y$, and the effect of the treatment on $Y$ is entirely explained by $S$, than you can use $\hat{Y} = f(S, X, T) + \epsilon$  as an unbiased estimator for $Y$ before $Y$ is actually observed. This also means that you can estimate the long term treatment effect by observing $S$ for each variant of an experiment and using it to predict $\hat{Y}$ for each group, then taking the difference: 
+$$
+E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
+$$
+
+where $\delta_{\text{LTO}}$ is the treatment effect on the long term outcome. 
 
 Lets start simulating to see that for ourselves
 
@@ -118,6 +123,78 @@ experiment_data = experiment_data.assign(Y=np.NaN)
 display(historical_data.head(5))
 ```
 
+The underlying simulation code is below if you're interested
+
+```{python}
+#| code-fold: true
+from typing import Dict
+
+def transmitter(
+    params: Dict,
+    add_treatment: bool = False,
+    n_users: int = 1,
+    logit_link: bool = False,
+    rng = None
+) -> pd.DataFrame:
+    '''Simulates outcomes based on some ground truth parameters. 
+
+    Parameters
+    -----------
+        params: The ground truth parameters (effects and biases) to simulate based off of
+        add_treatment: adds a randomly allocated treatment when true, with effect `bTS`
+        n_users: The number of users to simulate
+        logit_link: whether the data generating process is a bernoulli outcome or not
+        rng: A numpy random generator 
+
+    Returns
+    --------
+        A pandas dataframe with simulated data, including pre-treatment covariates,
+         surrogate outcomes, a treatment indicator, and a long term outcome, Y
+    '''
+    if rng is None:
+        seed = np.random.choice(range(1000))
+        rng = np.random.default_rng(seed=seed)
+
+    # unpack params
+    Zdims, Xdims, Sdims =  params['bZX'].shape[1],  params['bZX'].shape[0],  params['bXS'].shape[0]
+    alphaX,alphaS,alphaY  = params['alphaX'], params['alphaS'], params['alphaY'] # bias terms
+    bZX,bXS,bSY = params['bZX'], params['bXS'],params['bSY'] # causal relationships
+    bTS,bXTS = params['bTS'], params['bXTS'] # tx effects
+
+    # unobserved variable Z representing latent customer traits
+    Z = rng.normal(0,1, size=(Zdims, n_users))
+
+    # Some observed pre-TX measures
+    X = alphaX[:,None] + (bZX @ Z)
+
+    # Intermediate outcomes
+    S = alphaS[:,None] + (bXS @ X) 
+
+    # Add in treatment effect if applicable
+    T = rng.binomial(1,0.5,size=n_users) if add_treatment else np.zeros(n_users)        
+    avg_tx_term = (bTS * T[:,None])        
+    hetergeneous_tx_term = (bXTS @ (X*T))
+    S += avg_tx_term.T + hetergeneous_tx_term
+
+    # expectation of long term outcome
+    eta = 0 + (bSY @ S)
+
+    # Long term outcome
+    if logit_link:
+        Y = rng.binomial(1, sp.expit(eta) )
+    else:
+        Y = rng.normal(eta, 0.025)
+
+    # Output as dataframe
+    Xdf = pd.DataFrame(X.T, columns=[f'X{i}' for i in range(Xdims)]).assign(T=T)
+    Sdf = pd.DataFrame(S.T, columns=[f'S{i}' for i in range(Sdims)])
+    Ydf = pd.DataFrame(Y.ravel(), columns=['Y'])
+    return pd.concat((Xdf, Sdf, Ydf),axis=1)
+
+
+```
+
+
 ## Step 2: Fitting a surrogate model 
 
 We'll use the historical dataset to fit the surrogate index model, mapping $S \rightarrow Y$
@@ -149,11 +226,13 @@ We'll now use the surrogate index to estimate a long term treatment effect
 Let's take our experiment dataset and estimate $E[\delta_{\text{LTO}}]$, the average treatment effect on the long term outcome. Notice, the long term outcome, $Y$, hasn't been observed yet.
 
 ```{python}
+#| code-fold: true
 display(experiment_data.head())
 ```
 
 First, we'll do some visulation of the experiment data.
 ```{python}
+#| code-fold: true
 fig, axes = plt.subplots(2,int(Xdims/2),figsize=(8,5),sharey=True)
 
 for i, ax in zip(range(Xdims), axes.ravel()):
@@ -169,6 +248,7 @@ As we can see above, the pre-treatment variables are the exact same between the 
 Conversely, if we look at the surrogate outcomes below, we'll see some differences in surrogate outcomes between the treatment and control groups.
 
 ```{python}
+#| code-fold: true
 fig, axes = plt.subplots(2,int(Sdims/2),figsize=(8,5), sharey=True)
 
 for i, ax in zip(range(Sdims), axes.ravel()):

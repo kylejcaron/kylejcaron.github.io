@@ -73,9 +73,6 @@ def set_true_parameters(
 
 def transmitter(
     params: Dict,
-    Zdims: int = 20, 
-    Xdims: int = 5, 
-    Sdims: int = 3,
     add_treatment: bool = False,
     n_users: int = 1,
     logit_link: bool = False,
