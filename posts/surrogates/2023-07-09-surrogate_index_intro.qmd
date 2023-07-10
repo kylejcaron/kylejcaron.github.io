@@ -98,7 +98,7 @@ import seaborn as sns
 import statsmodels.api as sm
 from simple_simulation import Transmitter
 import scipy.stats as stats
-SEED = 99
+SEED = 10
 
 # step 1: simulate data
 Zdims, Xdims, Sdims = 20, 5, 8
@@ -229,6 +229,7 @@ predicted_sigma2 = np.var( surrogate_model.fittedvalues - historical_data.Y,  dd
 surrogate_model.summary()
 ```
 
+---
 
 There are 2 important things to note here: 
 
@@ -313,7 +314,7 @@ There we are. The surrogate estimator recovers the true average treatment effect
 # Repeated Simulation
 
 We can take this a step further and validate it works with repeated simulation. Can it recover true treatment effects? What if there is no effect, does the tests false positive rate match what it should be?
-
+ 
 ```{python}
 transmitter = Transmitter(Zdims=20, Xdims=5, Sdims=8, seed=99)
 historical, _ = transmitter.simulate(n_users=10000, add_treatment=False)
@@ -374,7 +375,7 @@ for i in range(n_experiments):
 
 sig_result_rate = np.mean(sigs)
 print("Empirical False Positive Rate from 1000 trials is {:.1%} (expected: 5%)".format(sig_result_rate))
-```
+``` 
 
 
 

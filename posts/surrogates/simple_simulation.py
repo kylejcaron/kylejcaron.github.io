@@ -8,7 +8,6 @@ import scipy.stats as stats
 import scipy.special as sp
 import graphviz as gv
 import statsmodels.api as sm
-SEED=99
 
 
 class Transmitter:
@@ -78,7 +77,7 @@ class Transmitter:
         bTS, bXTS = self._simulate_tx(bTS, bXTS) # tx effects
 
         # unobserved variable Z representing latent customer traits
-        Z = np.random.normal(0,.25, size=(n_users, self.Zdims))
+        Z = np.random.normal(0,0.1, size=(n_users, self.Zdims))
 
         # Some observed pre-TX measures
         X = alphaX[:,None].T + (Z @ bZX) + eps((n_users, self.Xdims))
