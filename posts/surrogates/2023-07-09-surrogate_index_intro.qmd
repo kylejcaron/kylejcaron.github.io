@@ -34,7 +34,7 @@ At Policygenius, customers would take a long time to convert to a sale, and we f
 
 # The Surrogate Index Approach
 
-Surrogate indexes are a way to use short term proxies to estimate long-term treatment effects. For instance, lets say you're a subscription company and you want to see how some intervention improves retention. But churn takes a long time to observe, so your experiment could go on for months. __TLDR;__ is that with this approach, instead of measuring churn as your __overall evaluation criteria (OEC__), you measure `predicted churn` (with some caveats) as the OEC. 
+Surrogate indexes are a way to use short term proxies to estimate long-term treatment effects. For instance, lets say you're a subscription company and you want to see how some intervention improves retention. But churn takes a long time to observe, so your experiment could go on for months. __TLDR;__ is that with this approach, instead of measuring churn as your __overall evaluation criteria (OEC__), you would measure `predicted churn` (with some caveats) as the OEC. 
 
 A common response might be "thats complicated, can we try something more simple for now?" Of course you can. You can always try to choose some single short term proxy as your OEC for an experiment. But be careful because you could end up over-optimizing that proxy and not seeing the improvement in your long term outcome that you want. Surrogate indexes instead have many short term proxies, and they are validated over a set of historical data to ensure they're an unbiased estimator of long term treatment effects.
 
@@ -96,24 +96,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-from simple_simulation import set_true_parameters, transmitter
+from simple_simulation import Transmitter
+import scipy.stats as stats
 SEED = 99
 
 # step 1: simulate data
-rng = np.random.default_rng(seed=SEED)
-logit_link=True
-
-# True parameters
-Zdims = 20 # customer latent dims
-Xdims = 5 # pre treatment covariates
-Sdims = 8 # intermediate outcomes (the surrogates)
-n_users = 50000
-
-GROUND_TRUTH = set_true_parameters(Zdims, Xdims, Sdims, logit_link=True, rng=rng)
+Zdims, Xdims, Sdims = 20, 5, 8
+transmitter = Transmitter(Zdims=Zdims, Xdims=Xdims, Sdims=Sdims, seed=SEED)
 
 # Simulate data 
-historical_data = transmitter(GROUND_TRUTH, add_treatment=False, n_users=n_users,logit_link=logit_link, rng=rng) 
-experiment_data = transmitter(GROUND_TRUTH, add_treatment=True, n_users=n_users, logit_link=logit_link, rng=rng)
+historical_data, _ = transmitter.simulate(add_treatment=False, n_users=10000) 
+experiment_data, TRUE_EFFECTS = transmitter.simulate(add_treatment=True, n_users=15000) 
 
 # Censor the experiment dataset so that we dont know the long term outcome yet
 Y_TRUE = experiment_data.Y.values
@@ -127,71 +120,94 @@ The underlying simulation code is below if you're interested
 
 ```{python}
 #| code-fold: true
-from typing import Dict
+class TransmitterExample:
+    
+    def __init__(
+        self, 
+        Zdims: int, 
+        Xdims: int, 
+        Sdims: int, 
+        logit_link: bool = False,
+        seed: int = None
+    ) -> None:
 
-def transmitter(
-    params: Dict,
-    add_treatment: bool = False,
-    n_users: int = 1,
-    logit_link: bool = False,
-    rng = None
-) -> pd.DataFrame:
-    '''Simulates outcomes based on some ground truth parameters. 
+        self.rng = np.random.default_rng(seed=seed)
+        self.logit_link = logit_link
+        self.Zdims, self.Xdims, self.Sdims = Zdims, Xdims, Sdims
+        self.params = self._set_true_parameters()
+    
+    ...
 
-    Parameters
-    -----------
-        params: The ground truth parameters (effects and biases) to simulate based off of
-        add_treatment: adds a randomly allocated treatment when true, with effect `bTS`
-        n_users: The number of users to simulate
-        logit_link: whether the data generating process is a bernoulli outcome or not
-        rng: A numpy random generator 
+    def simulate(
+        self,
+        n_users: int = 1,
+        add_treatment: bool = False,
+        bTS = None,
+        bXTS = None,
+    ) -> pd.DataFrame:
+        '''Simulates outcomes based on some ground truth parameters. 
 
-    Returns
-    --------
-        A pandas dataframe with simulated data, including pre-treatment covariates,
-         surrogate outcomes, a treatment indicator, and a long term outcome, Y
-    '''
-    if rng is None:
-        seed = np.random.choice(range(1000))
-        rng = np.random.default_rng(seed=seed)
+        Parameters
+        -----------
+            params: The ground truth parameters (effects and biases) to simulate based off of
+            add_treatment: adds a randomly allocated treatment when true, with effect `bTS`
+            n_users: The number of users to simulate
+            logit_link: whether the data generating process is a bernoulli outcome or not
+            rng: A numpy random generator 
 
-    # unpack params
-    Zdims, Xdims, Sdims =  params['bZX'].shape[1],  params['bZX'].shape[0],  params['bXS'].shape[0]
-    alphaX,alphaS,alphaY  = params['alphaX'], params['alphaS'], params['alphaY'] # bias terms
-    bZX,bXS,bSY = params['bZX'], params['bXS'],params['bSY'] # causal relationships
-    bTS,bXTS = params['bTS'], params['bXTS'] # tx effects
+        Returns
+        --------
+            A pandas dataframe with simulated data, including pre-treatment covariates,
+             surrogate outcomes, a treatment indicator, and a long term outcome, Y
+        '''
+        
+        def eps(n_users, scale=1):
+            return np.random.normal(0, scale, size=n_users)
+        
+        # unpack params
+        alphaX,alphaS,alphaY  = self.params['alphaX'], self.params['alphaS'], self.params['alphaY'] # bias terms
+        bZX,bXS,bSY = self.params['bZX'], self.params['bXS'],self.params['bSY'] # causal relationships
+        bTS, bXTS = self._simulate_tx(bTS, bXTS) # tx effects
 
-    # unobserved variable Z representing latent customer traits
-    Z = rng.normal(0,1, size=(Zdims, n_users))
+        # unobserved variable Z representing latent customer traits
+        Z = np.random.normal(0,1, size=(n_users, self.Zdims))
 
-    # Some observed pre-TX measures
-    X = alphaX[:,None] + (bZX @ Z)
+        # Some observed pre-TX measures
+        X = alphaX[:,None].T + (Z @ bZX) + eps((n_users, self.Xdims))
 
-    # Intermediate outcomes
-    S = alphaS[:,None] + (bXS @ X) 
+        # Intermediate outcomes
+        S = alphaS[:,None].T + (X @ bXS) + eps((n_users, self.Sdims))
+        
+        # Add in treatment effect if applicable
+        T = np.random.binomial(1,0.5,size=n_users) if add_treatment else np.zeros(n_users)        
+        avg_tx_term = (bTS * T[:,None])  
+        hetergeneous_tx_term = ((X*T[:,None]) @ bXTS.T)
+        S += avg_tx_term + hetergeneous_tx_term 
 
-    # Add in treatment effect if applicable
-    T = rng.binomial(1,0.5,size=n_users) if add_treatment else np.zeros(n_users)        
-    avg_tx_term = (bTS * T[:,None])        
-    hetergeneous_tx_term = (bXTS @ (X*T))
-    S += avg_tx_term.T + hetergeneous_tx_term
+        # long term outcome
+        eta = (alphaY[:,None] + (S @ bSY))
+            
+        # Calculate true treatment effects
+        bTY = (bTS @ bSY).ravel()
+        eta_scale = eta.std() # TODO: dont estimate eta_scale, calculate it analytically
+        ATE = (
+            self._approx_expit_expectation(bTY, eta_scale ) 
+            - self._approx_expit_expectation(0, eta_scale )
+        ) if self.logit_link else bTY
+        ground_truth = {"bTS":bTS,"bXTS":bXTS, "bTY":bTY, "ATE":ATE}
 
-    # expectation of long term outcome
-    eta = 0 + (bSY @ S)
+        # Long term outcome
+        if self.logit_link:
+            Y = np.random.binomial(1, sp.expit( eta )) 
+        else:
+            Y = np.random.normal(eta, .1)
 
-    # Long term outcome
-    if logit_link:
-        Y = rng.binomial(1, sp.expit(eta) )
-    else:
-        Y = rng.normal(eta, 0.025)
-
-    # Output as dataframe
-    Xdf = pd.DataFrame(X.T, columns=[f'X{i}' for i in range(Xdims)]).assign(T=T)
-    Sdf = pd.DataFrame(S.T, columns=[f'S{i}' for i in range(Sdims)])
-    Ydf = pd.DataFrame(Y.ravel(), columns=['Y'])
-    return pd.concat((Xdf, Sdf, Ydf),axis=1)
-
-
+        # Output as dataframe
+        Xdf = pd.DataFrame(X, columns=[f'X{i}' for i in range(self.Xdims)]).assign(T=T)
+        Sdf = pd.DataFrame(S, columns=[f'S{i}' for i in range(self.Sdims)])
+        Ydf = pd.DataFrame(Y.ravel(), columns=['Y'])
+        return pd.concat((Xdf, Sdf, Ydf),axis=1), ground_truth
+    
 ```
 
 
@@ -213,10 +229,11 @@ predicted_sigma2 = np.var( surrogate_model.fittedvalues - historical_data.Y,  dd
 surrogate_model.summary()
 ```
 
-There are 3 important things to note here: 
+
+There are 2 important things to note here: 
 
  1. Note that we're purposely not including the pre-treatment covariates, $X$ in this model. Remember the DAG - all of the effect of $X$ on $Y$ is entirely mediated by $S$, so adding $X$ into the model adds no additional information. 
- 2. We're using Ordinary Least Squares for bernoulli outcome data. Thats not a mistake. OLS has great properties to be effective on bernoulli outcome data, and it makes this approach very simple. Other models can also be swapped in, like Random Forest or XGBoost. 
+ 2. We're using Ordinary Least Squares. Other nonparametric models can also be swapped in, like Random Forest or XGBoost. 
  3. I'm not doing alot of model validation, just because this is simulated data. In practice, don't just throw things into a model. Part 2 in this series will discuss how to validate surrogate indexes.
 
 ## Step 3: Estimate Long Term Treatment Effect
@@ -284,7 +301,7 @@ def estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):
 
 ATE, ATE_sd = estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)
 sns.histplot(np.random.normal(ATE, ATE_sd,size=10000), stat='probability')
-plt.axvline( GROUND_TRUTH['ATE'], color='r', ls='--', label='True ATE')
+plt.axvline( TRUE_EFFECTS['ATE'], color='r', ls='--', label='True ATE')
 plt.legend()
 plt.xlabel("ATE")
 plt.title("Estimated Treatment Effect vs. True Treatment Effect")
@@ -293,7 +310,73 @@ plt.show()
 
 There we are. The surrogate estimator recovers the true average treatment effect! We didn't even have to wait and observe the true long term outcome.
 
-If you're interested, try simulating this repeatedly to confirm it regularly recovers the true ATE with different random seeds. Even better, try setting the treatment effect to zero and see how often there are false positives. 
+# Repeated Simulation
+
+We can take this a step further and validate it works with repeated simulation. Can it recover true treatment effects? What if there is no effect, does the tests false positive rate match what it should be?
+
+```{python}
+transmitter = Transmitter(Zdims=20, Xdims=5, Sdims=8, seed=99)
+historical, _ = transmitter.simulate(n_users=10000, add_treatment=False)
+
+S_vars = " + ".join( historical.filter(like="S").columns )
+surrogate_model = sm.OLS.from_formula(f"Y ~ {S_vars}", data=historical).fit()
+predicted_sigma2 = np.var( surrogate_model.fittedvalues - historical.Y,  ddof=1 )
+
+
+n_experiments = 1000
+alpha=0.05
+crit_value = stats.norm(0,1).isf(alpha/2)
+
+in_bounds = []
+for i in range(n_experiments):
+    
+    experiment, TRUTH = transmitter.simulate(n_users=5000, add_treatment=True)
+
+    ate, sd_ate = estimate_delta_LTO(experiment, surrogate_model, predicted_sigma2)
+    CI = ate + np.array([-1,1])*crit_value*sd_ate
+    
+    in_bounds.append([TRUTH['ATE'] >= CI[0] and TRUTH['ATE'] <= CI[1]])
+
+recovery_rate = np.mean(in_bounds)
+print("Parameter Recover Rate is {:.1%} (expected: 95%)".format(recovery_rate))
+```
+
+
+```{python}
+transmitter = Transmitter(Zdims=20, Xdims=5, Sdims=8, seed=99)
+historical, _ = transmitter.simulate(n_users=10000, add_treatment=False)
+
+S_vars = " + ".join( historical.filter(like="S").columns )
+surrogate_model = sm.OLS.from_formula(f"Y ~ {S_vars}", data=historical).fit()
+predicted_sigma2 = np.var( surrogate_model.fittedvalues - historical.Y,  ddof=1 )
+
+
+n_experiments = 1000
+alpha=0.05
+crit_value = stats.norm(0,1).isf(alpha/2)
+
+sigs = []
+for i in range(n_experiments):
+    
+    experiment, TRUTH = transmitter.simulate(
+        n_users=5000, 
+        add_treatment=True,
+        # Force treatment effects to be zero
+        bTS=np.zeros((1,8)),
+        bXTS=np.zeros((8,5))
+    )
+
+    ate, sd_ate = estimate_delta_LTO(experiment, surrogate_model, predicted_sigma2)
+    CI = ate + np.array([-1,1]) * crit_value * sd_ate
+    
+    zero_in_ci = (0 >= CI[0] and 0 <= CI[1])
+    sigs.append( [ ~zero_in_ci ] )
+
+sig_result_rate = np.mean(sigs)
+print("Empirical False Positive Rate from 1000 trials is {:.1%} (expected: 5%)".format(sig_result_rate))
+```
+
+
 
 # What's next?
 
