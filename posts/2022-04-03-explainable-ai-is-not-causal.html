@@ -320,13 +320,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="can-we-use-explainable-ai-for-causal-inference-at-all" class="level1">
 <h1>Can we use Explainable AI for causal inference at all?</h1>
 <p>We can! We just need to be deliberate in which variables we include in our models, and the only way to do that right is to use DAGs! The example below looks at an XGBoost model that doesnt condition on <code>X2</code> (allowing us to estimate the causal effect of <code>X4 -&gt; Y</code>).</p>
-<p>[](/assets/img/explainable_ai_fig9.png]{fig-align=“center”}</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/explainable_ai_fig9.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </section>
 <section id="take-aways" class="level1">
 <h1>Take Aways</h1>
 <p>Explainable AI is not some magic tool for causal inference. What these tools are good at is explaining why complicated models make the decisions they do. Explainable AI tools suffer from the same limitations for causal inference as all other statistical estimators.</p>
 <p>At the end of the day when causal inference is your goal, nothing beats using DAGs to inform deliberate variable selection.</p>
-<p>If you’re new to the subject, I highly recommend the following resources that will teach you how to use causal inference properly: * Chapter’s 5 and 6 of Statistical Rethinking v2, by Richard McElreath * Causal Inference for the Brave and True by Matheus Facure * Causal Inference the Mixtape, by Scott Cunningham</p>
+<p>If you’re new to the subject, I highly recommend the following resources that will teach you how to use causal inference properly:</p>
+<ul>
+<li>Chapter’s 5 and 6 of Statistical Rethinking v2, by Richard McElreath</li>
+<li>Causal Inference for the Brave and True by Matheus Facure</li>
+<li>Causal Inference the Mixtape, by Scott Cunningham</li>
+</ul>
 
 
 </section>
