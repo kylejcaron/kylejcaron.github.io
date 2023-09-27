@@ -294,6 +294,7 @@ We can also see that in our code, where the distribution of true HTE bias from o
 Any time we've accounted for all selection bias, the HTE should be zero centered and cancel itself out as N increases.
 
 ```{python}
+#| code-fold: true
 ATE = data["ITE"].mean()
 HTE = data.ITE.values - ATE
 sns.histplot(HTE)

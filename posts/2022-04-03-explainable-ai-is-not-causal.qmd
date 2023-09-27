@@ -128,7 +128,7 @@ plot_model_estimate(model, true_effect=true_effect, feat="X4", ax=ax)
 
 We can! We just need to be deliberate in which variables we include in our models, and the only way to do that right is to use DAGs! The example below looks at an XGBoost model that doesnt condition on `X2` (allowing us to estimate the causal effect of `X4 -> Y`).
 
-![](/assets/img/explainable_ai_fig9.png]{fig-align="center"}
+![](/assets/img/explainable_ai_fig9.png){fig-align="center"}
 
 
 # Take Aways
@@ -138,6 +138,7 @@ Explainable AI is not some magic tool for causal inference. What these tools are
 At the end of the day when causal inference is your goal, nothing beats using DAGs to inform deliberate variable selection.
 
 If you're new to the subject, I highly recommend the following resources that will teach you how to use causal inference properly:
+
  * Chapter's 5 and 6 of Statistical Rethinking v2, by Richard McElreath
  * Causal Inference for the Brave and True by Matheus Facure
  * Causal Inference the Mixtape, by Scott Cunningham

@@ -233,7 +233,7 @@ display(experiment_data.head())
 First, we'll do some visulation of the experiment data.
 ```{python}
 #| code-fold: true
-fig, axes = plt.subplots(2,int(Xdims/2),figsize=(8,5),sharey=True)
+fig, axes = plt.subplots(2,int(Xdims/2),figsize=(7,5),sharey=True)
 
 for i, ax in zip(range(Xdims), axes.ravel()):
     sns.histplot( experiment_data.loc[lambda d: d['T']==0][f"X{i}"],ax=ax, label='Control' )
@@ -249,7 +249,7 @@ Conversely, if we look at the surrogate outcomes below, we'll see some differenc
 
 ```{python}
 #| code-fold: true
-fig, axes = plt.subplots(2,int(Sdims/2),figsize=(8,5), sharey=True)
+fig, axes = plt.subplots(2,int(Sdims/2),figsize=(7,5), sharey=True)
 
 for i, ax in zip(range(Sdims), axes.ravel()):
     sns.histplot( experiment_data.loc[lambda d: d['T']==0][f"S{i}"],ax=ax, label='Control' )
