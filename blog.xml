@@ -3766,8 +3766,12 @@ font-style: inherit;">int</span>)</span></code></pre></div>
 </section>
 
  ]]></description>
-  <category>experimentation</category>
+  <category>Time Series</category>
+  <category>Demand Modeling</category>
   <category>Causal Inference</category>
+  <category>Supply Chain</category>
+  <category>Discrete Choice</category>
+  <category>Survival Analysis</category>
   <guid>https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand.html</guid>
   <pubDate>Sun, 09 Jul 2023 04:00:00 GMT</pubDate>
 </item>
