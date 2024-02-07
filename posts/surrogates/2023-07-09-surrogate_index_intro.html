@@ -425,7 +425,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <section id="step-1-simulating-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-simulating-the-data">Step 1: Simulating the data</h2>
 <p>We’ll start by simulating two datasets: A historical dataset and an experiment dataset. The advantage to simulating data is that we know the exact effects, so when we try and estimate them we can confirm our methods are recovering the true effect.</p>
-<div id="e2b7160b" class="cell" data-execution_count="1">
+<div id="349ece71" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -487,93 +487,93 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>-0.112296</td>
-<td>0.858491</td>
-<td>-1.054248</td>
-<td>-0.148359</td>
-<td>-1.445868</td>
+<td>-0.096380</td>
+<td>0.840839</td>
+<td>-1.053685</td>
+<td>-0.161607</td>
+<td>-1.464074</td>
 <td>0.0</td>
-<td>1.124882</td>
-<td>0.470750</td>
-<td>-0.256719</td>
-<td>0.490501</td>
-<td>0.717733</td>
-<td>0.112275</td>
-<td>-0.469665</td>
-<td>0.685521</td>
+<td>1.140716</td>
+<td>0.460239</td>
+<td>-0.243707</td>
+<td>0.478655</td>
+<td>0.722508</td>
+<td>0.119872</td>
+<td>-0.491021</td>
+<td>0.657103</td>
 <td>1</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>0.742275</td>
-<td>-0.713454</td>
-<td>1.338420</td>
-<td>-0.110851</td>
-<td>-0.858061</td>
+<td>0.750790</td>
+<td>-0.723678</td>
+<td>1.339998</td>
+<td>-0.109216</td>
+<td>-0.886968</td>
 <td>0.0</td>
-<td>0.164344</td>
-<td>-0.098284</td>
-<td>0.145100</td>
-<td>-0.824628</td>
-<td>0.287690</td>
-<td>-0.437757</td>
-<td>0.349465</td>
-<td>-1.338357</td>
-<td>0</td>
+<td>0.173273</td>
+<td>-0.100168</td>
+<td>0.150519</td>
+<td>-0.828812</td>
+<td>0.288891</td>
+<td>-0.454165</td>
+<td>0.356069</td>
+<td>-1.335292</td>
+<td>1</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>1.120252</td>
-<td>-1.605373</td>
-<td>1.248297</td>
-<td>1.041319</td>
-<td>-0.607336</td>
+<td>1.135441</td>
+<td>-1.586930</td>
+<td>1.226992</td>
+<td>1.028425</td>
+<td>-0.628964</td>
 <td>0.0</td>
-<td>-0.137178</td>
-<td>-0.151111</td>
-<td>0.565121</td>
-<td>-1.408072</td>
-<td>-0.061795</td>
-<td>-0.443625</td>
-<td>0.518400</td>
-<td>-1.081136</td>
-<td>1</td>
+<td>-0.136527</td>
+<td>-0.151602</td>
+<td>0.555157</td>
+<td>-1.382398</td>
+<td>-0.071426</td>
+<td>-0.453651</td>
+<td>0.506445</td>
+<td>-1.059432</td>
+<td>0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>0.473632</td>
-<td>-0.493766</td>
-<td>0.312885</td>
-<td>1.267837</td>
-<td>-0.368449</td>
+<td>0.470862</td>
+<td>-0.472840</td>
+<td>0.295874</td>
+<td>1.280656</td>
+<td>-0.370790</td>
 <td>0.0</td>
-<td>0.156102</td>
-<td>0.163492</td>
-<td>0.085546</td>
-<td>-0.745953</td>
-<td>0.096308</td>
-<td>-0.080255</td>
-<td>0.126942</td>
-<td>0.045388</td>
+<td>0.172303</td>
+<td>0.171164</td>
+<td>0.069458</td>
+<td>-0.738659</td>
+<td>0.113751</td>
+<td>-0.089416</td>
+<td>0.115741</td>
+<td>0.073674</td>
 <td>0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>0.294106</td>
-<td>-0.571930</td>
-<td>0.861256</td>
-<td>0.833036</td>
-<td>-0.110088</td>
+<td>0.299083</td>
+<td>-0.566013</td>
+<td>0.851715</td>
+<td>0.816545</td>
+<td>-0.128058</td>
 <td>0.0</td>
-<td>-0.082428</td>
-<td>0.061585</td>
-<td>0.061670</td>
-<td>-0.762393</td>
-<td>0.048130</td>
-<td>-0.173321</td>
-<td>0.307335</td>
-<td>-0.504886</td>
-<td>1</td>
+<td>-0.072062</td>
+<td>0.078149</td>
+<td>0.067890</td>
+<td>-0.761437</td>
+<td>0.052046</td>
+<td>-0.173179</td>
+<td>0.309554</td>
+<td>-0.506578</td>
+<td>0</td>
 </tr>
 </tbody>
 </table>
@@ -582,7 +582,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 </div>
 <p>The underlying simulation code is below if you’re interested</p>
-<div id="447c6916" class="cell" data-execution_count="2">
+<div id="b387b53a" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Dict</span>
@@ -654,7 +654,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <section id="step-2-fitting-a-surrogate-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-fitting-a-surrogate-model">Step 2: Fitting a surrogate model</h2>
 <p>We’ll use the historical dataset to fit the surrogate index model, mapping <span class="math inline">\(S \rightarrow Y\)</span></p>
-<div id="ca9b047f" class="cell" data-execution_count="3">
+<div id="c58b647e" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>S_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"S"</span>).columns )</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"X"</span>).columns )</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -674,19 +674,19 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <td data-quarto-table-cell-role="th">Dep. Variable:</td>
 <td>Y</td>
 <td data-quarto-table-cell-role="th">R-squared:</td>
-<td>0.110</td>
+<td>0.112</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Model:</td>
 <td>OLS</td>
 <td data-quarto-table-cell-role="th">Adj. R-squared:</td>
-<td>0.110</td>
+<td>0.112</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Method:</td>
 <td>Least Squares</td>
 <td data-quarto-table-cell-role="th">F-statistic:</td>
-<td>776.2</td>
+<td>1261.</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Date:</td>
@@ -696,25 +696,25 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Time:</td>
-<td>22:01:34</td>
+<td>22:42:07</td>
 <td data-quarto-table-cell-role="th">Log-Likelihood:</td>
-<td>-33362.</td>
+<td>-33320.</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">No. Observations:</td>
 <td>50000</td>
 <td data-quarto-table-cell-role="th">AIC:</td>
-<td>6.674e+04</td>
+<td>6.665e+04</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Df Residuals:</td>
-<td>49991</td>
+<td>49994</td>
 <td data-quarto-table-cell-role="th">BIC:</td>
-<td>6.682e+04</td>
+<td>6.670e+04</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Df Model:</td>
-<td>8</td>
+<td>5</td>
 <td data-quarto-table-cell-role="th"></td>
 <td></td>
 </tr>
@@ -739,84 +739,84 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Intercept</td>
-<td>0.5014</td>
+<td>0.4994</td>
 <td>0.002</td>
-<td>237.696</td>
+<td>236.981</td>
 <td>0.000</td>
-<td>0.497</td>
-<td>0.506</td>
+<td>0.495</td>
+<td>0.504</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">S0</td>
-<td>-0.2217</td>
-<td>0.122</td>
-<td>-1.820</td>
-<td>0.069</td>
-<td>-0.461</td>
-<td>0.017</td>
+<td>0.0382</td>
+<td>0.004</td>
+<td>10.857</td>
+<td>0.000</td>
+<td>0.031</td>
+<td>0.045</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">S1</td>
-<td>0.2005</td>
-<td>0.107</td>
-<td>1.869</td>
-<td>0.062</td>
-<td>-0.010</td>
-<td>0.411</td>
+<td>0.1023</td>
+<td>0.005</td>
+<td>21.446</td>
+<td>0.000</td>
+<td>0.093</td>
+<td>0.112</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">S2</td>
-<td>0.0646</td>
-<td>0.054</td>
-<td>1.187</td>
-<td>0.235</td>
-<td>-0.042</td>
-<td>0.171</td>
+<td>-0.0420</td>
+<td>0.005</td>
+<td>-8.853</td>
+<td>0.000</td>
+<td>-0.051</td>
+<td>-0.033</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">S3</td>
-<td>0.1787</td>
-<td>0.048</td>
-<td>3.692</td>
+<td>0.1861</td>
+<td>0.004</td>
+<td>50.774</td>
 <td>0.000</td>
-<td>0.084</td>
-<td>0.274</td>
+<td>0.179</td>
+<td>0.193</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">S4</td>
-<td>0.3173</td>
-<td>0.172</td>
-<td>1.840</td>
-<td>0.066</td>
-<td>-0.021</td>
-<td>0.655</td>
+<td>0.0501</td>
+<td>0.002</td>
+<td>30.302</td>
+<td>0.000</td>
+<td>0.047</td>
+<td>0.053</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">S5</td>
-<td>-0.0823</td>
-<td>0.188</td>
-<td>-0.438</td>
-<td>0.661</td>
-<td>-0.451</td>
-<td>0.286</td>
+<td>0.0666</td>
+<td>0.002</td>
+<td>28.930</td>
+<td>0.000</td>
+<td>0.062</td>
+<td>0.071</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">S6</td>
-<td>-0.1860</td>
-<td>0.182</td>
-<td>-1.024</td>
-<td>0.306</td>
-<td>-0.542</td>
-<td>0.170</td>
+<td>-0.0072</td>
+<td>0.002</td>
+<td>-2.978</td>
+<td>0.003</td>
+<td>-0.012</td>
+<td>-0.002</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">S7</td>
-<td>0.0394</td>
-<td>0.065</td>
-<td>0.609</td>
-<td>0.543</td>
-<td>-0.088</td>
-<td>0.166</td>
+<td>0.0037</td>
+<td>0.003</td>
+<td>1.348</td>
+<td>0.178</td>
+<td>-0.002</td>
+<td>0.009</td>
 </tr>
 </tbody>
 </table>
@@ -824,31 +824,31 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Omnibus:</td>
-<td>253631.416</td>
+<td>255849.096</td>
 <td data-quarto-table-cell-role="th">Durbin-Watson:</td>
-<td>2.001</td>
+<td>1.998</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Prob(Omnibus):</td>
 <td>0.000</td>
 <td data-quarto-table-cell-role="th">Jarque-Bera (JB):</td>
-<td>5202.355</td>
+<td>5169.412</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Skew:</td>
-<td>-0.005</td>
+<td>-0.002</td>
 <td data-quarto-table-cell-role="th">Prob(JB):</td>
 <td>0.00</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Kurtosis:</td>
-<td>1.420</td>
+<td>1.425</td>
 <td data-quarto-table-cell-role="th">Cond. No.</td>
-<td>136.</td>
+<td>3.91e+15</td>
 </tr>
 </tbody>
 </table>
-<br><br>Notes:<br>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+<br><br>Notes:<br>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.<br>[2] The smallest eigenvalue is 6.03e-27. This might indicate that there are<br>strong multicollinearity problems or that the design matrix is singular.
 </div>
 </div>
 <p>There are 3 important things to note here:</p>
@@ -862,7 +862,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <h2 class="anchored" data-anchor-id="step-3-estimate-long-term-treatment-effect">Step 3: Estimate Long Term Treatment Effect</h2>
 <p>We’ll now use the surrogate index to estimate a long term treatment effect</p>
 <p>Let’s take our experiment dataset and estimate <span class="math inline">\(E[\delta_{\text{LTO}}]\)</span>, the average treatment effect on the long term outcome. Notice, the long term outcome, <span class="math inline">\(Y\)</span>, hasn’t been observed yet.</p>
-<div id="1f6eb378" class="cell" data-execution_count="4">
+<div id="40152db1" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(experiment_data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -895,92 +895,92 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>-1.033267</td>
-<td>-0.528259</td>
-<td>0.949423</td>
-<td>-0.520125</td>
-<td>1.792063</td>
-<td>0</td>
-<td>-1.290094</td>
-<td>-0.221351</td>
-<td>0.208036</td>
-<td>0.030492</td>
-<td>-0.753614</td>
-<td>0.056142</td>
-<td>0.606793</td>
-<td>-0.881064</td>
+<td>0.849129</td>
+<td>0.941827</td>
+<td>0.683911</td>
+<td>1.435666</td>
+<td>1.001435</td>
+<td>1</td>
+<td>-0.559842</td>
+<td>-0.575105</td>
+<td>-0.884129</td>
+<td>-0.543576</td>
+<td>-0.289843</td>
+<td>0.816105</td>
+<td>-0.516732</td>
+<td>0.887577</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>0.749901</td>
-<td>2.010609</td>
-<td>0.256891</td>
-<td>1.920605</td>
-<td>0.452995</td>
-<td>0</td>
-<td>0.620659</td>
-<td>0.168459</td>
-<td>-1.590445</td>
-<td>-0.281972</td>
-<td>0.622488</td>
-<td>0.138089</td>
-<td>-0.643408</td>
-<td>1.699240</td>
+<td>-0.053981</td>
+<td>0.716863</td>
+<td>0.718290</td>
+<td>1.600732</td>
+<td>0.390534</td>
+<td>1</td>
+<td>-0.271181</td>
+<td>0.001847</td>
+<td>-0.690713</td>
+<td>-0.609596</td>
+<td>0.001895</td>
+<td>0.902771</td>
+<td>-0.263201</td>
+<td>0.456430</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>0.254711</td>
-<td>0.889539</td>
-<td>-0.281117</td>
-<td>-0.801415</td>
-<td>0.040578</td>
+<td>0.852506</td>
+<td>1.276305</td>
+<td>-1.803119</td>
+<td>-0.418187</td>
+<td>-0.009625</td>
 <td>1</td>
-<td>-0.251532</td>
-<td>-0.586810</td>
-<td>-0.323471</td>
-<td>0.467541</td>
-<td>-0.193884</td>
-<td>0.831666</td>
-<td>-0.666616</td>
-<td>0.350538</td>
+<td>0.021439</td>
+<td>-0.752464</td>
+<td>-0.340972</td>
+<td>0.909959</td>
+<td>-0.323996</td>
+<td>1.041753</td>
+<td>-1.256339</td>
+<td>1.851033</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>-0.896266</td>
-<td>2.284030</td>
-<td>1.068579</td>
-<td>-0.217892</td>
-<td>1.577269</td>
+<td>-0.650541</td>
+<td>0.908525</td>
+<td>1.985210</td>
+<td>1.231077</td>
+<td>0.265338</td>
 <td>1</td>
-<td>-0.612860</td>
-<td>-0.258097</td>
-<td>-1.505164</td>
-<td>0.477945</td>
-<td>-0.003999</td>
-<td>1.061724</td>
-<td>-0.442552</td>
-<td>0.320724</td>
+<td>-0.226897</td>
+<td>0.259183</td>
+<td>-0.987532</td>
+<td>-0.835104</td>
+<td>0.359953</td>
+<td>0.767602</td>
+<td>0.108398</td>
+<td>-0.659191</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>0.279639</td>
-<td>-0.980695</td>
-<td>0.898379</td>
-<td>-0.106953</td>
-<td>-0.246317</td>
-<td>1</td>
-<td>-0.682758</td>
-<td>-0.480952</td>
-<td>0.510291</td>
-<td>-0.676125</td>
-<td>-0.451777</td>
-<td>0.547531</td>
-<td>0.156820</td>
-<td>-1.091956</td>
+<td>-0.473196</td>
+<td>-0.007258</td>
+<td>0.054155</td>
+<td>-0.368575</td>
+<td>0.331867</td>
+<td>0</td>
+<td>-0.229447</td>
+<td>0.020273</td>
+<td>0.058779</td>
+<td>0.200721</td>
+<td>-0.121112</td>
+<td>0.062693</td>
+<td>0.113565</td>
+<td>-0.206135</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -990,7 +990,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 </div>
 <p>First, we’ll do some visulation of the experiment data.</p>
-<div id="8b2b7adf" class="cell" data-execution_count="5">
+<div id="216ead84" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Xdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>),sharey<span class="op">=</span><span class="va">True</span>)</span>
@@ -1012,7 +1012,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 <p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
 <p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
-<div id="d8ca211f" class="cell" data-execution_count="6">
+<div id="6b2afd96" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Sdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
@@ -1027,14 +1027,14 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="661" height="475" class="figure-img"></p>
+<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="658" height="475" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>If our surrogate index estimator is correct, these observed surrogate outcomes should directly map to the Long Term Outcome deterministically, via <span class="math inline">\(\hat{Y} = f(S)\)</span>, where <span class="math inline">\(f()\)</span> is the surrogate index model.</p>
 <p>We can show that the surrogate index estimator recovers the true average treatment effect on the long term outcome</p>
-<div id="f27fdd21" class="cell" data-execution_count="7">
+<div id="b0a6e48e" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns the ATE estimate and its uncertainty</span></span>
@@ -1066,14 +1066,6 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-8-output-1.png" width="597" height="449" class="figure-img"></p>
 </figure>
 </div>
-</div>
-</div>
-<div id="8cc3f970" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>np.isinf(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>])</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>0</code></pre>
 </div>
 </div>
 <p>There we are. The surrogate estimator recovers the true average treatment effect! We didn’t even have to wait and observe the true long term outcome.</p>

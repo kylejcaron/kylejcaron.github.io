@@ -21,10 +21,44 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -67,7 +101,39 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../theme.scss">
 </head>
@@ -145,7 +211,28 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#part-1-looking-at-the-data" id="toc-part-1-looking-at-the-data" class="nav-link active" data-scroll-target="#part-1-looking-at-the-data">Part 1: Looking at the data</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#part-1-looking-at-the-data" id="toc-part-1-looking-at-the-data" class="nav-link" data-scroll-target="#part-1-looking-at-the-data">Part 1: Looking at the data</a></li>
+  <li><a href="#starting-simple-looking-at-a-single-product" id="toc-starting-simple-looking-at-a-single-product" class="nav-link" data-scroll-target="#starting-simple-looking-at-a-single-product">Starting simple: Looking at a single product</a></li>
+  <li><a href="#part-2-modeling-the-problem" id="toc-part-2-modeling-the-problem" class="nav-link" data-scroll-target="#part-2-modeling-the-problem">Part 2: Modeling the problem</a>
+  <ul class="collapse">
+  <li><a href="#rental-duration-model" id="toc-rental-duration-model" class="nav-link" data-scroll-target="#rental-duration-model">Rental Duration Model</a>
+  <ul class="collapse">
+  <li><a href="#prepating-the-data" id="toc-prepating-the-data" class="nav-link" data-scroll-target="#prepating-the-data">Prepating the data</a></li>
+  <li><a href="#defining-and-fitting-the-model" id="toc-defining-and-fitting-the-model" class="nav-link" data-scroll-target="#defining-and-fitting-the-model">Defining and fitting the model</a></li>
+  </ul></li>
+  <li><a href="#rental-demand-model" id="toc-rental-demand-model" class="nav-link" data-scroll-target="#rental-demand-model">Rental Demand Model</a>
+  <ul class="collapse">
+  <li><a href="#looking-at-the-demand-data" id="toc-looking-at-the-demand-data" class="nav-link" data-scroll-target="#looking-at-the-demand-data">Looking at the demand data</a></li>
+  <li><a href="#defining-and-fitting-the-model-1" id="toc-defining-and-fitting-the-model-1" class="nav-link" data-scroll-target="#defining-and-fitting-the-model-1">Defining and fitting the model</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#part-3-simulation" id="toc-part-3-simulation" class="nav-link" data-scroll-target="#part-3-simulation">Part 3: Simulation</a>
+  <ul class="collapse">
+  <li><a href="#the-simulation-code" id="toc-the-simulation-code" class="nav-link" data-scroll-target="#the-simulation-code">The simulation code</a></li>
+  <li><a href="#simulating-the-impact-of-reordering-more-units" id="toc-simulating-the-impact-of-reordering-more-units" class="nav-link" data-scroll-target="#simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</a></li>
+  </ul></li>
+  <li><a href="#next-steps-simulating-a-full-product-assortment" id="toc-next-steps-simulating-a-full-product-assortment" class="nav-link" data-scroll-target="#next-steps-simulating-a-full-product-assortment">Next Steps: Simulating a full product assortment</a></li>
   </ul>
 </nav>
     </div>
@@ -156,10 +243,39 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<div id="5ff5d97f" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext autoreload</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>autoreload <span class="dv">2</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> arviz <span class="im">as</span> az</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> mtick</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jax <span class="im">import</span> random </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> jax.numpy <span class="im">as</span> jnp</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpyro</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpyro.distributions <span class="im">as</span> dist</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotting <span class="im">import</span> plot_rentals</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>az.style.use(<span class="st">"arviz-darkgrid"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">99</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">'https://raw.githubusercontent.com/kylejcaron/case_studies/main/censored_demand'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
 <p><strong>The Problem:</strong> You work at a clothing rental service that is suffering from high periods of churn. You’ve found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. <strong>How can we determine how much stock to reorder?</strong></p>
 <p>The idea of this project is to borrow ideas from first principles modeling - basically think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation.</p>
 <p>Products with extreme stockouts have misleading demand estimates under classic demand models. The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that demand is atleast 5 rentals. Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information.</p>
 <p>The idea is to start simple(-ish) and add complexity. We’ll first model a single product and test different ordering policies, and then begin modeling multiple products.</p>
+</section>
 <section id="part-1-looking-at-the-data" class="level1">
 <h1>Part 1: Looking at the data</h1>
 <hr>
@@ -169,6 +285,1310 @@ ul.task-list li input[type="checkbox"] {
 <li><code>stock</code> showing available stock levels for that product over time</li>
 <li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
+<div id="aa81df23" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rentals <span class="op">=</span> (pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/data/rentals.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>           .assign(date<span class="op">=</span><span class="kw">lambda</span> d: pd.to_datetime(d.date))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rentals.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rental_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">return_date</th>
+<th data-quarto-table-cell-role="th">product_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>7ee46d21-bf37-45a9-a03d-3cc36e08d422</td>
+<td>2022-04-01</td>
+<td>2022-05-12</td>
+<td>product_0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>cfefc50c-178d-4666-a97b-608d37cb771f</td>
+<td>2022-04-02</td>
+<td>2022-04-18</td>
+<td>product_0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>53bcc895-3f56-4c2c-8046-4bbda06848e6</td>
+<td>2022-04-03</td>
+<td>2022-04-09</td>
+<td>product_0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>e0381b64-2001-4f84-957f-3b864a7dcb99</td>
+<td>2022-04-04</td>
+<td>2022-06-07</td>
+<td>product_0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>422f73f1-ba66-4cb2-94a3-cd314aea9fd5</td>
+<td>2022-04-05</td>
+<td>2022-05-05</td>
+<td>product_0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="2a615536" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stock <span class="op">=</span> (pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/data/stock_levels.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>         .assign(date<span class="op">=</span><span class="kw">lambda</span> d: pd.to_datetime(d.date))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>stock.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">starting_units</th>
+<th data-quarto-table-cell-role="th">ending_units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>product_0</td>
+<td>2022-04-01</td>
+<td>110.0</td>
+<td>109.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>product_0</td>
+<td>2022-04-02</td>
+<td>109.0</td>
+<td>108.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>product_0</td>
+<td>2022-04-03</td>
+<td>108.0</td>
+<td>107.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>product_0</td>
+<td>2022-04-04</td>
+<td>107.0</td>
+<td>106.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>product_0</td>
+<td>2022-04-05</td>
+<td>106.0</td>
+<td>105.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="acdf99e8" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>purchases <span class="op">=</span> (pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/data/product_purchases.csv"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>           .assign(date<span class="op">=</span><span class="kw">lambda</span> d: pd.to_datetime(d.date))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>          )    </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>purchases.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">units</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">order_type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>product_0</td>
+<td>110.0</td>
+<td>2022-04-01</td>
+<td>new_product</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>product_1</td>
+<td>60.0</td>
+<td>2022-04-01</td>
+<td>new_product</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>product_2</td>
+<td>90.0</td>
+<td>2022-04-01</td>
+<td>new_product</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>product_3</td>
+<td>110.0</td>
+<td>2022-04-01</td>
+<td>new_product</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>product_4</td>
+<td>160.0</td>
+<td>2022-04-01</td>
+<td>new_product</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Lets convert the rental data to time series data and see what it looks like</p>
+<div id="6c481205" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rental_events_to_ts(rentals, freq<span class="op">=</span><span class="st">'D'</span>):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (rentals</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            .groupby(<span class="st">"product_id"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            .resample(freq,on<span class="op">=</span><span class="st">'date'</span>)[[<span class="st">'rental_id'</span>]].count()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            .set_axis([<span class="st">'rentals'</span>],axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>daily_rentals <span class="op">=</span> rentals.pipe(rental_events_to_ts, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">7</span>),sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].<span class="bu">set</span>(ylabel<span class="op">=</span><span class="st">'Total Daily Rentals'</span>, xlabel<span class="op">=</span><span class="st">'Date'</span>, title<span class="op">=</span><span class="st">'Total Daily Rentals'</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>daily_rentals.groupby(<span class="st">"date"</span>).<span class="bu">sum</span>().rentals.plot(ax<span class="op">=</span>ax[<span class="dv">0</span>])</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].<span class="bu">set</span>(ylabel<span class="op">=</span><span class="st">'Daily Rentals'</span>, xlabel<span class="op">=</span><span class="st">'Date'</span>, title<span class="op">=</span><span class="st">'Daily Rentals Across Products'</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>sample_idxs <span class="op">=</span> np.random.choice(<span class="dv">1000</span>, size<span class="op">=</span><span class="dv">25</span>, replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>daily_rentals.unstack(<span class="dv">0</span>).iloc[:,sample_idxs].plot(ax<span class="op">=</span>ax[<span class="dv">1</span>], alpha<span class="op">=</span><span class="fl">0.5</span>,legend<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>It looks like theres typically 0-15 rentals per day for a given product, and there are typically 5000 rentals each day.</p>
+<p>Looking at the distribution of total rentals across products, we see that its mildly long-tailed</p>
+<div id="5e366df7" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>),sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">'Distribution of total rentals per product in observation period'</span>, xlabel<span class="op">=</span><span class="st">'Rentals'</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>sns.histplot( daily_rentals.groupby(<span class="st">"product_id"</span>).<span class="bu">sum</span>(),ax<span class="op">=</span>ax )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We cam also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?</p>
+<div id="f14288cb" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(stock</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> .assign(stockout_rate<span class="op">=</span><span class="kw">lambda</span> d: d.ending_units<span class="op">==</span><span class="dv">0</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> .groupby(<span class="st">"date"</span>).stockout_rate.mean()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a> .plot(ylabel<span class="op">=</span><span class="st">'Stocked Out Products'</span>,title<span class="op">=</span><span class="st">'Percent of products with a Stockout each day'</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="starting-simple-looking-at-a-single-product" class="level1">
+<h1>Starting simple: Looking at a single product</h1>
+<p>We’re going to start with a single product and see if we can come up with a system that informs us how many units we should reorder</p>
+<div id="89d016e5" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>j<span class="op">=</span><span class="dv">165</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>reorder_date <span class="op">=</span> (</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    purchases</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">"order_type=='reorder'"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    .date.<span class="bu">min</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplot_mosaic(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"""</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="st">    AAA</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="st">    AAA</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="st">    BBB</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="st">    CCC</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">8</span>),sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="st">'A'</span>].set_title(<span class="ss">f"Daily Rentals for Product ID </span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].plot(ax<span class="op">=</span>ax[<span class="st">'A'</span>], color<span class="op">=</span><span class="st">'k'</span>,ylabel<span class="op">=</span><span class="st">'Rentals'</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>daily_rentals.groupby(<span class="st">"date"</span>).<span class="bu">sum</span>().rentals.rename(<span class="st">"total_rentals"</span>).plot(ax<span class="op">=</span>ax[<span class="st">'B'</span>],ylabel<span class="op">=</span><span class="st">'Total Rentals'</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>ax[<span class="st">'B'</span>].set_ylabel(<span class="st">"Total Rentals"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>(stock</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a> .assign(stockout_rate<span class="op">=</span><span class="kw">lambda</span> d: d.ending_units<span class="op">==</span><span class="dv">0</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a> .groupby(<span class="st">"date"</span>).stockout_rate.mean()</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a> .plot(ax<span class="op">=</span>ax[<span class="st">'C'</span>]))</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>ax[<span class="st">'C'</span>].set_ylabel(<span class="st">"Stockout Rate"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>ax[<span class="st">'C'</span>].set_ylim(<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown above, just looking at a time series of rentals each day is a bit confusing - soon after the product is published there’s a lot of rentals, which then drop off quickly. Then around June, theres a giant spike in rentals that drops off quickly again. When looking at a simple covariate, the total number of rentals that occur every day, there’s no obvious relationship - aka it seems like the spike in demand was moreso just for this product, not for all products.</p>
+<p>When we look at the overall stockout rate over time, it looks like the stockout rate drops at the same time demand increases for Product ID 493.</p>
+<p>Lets join stock data to rental data and see whats happening for this product</p>
+<div id="1a736fdb" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>daily_rentals <span class="op">=</span> (rentals.pipe(rental_events_to_ts, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                 .merge(stock, on<span class="op">=</span>[<span class="st">'product_id'</span>, <span class="st">'date'</span>])</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                 .assign(stockout<span class="op">=</span><span class="kw">lambda</span> d: <span class="dv">1</span><span class="op">*</span>(d.ending_units<span class="op">==</span><span class="dv">0</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 .assign(total_stockout_rate<span class="op">=</span><span class="kw">lambda</span> d: d.groupby(<span class="st">"date"</span>).stockout.transform(<span class="st">"mean"</span>)) </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                 .assign(total_rentals<span class="op">=</span><span class="kw">lambda</span> d: d.groupby(<span class="st">"date"</span>).rentals.transform(<span class="st">"sum"</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                 .set_index([<span class="st">'product_id'</span>, <span class="st">"date"</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>daily_rentals.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rentals</th>
+<th data-quarto-table-cell-role="th">starting_units</th>
+<th data-quarto-table-cell-role="th">ending_units</th>
+<th data-quarto-table-cell-role="th">stockout</th>
+<th data-quarto-table-cell-role="th">total_stockout_rate</th>
+<th data-quarto-table-cell-role="th">total_rentals</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">product_0</td>
+<td data-quarto-table-cell-role="th">2022-04-01</td>
+<td>1</td>
+<td>110.0</td>
+<td>109.0</td>
+<td>0</td>
+<td>0.001122</td>
+<td>5014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022-04-02</td>
+<td>1</td>
+<td>109.0</td>
+<td>108.0</td>
+<td>0</td>
+<td>0.003125</td>
+<td>4887</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-04-03</td>
+<td>1</td>
+<td>108.0</td>
+<td>107.0</td>
+<td>0</td>
+<td>0.011190</td>
+<td>5058</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022-04-04</td>
+<td>1</td>
+<td>107.0</td>
+<td>106.0</td>
+<td>0</td>
+<td>0.023209</td>
+<td>5040</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022-04-05</td>
+<td>1</td>
+<td>106.0</td>
+<td>105.0</td>
+<td>0</td>
+<td>0.032193</td>
+<td>4890</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now that we have this data joined, we can plot the rental data with corresponding stock data</p>
+<div id="4d0f1ac8" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plot_rentals(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    daily_rentals <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].rentals, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    daily_stock <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].starting_units,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>ax.axvline(reorder_date, color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder: new units added to inventory'</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For most of the days in the product’s lifetime, there are as many rentals as there are units available. This indicates we’re probably understocked - if we had more stock available, we’d likely observe more rental demand.</p>
+<p>This is also apparent in the overstocked periods - at the start of the products lifetime there tends to be more rentals. There’s also a <strong>reorder</strong> that happens at t=60, where the business procured new units of that product to rent out to customers. We can see that there’s a jump in observed rentals</p>
+<p>It’s time to introduce a key concept - the difference between rental demand and observed rentals. * <strong>Rental demand</strong> is the true demand to rent the product each day. * <strong>Observed rentals</strong> are the number of rentals we actually observe in the data, after random noise is added to demand and it gets constrained by stock levels</p>
+</section>
+<section id="part-2-modeling-the-problem" class="level1">
+<h1>Part 2: Modeling the problem</h1>
+<hr>
+<p>First, lets reiterate our goal. We want to know how many more units to purchase for this rental product so we dont end up with any more stockouts. To do so, we need to know what stock levels will be if we have more units in stock</p>
+<p><span class="math display">\[
+E[\text{stock}_t | \text{do(stock}_{t=0}=X), \text{demand}_{t-1},\text{stock}_{t-1}, \text{active rentals}_{0:t}]
+\]</span></p>
+<p>When we think of the <strong>data generating process</strong> for rental demand and stock levels its the following: 1. Customers come in and rent <span class="math inline">\(y \sim \text{min}(\text{Poisson}(\lambda), \text{stock})\)</span> units each day 2. Those units tend to have some learnable distribution of rental duration, <span class="math inline">\(t \sim \text{LogNormal}(\theta, \sigma)\)</span> 3. The stock levels vary as those rentals occur and get returned</p>
+<p>This narrows the problem down - we need to identify unconstrained rental demand (how many rentals would we get if we had perfect stock), and rental duration. We can use models for both (1) and (2) and then simulate different potential outcomes</p>
+<p><strong>Here’s a glimpse at the overall plan</strong> 1. Fit a rental duration model 2. Fit a censored demand model 3. Combine both of those into a stock level simulation 4. Simulate out different purchase volumes that lead to a low chance of stockouts. 5. Purchase that volume of units 6. Expand the model to incorporate many products 7. Increase the complexity of the simulation and the model - i.e.&nbsp;what happens if we add seasonality to the demand? What happens if there are demand shocks?</p>
+<section id="rental-duration-model" class="level2">
+<h2 class="anchored" data-anchor-id="rental-duration-model">Rental Duration Model</h2>
+<hr>
+<p>The plan for now is to model the unconstrained demand for this single product - whats the actual rental demand for the product? How many rentals would it get if there werent stockouts? Lets start off by looking at our data</p>
+<section id="prepating-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="prepating-the-data">Prepating the data</h3>
+<p>Its easy to see that there are plenty of rentals that are still out with customers and havent been returned yet. For these unreturned rentals, we cant calculate an accurate rental duration.</p>
+<div id="3c4165a9" class="cell" data-execution_count="11">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rentals.sample(<span class="dv">10</span>, random_state<span class="op">=</span>SEED)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rental_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">return_date</th>
+<th data-quarto-table-cell-role="th">product_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">261183</td>
+<td>ad7f9c6a-7940-4d31-9542-4258a5c5d199</td>
+<td>2022-05-08</td>
+<td>2022-05-18</td>
+<td>product_510</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">85669</td>
+<td>ac5062bb-ee4e-4b8c-842d-6fbf9bb0ae50</td>
+<td>2022-05-24</td>
+<td>2022-06-19</td>
+<td>product_168</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">290048</td>
+<td>b0c71242-f8a1-454a-a109-57327ce5744b</td>
+<td>2022-05-14</td>
+<td>2022-05-28</td>
+<td>product_570</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">374239</td>
+<td>e04160d1-c4dd-40b1-bdad-1acc181c38a7</td>
+<td>2022-06-02</td>
+<td>2022-06-21</td>
+<td>product_742</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">263798</td>
+<td>845e389d-1c3f-4ebf-bbf8-0eb6ee422985</td>
+<td>2022-06-03</td>
+<td>2022-07-01</td>
+<td>product_516</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">111431</td>
+<td>657271a9-2125-4dac-9fff-c1db2cdf5be9</td>
+<td>2022-06-01</td>
+<td>2022-07-09</td>
+<td>product_220</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">343722</td>
+<td>6e08fd6c-61fc-462d-ae56-2aa8918c76c5</td>
+<td>2022-05-06</td>
+<td>2022-05-12</td>
+<td>product_676</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">270057</td>
+<td>171c5bd8-65f2-46ab-ad3e-eabcf9a42f67</td>
+<td>2022-05-13</td>
+<td>2022-05-31</td>
+<td>product_530</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">468349</td>
+<td>311b7c12-24c2-4fa5-9aff-8123dabe4518</td>
+<td>2022-05-04</td>
+<td>2022-05-31</td>
+<td>product_938</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">381777</td>
+<td>1d8e2c9f-5018-4872-8b1a-2dea00ca2f74</td>
+<td>2022-06-30</td>
+<td>NaN</td>
+<td>product_758</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Its important to remember that even those these items arent returned, some have been rented out for 30, 40, 50 days, and its important information to know that some items have been out for atleast that long. A good example is that if its possible for some items to be rented out for 200 days, but we’ve only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used simple averaging.</p>
+<p>What we can instead do is calculate the rental duration to-date and then use a survival model to properly incorporate those unreturned items.</p>
+<div id="02eff170" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>curr_date <span class="op">=</span> rentals.date.<span class="bu">max</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rentals <span class="op">=</span> (</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    rentals</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .assign(return_date<span class="op">=</span><span class="kw">lambda</span> d: pd.to_datetime(d.return_date))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    .assign(time_since<span class="op">=</span><span class="kw">lambda</span> d: (d.return_date.fillna(curr_date)<span class="op">-</span>d.date).dt.days)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    .assign(event<span class="op">=</span><span class="kw">lambda</span> d: d.return_date.notnull()<span class="op">*</span><span class="dv">1</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>rentals.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rental_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">return_date</th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">time_since</th>
+<th data-quarto-table-cell-role="th">event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">31432</td>
+<td>207a7e5b-11f3-4d0f-83e4-565a20dc5003</td>
+<td>2022-06-04</td>
+<td>2022-06-24</td>
+<td>product_61</td>
+<td>20</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">390512</td>
+<td>1bca1953-d9fe-4110-8b7f-c78cac5e0ee5</td>
+<td>2022-06-11</td>
+<td>2022-06-30</td>
+<td>product_778</td>
+<td>19</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">406214</td>
+<td>8873c535-5d6f-4b26-ae5e-bf7034e8747f</td>
+<td>2022-04-12</td>
+<td>2022-06-13</td>
+<td>product_808</td>
+<td>62</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">457721</td>
+<td>e89607e0-c40f-438b-a157-98660ee7408a</td>
+<td>2022-05-20</td>
+<td>2022-06-02</td>
+<td>product_915</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">337576</td>
+<td>a905e77e-7dbf-4942-8403-eebaef616c66</td>
+<td>2022-05-22</td>
+<td>2022-05-29</td>
+<td>product_663</td>
+<td>7</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="defining-and-fitting-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="defining-and-fitting-the-model">Defining and fitting the model</h3>
+<p>We can write up a simple survival model in numpyro. The idea of survival analysis is that * <strong>if a return has already occurred</strong>, we fit the model as usual with the observed rental duration. * <strong>If a return hasnt occurred yet</strong>, we tell the model that the rental duration is atleast as long as has been observed so far. This is done with stats via a survival function, or the complementary CDF (ccdf)</p>
+<p>For simplicity, we’re assuming the data is lognormally distributed (and we simulated the data that way). In reality, its best to plot distributions of your data and decide for yourself</p>
+<div id="ce97164c" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> censored_lognormal(theta, sigma, cens, y<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If observed, this is the likelihood contribution</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"obs"</span>, dist.LogNormal(theta, sigma).mask(cens <span class="op">!=</span> <span class="dv">1</span>), obs<span class="op">=</span>y)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If not observed, use the survival function as the likelihood constribution</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    ccdf <span class="op">=</span> numpyro.deterministic(<span class="st">"ccdf"</span>, <span class="dv">1</span> <span class="op">-</span> dist.LogNormal(theta, sigma).cdf(y))</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"censored_label"</span>, dist.Bernoulli(ccdf).mask(cens <span class="op">==</span> <span class="dv">1</span>), obs<span class="op">=</span>cens)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> survival_model(E, T<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    theta <span class="op">=</span> numpyro.sample(<span class="st">"theta"</span>, dist.Normal(<span class="fl">2.9</span>, <span class="dv">1</span>))</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    sigma <span class="op">=</span> numpyro.sample(<span class="st">"sigma"</span>, dist.Exponential(<span class="fl">0.7</span>))</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> numpyro.plate(<span class="st">"data"</span>, <span class="bu">len</span>(E)):</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        censored_lognormal(theta, sigma, cens<span class="op">=</span>(<span class="dv">1</span><span class="op">-</span>E), y<span class="op">=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now use numpyro to fit a model and estimate the typical rental duration.</p>
+<div id="884d6ada" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>E <span class="op">=</span> rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).query(<span class="st">"time_since&gt;0"</span>).event.values</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).query(<span class="st">"time_since&gt;0"</span>).time_since.values</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>kernel <span class="op">=</span> numpyro.infer.NUTS(survival_model)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>mcmc <span class="op">=</span> numpyro.infer.MCMC(</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    kernel,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    num_warmup<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    num_samples<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    num_chains<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    progress_bar<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>mcmc.run(random.PRNGKey(SEED),E<span class="op">=</span>E,T<span class="op">=</span>T)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>idata <span class="op">=</span> mcmc.get_samples()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;23:25,  1.42it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  32%|███▏      | 639/2000 [00:00&lt;00:01, 1078.71it/s, 7 steps of size 7.87e-01. acc. prob=0.79]sample:  66%|██████▌   | 1322/2000 [00:00&lt;00:00, 2196.44it/s, 3 steps of size 8.53e-01. acc. prob=0.92]sample:  98%|█████████▊| 1952/2000 [00:01&lt;00:00, 3087.90it/s, 3 steps of size 8.53e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:01&lt;00:00, 1978.50it/s, 1 steps of size 8.53e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  32%|███▏      | 636/2000 [00:00&lt;00:00, 6331.31it/s, 7 steps of size 1.04e+00. acc. prob=0.79]sample:  64%|██████▎   | 1270/2000 [00:00&lt;00:00, 5737.46it/s, 3 steps of size 8.51e-01. acc. prob=0.92]sample:  95%|█████████▍| 1893/2000 [00:00&lt;00:00, 5946.63it/s, 7 steps of size 8.51e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 5946.77it/s, 3 steps of size 8.51e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  30%|██▉       | 592/2000 [00:00&lt;00:00, 5914.03it/s, 7 steps of size 1.21e+00. acc. prob=0.79]sample:  60%|█████▉    | 1192/2000 [00:00&lt;00:00, 5962.52it/s, 7 steps of size 8.31e-01. acc. prob=0.92]sample:  90%|█████████ | 1809/2000 [00:00&lt;00:00, 6054.72it/s, 3 steps of size 8.31e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6020.05it/s, 3 steps of size 8.31e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  32%|███▏      | 633/2000 [00:00&lt;00:00, 6327.73it/s, 3 steps of size 1.73e+00. acc. prob=0.79]sample:  66%|██████▌   | 1317/2000 [00:00&lt;00:00, 6623.87it/s, 15 steps of size 8.31e-01. acc. prob=0.90]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6726.98it/s, 3 steps of size 8.31e-01. acc. prob=0.91] </code></pre>
+</div>
+</div>
+<p>Remember, this is simulated data so we know the truth. The true parameter values are covered by the model estimates, although they may be a little biased. Its possible my simulation code has a slight bug and should be double checked. However the estimated distribution is still pretty close to reality in this case and shouldnt impact too much for this demonstration</p>
+<div id="ebd15984" class="cell" data-execution_count="15">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sns.histplot( idata[<span class="st">'theta'</span>],ax<span class="op">=</span>ax[<span class="dv">0</span>] )</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].axvline(<span class="fl">2.9</span>,color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Ground Truth'</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Theta Estimate"</span>, xlabel<span class="op">=</span><span class="st">'Value'</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].legend()</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>sns.histplot( idata[<span class="st">'sigma'</span>],ax<span class="op">=</span>ax[<span class="dv">1</span>] )</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axvline(<span class="fl">0.7</span>,color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Ground Truth'</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Sigma Estimate"</span>, xlabel<span class="op">=</span><span class="st">'Value'</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].legend()</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="26e98ca9" class="cell" data-execution_count="16">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">4</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> np.arange(<span class="dv">0</span>,<span class="dv">200</span>,<span class="dv">4</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>sns.histplot(T, stat<span class="op">=</span><span class="st">'density'</span>, label<span class="op">=</span><span class="st">'Observed Distribution'</span>, bins<span class="op">=</span>bins,ax<span class="op">=</span>ax)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>sns.histplot(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    dist.LogNormal(idata[<span class="st">'theta'</span>], idata[<span class="st">'sigma'</span>]).sample(jax.random.PRNGKey(<span class="dv">1</span>)),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    stat<span class="op">=</span><span class="st">'density'</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">'Estimated Distribution'</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>bins,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Estimated Rental Duration"</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Great, now we have a rental duration model fit, we just need to estimate demand</p>
+</section>
+</section>
+<section id="rental-demand-model" class="level2">
+<h2 class="anchored" data-anchor-id="rental-demand-model">Rental Demand Model</h2>
+<hr>
+<section id="looking-at-the-demand-data" class="level3">
+<h3 class="anchored" data-anchor-id="looking-at-the-demand-data">Looking at the demand data</h3>
+<p>The rental demand model is going to start simple for this single-product case - we’ll just estimate a poisson distribuion.</p>
+<p>Taking a look at the data again, its clear that demand is constrained, or censored, by stockouts here</p>
+<div id="c096b2db" class="cell" data-execution_count="17">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plot_rentals(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    daily_rentals <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].rentals, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    daily_stock <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].starting_units</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>ax.axvline(reorder_date, color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder: new units added to inventory'</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs.&nbsp;when there isnt - its clear that demand is much less on days when there are stockouts - the sample size of stocked out periods is also very small</p>
+<div id="134382fa" class="cell" data-execution_count="18">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    daily_rentals</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    .loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>]</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"stockout"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    .rentals.agg([<span class="st">'mean'</span>, <span class="st">'count'</span>])</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">stockout</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>6.65</td>
+<td>26</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>4.31</td>
+<td>74</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="defining-and-fitting-the-model-1" class="level3">
+<h3 class="anchored" data-anchor-id="defining-and-fitting-the-model-1">Defining and fitting the model</h3>
+<p>We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if theres a stockout, the model thinks that demand is atleast as high as the rentals that day, otherwise if there’s no stockout it thinks that demand is the number of rentals that day (plus some noise of course)</p>
+<div id="6dfdf81e" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> censored_poisson(lambd, cens, y<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If observed, this is the likelihood contribution</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"obs"</span>, dist.Poisson(lambd).mask(cens <span class="op">!=</span> <span class="dv">1</span>), obs<span class="op">=</span>y)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If not observed, use the survival function as the likelihood constribution</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    ccdf <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> dist.Poisson(lambd).cdf(y)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    pmf <span class="op">=</span> jnp.exp(dist.Poisson(lambd).log_prob(y)) <span class="co"># need to include the pmf for discrete distributions</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"censored_label"</span>, dist.Bernoulli(ccdf<span class="op">+</span>pmf).mask(cens <span class="op">==</span> <span class="dv">1</span>), obs<span class="op">=</span>cens)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demand_model(stockout, X, y<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parameters</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    alpha <span class="op">=</span> numpyro.sample(<span class="st">"alpha"</span>, dist.Normal(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> numpyro.sample(<span class="st">"beta"</span>, dist.Normal(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> numpyro.plate(<span class="st">"data"</span>, <span class="bu">len</span>(stockout)):</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># regression</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>        log_lambd <span class="op">=</span> numpyro.deterministic(</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"log_lambd"</span>, </span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># base demand</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>            alpha </span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>            <span class="co"># covariate influence on demand - in this case cross product effect</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>            <span class="co"># as more products go out of stock, demand for the remaining in-stock products increases</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> jnp.dot( X, beta ) </span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># demand as a rental rate per day</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>        lambd <span class="op">=</span> numpyro.deterministic(<span class="st">"lambd"</span>, jnp.exp(log_lambd))</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Observational model</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        censored_poisson(lambd, cens<span class="op">=</span>stockout, y<span class="op">=</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4aaaad47" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].rentals.values</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>stockout <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].stockout.values</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].total_stockout_rate.values</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>kernel <span class="op">=</span> numpyro.infer.NUTS(demand_model)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>mcmc <span class="op">=</span> numpyro.infer.MCMC(</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    kernel,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    num_warmup<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    num_samples<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    num_chains<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    progress_bar<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>mcmc.run(random.PRNGKey(SEED),stockout<span class="op">=</span>stockout, X<span class="op">=</span>X, y<span class="op">=</span>y)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>idata_demand <span class="op">=</span> mcmc.get_samples()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;24:06,  1.38it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  44%|████▍     | 878/2000 [00:00&lt;00:00, 1446.68it/s, 7 steps of size 5.00e-01. acc. prob=0.79]sample:  89%|████████▉ | 1779/2000 [00:00&lt;00:00, 2887.73it/s, 15 steps of size 4.08e-01. acc. prob=0.93]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 2107.75it/s, 11 steps of size 4.08e-01. acc. prob=0.93]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  45%|████▌     | 901/2000 [00:00&lt;00:00, 9005.76it/s, 15 steps of size 5.59e-01. acc. prob=0.79]sample:  90%|█████████ | 1802/2000 [00:00&lt;00:00, 8865.71it/s, 1 steps of size 3.71e-01. acc. prob=0.94]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 8907.30it/s, 3 steps of size 3.71e-01. acc. prob=0.94]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  43%|████▎     | 869/2000 [00:00&lt;00:00, 8680.18it/s, 5 steps of size 7.43e-01. acc. prob=0.79]sample:  89%|████████▉ | 1783/2000 [00:00&lt;00:00, 8945.45it/s, 7 steps of size 4.21e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 8911.82it/s, 15 steps of size 4.21e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  44%|████▍     | 887/2000 [00:00&lt;00:00, 8862.11it/s, 7 steps of size 5.94e-01. acc. prob=0.79]sample:  91%|█████████ | 1816/2000 [00:00&lt;00:00, 9109.75it/s, 7 steps of size 5.04e-01. acc. prob=0.88]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 9078.32it/s, 3 steps of size 5.04e-01. acc. prob=0.88]</code></pre>
+</div>
+</div>
+<p>we can check the estimated rental rate parameter, <span class="math inline">\(\lambda\)</span>, against the actual value that we simulated and find that our model does have coverage over the ground truth</p>
+<div id="5b9b6ba6" class="cell" data-execution_count="21">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> (</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/data/true_params.csv"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    .assign(demand<span class="op">=</span><span class="kw">lambda</span> d: jax.nn.softmax(d.utility.values)<span class="op">*</span><span class="dv">5000</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    .query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>demand_param <span class="op">=</span> params.loc[j,<span class="st">'demand'</span>]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">5</span>,<span class="dv">4</span>))</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>sns.histplot( np.exp(idata_demand[<span class="st">'alpha'</span>]),ax<span class="op">=</span>ax )</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>ax.axvline(demand_param, ls<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'Ground Truth'</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Value"</span>, title<span class="op">=</span><span class="st">"Lambda estimate"</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ok cool, now that we have a rental duration model and a rental demand model, lets build a simulation</p>
+</section>
+</section>
+</section>
+<section id="part-3-simulation" class="level1">
+<h1>Part 3: Simulation</h1>
+<hr>
+<section id="the-simulation-code" class="level2">
+<h2 class="anchored" data-anchor-id="the-simulation-code">The simulation code</h2>
+<p>We can leverage numpyro to simulate this. They have a <code>scan</code> operator that basically iterates day over day which fits well with this problem. Here’s the initial simulation model structure.</p>
+<p>We’ll start by building a base class, <code>RentalInventory</code> that can be inherited by other classes. If you look at the <code>model</code> method, it takes in an initial state, and iterates over the <code>model_single_day</code> method each day we tell it to.</p>
+<p>The <code>model_single_day</code> method simulates returns and rentals each day, and logs them.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RentalInventory:</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A model of rental inventory, modeling stock levels as returns and rentals occur each day.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Currently supports a single product</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_products: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>, policies: np.ndarray <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.n_products <span class="op">=</span> n_products</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.policies <span class="op">=</span> policies <span class="cf">if</span> policies <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="cf">else</span> jnp.zeros((n_products, <span class="dv">10000</span>))</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Rentals that are out with customers are stored as an array, where the index corresponds with time, </span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># and the value corresponds with the number of rentals from that time that are still out with customers</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># max_periods is the total number of periods to log</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.max_periods <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> model(<span class="va">self</span>, init_state: Dict, start_time: <span class="bu">int</span>, end_time: <span class="bu">int</span>) <span class="op">-&gt;</span> jnp.array:</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""The Rental Inventory model. Each day returns occur as represented by a lognormal time to event distribution,</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co">        and rentals occur as simulated by a poisson distribution and constrained physically by stock levels.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>        _, ys <span class="op">=</span> scan(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.model_single_day, </span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>            init<span class="op">=</span>init_state, </span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>            xs<span class="op">=</span>jnp.arange(start_time, end_time)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ys</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> model_single_day(<span class="va">self</span>, state: Dict, time: <span class="bu">int</span>) <span class="op">-&gt;</span> Tuple[Dict, jnp.array]:</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Models a single day of inventory activity, including returns, rentals, and stock changes</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>        state_next <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Simulate Returns</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>        returns <span class="op">=</span> <span class="va">self</span>.returns_model(state[<span class="st">'existing_rentals'</span>], time)</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>        state_next[<span class="st">'starting_stock'</span>] <span class="op">=</span> numpyro.deterministic(<span class="st">"starting_stock"</span>, state[<span class="st">'ending_stock'</span>] <span class="op">+</span> returns.<span class="bu">sum</span>(<span class="dv">1</span>) <span class="op">+</span> <span class="va">self</span>.apply_policy(time))</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Simulate Rentals, incorporate them into the next state</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>        rentals <span class="op">=</span> <span class="va">self</span>.demand_model(available_stock<span class="op">=</span>state_next[<span class="st">'starting_stock'</span>], time<span class="op">=</span>time)</span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>        state_next[<span class="st">'ending_stock'</span>] <span class="op">=</span> numpyro.deterministic(<span class="st">"ending_stock"</span>, state_next[<span class="st">'starting_stock'</span>] <span class="op">-</span> rentals.<span class="bu">sum</span>(<span class="dv">1</span>))</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>        state_next[<span class="st">'existing_rentals'</span>] <span class="op">=</span> numpyro.deterministic(<span class="st">"existing_rentals"</span>, state[<span class="st">'existing_rentals'</span>] <span class="op">-</span> returns <span class="op">+</span> rentals)</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> state_next, rentals</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The sub-models and methods referenced but not shown above are a little complicated and overwhelming with the array operations and logic however, so feel free to skim over this for now.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RentalInventory</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> demand_model(<span class="va">self</span>, available_stock, time):</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Models the true demand each day.</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">NotImplementedError</span>()</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> returns_model(<span class="va">self</span>, existing_rentals: jnp.array, time: <span class="bu">int</span>) <span class="op">-&gt;</span> jnp.array:</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>        theta <span class="op">=</span> numpyro.sample(<span class="st">"theta"</span>, dist.Normal(<span class="fl">2.9</span>, <span class="fl">0.01</span>))</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>        sigma <span class="op">=</span> numpyro.sample(<span class="st">"sigma"</span>, dist.TruncatedNormal(<span class="fl">0.7</span>, <span class="fl">0.01</span>, low<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>        return_dist <span class="op">=</span> dist.LogNormal(theta, sigma)</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate the discrete hazard of rented out inventory from previous time-points being returned</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>        discrete_hazards <span class="op">=</span> <span class="va">self</span>.survival_convolution(dist<span class="op">=</span>return_dist, time<span class="op">=</span>time)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Simulate returns from hazards</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>        returns <span class="op">=</span> numpyro.sample(<span class="st">"returns"</span>, dist.Binomial(existing_rentals.astype(<span class="st">"int32"</span>), probs<span class="op">=</span>discrete_hazards))</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>        total_returns <span class="op">=</span> numpyro.deterministic(<span class="st">"total_returns"</span>, returns.<span class="bu">sum</span>())</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> returns</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> survival_convolution(<span class="va">self</span>, dist, time: <span class="bu">int</span>) <span class="op">-&gt;</span> jnp.array:</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Calculates the hazard rate of a return from all past time periods, returning an array where each index is a previous time period,</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a><span class="co">        and the value is the probability of a rental from that time being returned at the current date.</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>        rental_durations <span class="op">=</span> (time<span class="op">-</span>jnp.arange(<span class="va">self</span>.max_periods))</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>        discrete_hazards <span class="op">=</span> jnp.where(</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>            <span class="co"># If rental duration is nonnegative,</span></span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>            rental_durations<span class="op">&gt;</span><span class="dv">0</span>,</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use those rental durations to calculate a return rate, using a discrete interval hazard function</span></span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>            RentalInventory.hazard_func(jnp.clip(rental_durations, a_min<span class="op">=</span><span class="dv">0</span>), dist<span class="op">=</span>dist ),</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Otherwise, return rate is 0</span></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span></span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> discrete_hazards</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">@staticmethod</span></span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> hazard_func(t, dist):</span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Discrete interval hazard function - aka the probability of a return occurring on a single date</span></span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (dist.cdf(t<span class="op">+</span><span class="dv">1</span>)<span class="op">-</span>dist.cdf(t))<span class="op">/</span>(<span class="dv">1</span><span class="op">-</span>dist.cdf(t))</span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> apply_policy(<span class="va">self</span>, time):</span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Adds in some number of units for the product at time $T=t$</span></span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.policies[time]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>One key thing to note is the <code>demand_model</code> method raises a <code>NotImplementedError</code> the idea is that this base class can be inherited by other classes that may have different demand models. Even the returns model could be overwritten. Here’s an example of a poisson demand model</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PoissonDemandInventory(RentalInventory):</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A model of rental inventory, modeling stock levels as returns and rentals occur each day.</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Currently supports a single product</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_products: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>, policies: np.ndarray <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(n_products, policies)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span><span class="dv">99</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Heterogeneity in true demand is lambd ~ Exp(5) distributed</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.U <span class="op">=</span> jnp.log( <span class="dv">5</span> <span class="op">*</span> rng.exponential( size<span class="op">=</span>n_products) )</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> demand_model(<span class="va">self</span>, available_stock, time):</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Models the true demand each day.</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> numpyro.plate(<span class="st">"n_products"</span>, <span class="va">self</span>.n_products) <span class="im">as</span> ind:</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>            lambd <span class="op">=</span> numpyro.sample(<span class="st">"lambd"</span>, dist.Normal(jnp.exp(<span class="va">self</span>.U[ind]), <span class="fl">0.001</span>))</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>        unconstrained_rentals <span class="op">=</span> numpyro.sample(<span class="st">"unconstrained_rentals"</span>, dist.Poisson(lambd))</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>        rentals <span class="op">=</span> numpyro.deterministic(<span class="st">"rentals"</span>, jnp.clip(unconstrained_rentals, a_min<span class="op">=</span><span class="dv">0</span>, a_max<span class="op">=</span>available_stock ))</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>        rentals_as_arr <span class="op">=</span> ( time <span class="op">==</span> jnp.arange(<span class="va">self</span>.max_periods) )<span class="op">*</span>rentals[:,<span class="va">None</span>]</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> rentals_as_arr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Basically rentals are simulated according to a poisson distribution for each product, and if there isnt enough stock, then rentals are constrained. For example <span class="math display">\[
+\displaylines{
+\text{demand}_{\text{[product,t]}} \sim \text{Poisson}(\lambda_{\text{[product]}}) \\
+\text{rentals}_{\text{[product,t]}} = \text{min}(\text{demand}_{\text{[product,t]}},\ \text{stock}_{\text{[product,t]}})
+}
+\]</span></p>
+</section>
+<section id="simulating-the-impact-of-reordering-more-units" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</h2>
+<p>Lets dive in and simulate what would happen if we re-stocked different amounts</p>
+<div id="6d9bb784" class="cell" data-execution_count="22">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rental_model <span class="im">import</span> RentalInventory, PoissonDemandInventory, MultinomialDemandInventory</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper functions</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_active_rentals_as_array(rentals):</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Each array element corresponds to a single day, and the value is the amount of active rentals that are still</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co">    out with customers that started on that date</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    active_rentals <span class="op">=</span> np.zeros(<span class="dv">10000</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    dates <span class="op">=</span> pd.date_range(rentals.date.<span class="bu">min</span>(), end<span class="op">=</span>rentals.date.<span class="bu">max</span>(), freq<span class="op">=</span><span class="st">'D'</span>).values</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    active_rentals[:<span class="bu">len</span>(dates)] <span class="op">=</span> (rentals.loc[<span class="kw">lambda</span> d: d.return_date.isnull()].date.values <span class="op">==</span> dates[:,<span class="va">None</span>]).<span class="bu">sum</span>(<span class="dv">1</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> active_rentals</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reorder_as_array(reorder_amount, reorder_time, max_periods<span class="op">=</span><span class="dv">10000</span>):</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (jnp.arange(max_periods) <span class="op">==</span> reorder_time)<span class="op">*</span>reorder_amount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="3efbc6e2" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set initial state to last observed state in dataset</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>latest_stock_level <span class="op">=</span> daily_rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>)[<span class="st">'ending_units'</span>].tail(<span class="dv">1</span>).values[<span class="dv">0</span>]</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>active_rentals <span class="op">=</span> get_active_rentals_as_array(rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>))</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>init_state <span class="op">=</span> {</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"starting_stock"</span>: jnp.array([latest_stock_level]),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ending_stock"</span>: jnp.array([latest_stock_level]),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"existing_rentals"</span>:active_rentals[:,<span class="va">None</span>].T</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Try adding 125 new units at time T=100</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>reorder_amount <span class="op">=</span> <span class="dv">125</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>reorder_policy <span class="op">=</span> reorder_as_array(reorder_amount, reorder_time<span class="op">=</span><span class="dv">100</span>)[<span class="va">None</span>,:]</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Simulation</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>nsamples <span class="op">=</span><span class="dv">250</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>rental_inventory <span class="op">=</span> PoissonDemandInventory(n_products <span class="op">=</span> <span class="dv">1</span>, policies<span class="op">=</span>reorder_policy)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>simulation <span class="op">=</span> numpyro.infer.Predictive(</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    rental_inventory.model, </span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>    num_samples <span class="op">=</span> nsamples,</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Input our learned parameters from the previous models</span></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    posterior_samples<span class="op">=</span>{</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lambd"</span>:idata_demand[<span class="st">'lambd'</span>][:nsamples,[<span class="op">-</span><span class="dv">1</span>]], </span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"theta"</span>:idata[<span class="st">'theta'</span>][:nsamples,<span class="va">None</span>],</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sigma"</span>:idata[<span class="st">'sigma'</span>][:nsamples,<span class="va">None</span>]</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Simulation</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> simulation(random.PRNGKey(SEED), init_state, start_time<span class="op">=</span><span class="dv">100</span>, end_time<span class="op">=</span><span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lets look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of possible different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out</p>
+<div id="70b9b9aa" class="cell" data-execution_count="24">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> np.random.choice(<span class="dv">250</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(rentals.date.<span class="bu">min</span>(), periods<span class="op">=</span><span class="dv">200</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>historical_data <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>]</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>sim_data <span class="op">=</span> pd.Series(results[<span class="st">'rentals'</span>][sample_idx,:].ravel(),  index<span class="op">=</span>dates[<span class="dv">100</span>:] )</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>daily_rentals_j <span class="op">=</span> pd.concat((historical_data.rentals, sim_data))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>daily_stock_j <span class="op">=</span> np.concatenate((historical_data.starting_units.values, results[<span class="st">'starting_stock'</span>][sample_idx,:].squeeze(<span class="op">-</span><span class="dv">1</span>)))</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plot_rentals(daily_rentals_j, daily_stock_j)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="ss">f'Simulated Stock Levels after Reordering </span><span class="sc">{</span>reorder_amount<span class="sc">}</span><span class="ss"> units'</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>ax.axvline(daily_rentals_j.index.values[<span class="dv">100</span>], color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder'</span>)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-25-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can summarize all of these simulations with uncertainty intervals</p>
+<div id="4be12edf" class="cell" data-execution_count="25">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>daily_ending_stock_sim <span class="op">=</span> results[<span class="st">'ending_stock'</span>].squeeze(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>az.plot_hdi(dates[<span class="dv">100</span>:], daily_ending_stock_sim, smooth<span class="op">=</span><span class="va">False</span>,ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'r'</span>, fill_kwargs<span class="op">=</span><span class="bu">dict</span>(alpha<span class="op">=</span><span class="fl">0.25</span>),)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>ax.plot(dates[<span class="dv">100</span>:], daily_ending_stock_sim.mean(<span class="dv">0</span>), color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Simulated Stock Levels'</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>historical_data.ending_units.plot(color<span class="op">=</span><span class="st">'k'</span>,ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Historical Stock Levels'</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>ax.axvline(dates[<span class="dv">100</span>], color<span class="op">=</span><span class="st">'k'</span>,ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder'</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f'Simulated Stock Levels: what would happen after reordering </span><span class="sc">{</span>reorder_amount<span class="sc">}</span><span class="ss"> units?'</span>,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">'Stock Levels'</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">'Date'</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Overlay some simulations to confirm its lining up with the plot</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>ax.plot(dates[<span class="dv">100</span>:], daily_ending_stock_sim[:<span class="dv">20</span>,:].T, alpha<span class="op">=</span><span class="fl">0.1</span>, color<span class="op">=</span><span class="st">'k'</span>)<span class="op">;</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>ax.plot(dates[<span class="dv">100</span>:], daily_ending_stock_sim[<span class="dv">0</span>,:].T, alpha<span class="op">=</span><span class="fl">0.1</span>, color<span class="op">=</span><span class="st">'k'</span>,label<span class="op">=</span><span class="st">'Individual Simulations'</span>)<span class="op">;</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-26-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This view makes it a little more clear that there are probably stockouts happening, but it doesnt tell us for sure. We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.</p>
+<p>We could also go back and update the simulator to log things like <em>“missed rentals due to stockouts”</em> or other quantities that might be helpful</p>
+<div id="5ff8317b" class="cell" data-execution_count="26">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>p_stockout <span class="op">=</span> (daily_ending_stock_sim<span class="op">==</span><span class="dv">0</span>).mean(<span class="dv">0</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>ax.plot(dates[<span class="dv">100</span>:<span class="dv">200</span>], p_stockout)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>ax.axvline(dates[<span class="dv">100</span>], color<span class="op">=</span><span class="st">'k'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder Time'</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">'Estimated Stockout Probability after reordering 150 units'</span>, ylabel<span class="op">=</span><span class="st">'Stockout Rate'</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>ax.yaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ok so clearly the current reorder guidance isnt enough - so what should reorder?</p>
+<p>We could just simulate repeatedly with different stock reorder inputs like below</p>
+<div id="ef89a428" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sim_stockout_rate(stock_reorder, samples_per_iter<span class="op">=</span><span class="dv">250</span>):    </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    latest_stock_level <span class="op">=</span> daily_rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).tail(<span class="dv">1</span>)[<span class="st">'ending_units'</span>].values[<span class="dv">0</span>]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    active_rentals <span class="op">=</span> get_active_rentals_as_array(rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>))</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    init_state <span class="op">=</span> {</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"starting_stock"</span>: jnp.array([latest_stock_level]),</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"ending_stock"</span>: jnp.array([latest_stock_level]),</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"existing_rentals"</span>:active_rentals[<span class="va">None</span>,:]</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Try adding x new units at time T=100</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    reorder_policy <span class="op">=</span> reorder_as_array(stock_reorder, reorder_time<span class="op">=</span><span class="dv">100</span>)[<span class="va">None</span>,:]</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    rental_inventory <span class="op">=</span> PoissonDemandInventory(n_products <span class="op">=</span> <span class="dv">1</span>, policies<span class="op">=</span>reorder_policy)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    simulation <span class="op">=</span> numpyro.infer.Predictive(</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>        rental_inventory.model, </span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>        num_samples <span class="op">=</span> samples_per_iter,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Input our learned parameters from the previous models</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>        posterior_samples<span class="op">=</span>{</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use the latest demand sample from the last date as a simple approach for ow</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">"lambd"</span>: idata_demand[<span class="st">'lambd'</span>][:samples_per_iter,[<span class="op">-</span><span class="dv">1</span>]], </span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use rental duration parameter estimates</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>             <span class="st">"theta"</span>: idata[<span class="st">'theta'</span>][:samples_per_iter,<span class="va">None</span>],</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>             <span class="st">"sigma"</span>: idata[<span class="st">'sigma'</span>][:samples_per_iter,<span class="va">None</span>]</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> simulation(random.PRNGKey(SEED), init_state, start_time<span class="op">=</span><span class="dv">100</span>, end_time<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Only going to care about instock rate for the second half of the simulation to be safe</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    burn_in <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>    stockout_rate <span class="op">=</span> (results[<span class="st">'ending_stock'</span>]<span class="op">==</span><span class="dv">0</span>).mean(<span class="dv">0</span>)[burn_in:].mean()</span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stockout_rate</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Run simulations</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>stockout_results <span class="op">=</span> np.empty((<span class="dv">10</span>,<span class="dv">2</span>))</span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, units <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">range</span>(<span class="dv">0</span>,<span class="dv">500</span>, <span class="dv">50</span>)):</span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>    stockout_rate <span class="op">=</span> sim_stockout_rate(units)</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>    stockout_results[i,:] <span class="op">=</span> [units, stockout_rate]</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>ax.plot(stockout_results[:,<span class="dv">0</span>], stockout_results[:,<span class="dv">1</span>])</span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(ylabel<span class="op">=</span><span class="st">'Est. Stockout Rate'</span>, xlabel<span class="op">=</span><span class="st">'Units Reordered'</span>, title<span class="op">=</span><span class="st">'Estimated Stockout Rate as we reorder more units'</span>)</span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-28-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Its clear that right around 350 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One simple way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.</p>
+<p>Thats an exercise for another time. Lets reorder 350 units like we’re recommending and see what happens</p>
+<div id="1f0bdba9" class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>n_products, max_periods <span class="op">=</span> <span class="dv">1000</span>, <span class="dv">10000</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull latest state from dataset</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>active_rentals <span class="op">=</span> np.zeros((n_products, max_periods))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    active_rentals[i] <span class="op">=</span> get_active_rentals_as_array(rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'"</span>))</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>init_state <span class="op">=</span> {</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"starting_stock"</span>: jnp.array(stock.loc[<span class="kw">lambda</span> d: d.date<span class="op">==</span>d.date.<span class="bu">max</span>()].ending_units.values),</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ending_stock"</span>: jnp.array(stock.loc[<span class="kw">lambda</span> d: d.date<span class="op">==</span>d.date.<span class="bu">max</span>()].ending_units.values),</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"existing_rentals"</span>: jnp.array(active_rentals)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Try adding x new units at time T=100</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>reorder_amount <span class="op">=</span> <span class="dv">350</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>reorder_policy <span class="op">=</span> jnp.zeros((n_products, max_periods)).at[j,<span class="dv">100</span>].<span class="bu">set</span>(reorder_amount)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>rental_inventory <span class="op">=</span> MultinomialDemandInventory(n_products<span class="op">=</span>n_products, policies<span class="op">=</span>reorder_policy)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="co"># only simulate 1 sample - we're going to use the true data generating process </span></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a><span class="co"># to pretend we actually reordered this amount of units and watched what happened afterward</span></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>observe_future <span class="op">=</span> numpyro.infer.Predictive( rental_inventory.model, num_samples <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> observe_future(random.PRNGKey(SEED), init_state, start_time<span class="op">=</span><span class="dv">100</span>, end_time<span class="op">=</span><span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that this time we’re not loading in any parameters into the <code>Predictive</code> call. Thats because we’re using the true data-generating process to simulate what happens this time. We’re basically observing one possible future in the original fake world we created</p>
+<div id="50573b32" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">1</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>        gridspec_kw<span class="op">=</span><span class="bu">dict</span>(width_ratios<span class="op">=</span>[<span class="dv">15</span>], height_ratios<span class="op">=</span>[<span class="dv">10</span>,<span class="dv">1</span>]), </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        sharex<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">6</span>))</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>daily_ending_stock <span class="op">=</span> pd.concat((</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].ending_units,</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    pd.Series(results[<span class="st">'ending_stock'</span>][..., j].squeeze(), index<span class="op">=</span>dates[<span class="dv">100</span>:])</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>daily_ending_stock.plot(color<span class="op">=</span><span class="st">'k'</span>,ax<span class="op">=</span>axes[<span class="dv">0</span>], label<span class="op">=</span><span class="st">'Stock Levels'</span>)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].axvline(dates[<span class="dv">100</span>], color<span class="op">=</span><span class="st">'k'</span>,ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Reorder'</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].<span class="bu">set</span>(</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f'Observed Stock Levels after reordering </span><span class="sc">{</span>reorder_amount<span class="sc">}</span><span class="ss"> units'</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">'Stock Levels'</span>,</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">'Date'</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'r'</span>, lw<span class="op">=</span><span class="dv">2</span>, ls<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a><span class="co"># plot stockouts</span></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>axes[<span class="op">-</span><span class="dv">1</span>].vlines(dates[(daily_ending_stock<span class="op">==</span><span class="dv">0</span>).values],<span class="dv">0</span>,<span class="dv">1</span>, color<span class="op">=</span><span class="st">'r'</span>, lw<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>axes[<span class="op">-</span><span class="dv">1</span>].set_yticks([])</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>axes[<span class="op">-</span><span class="dv">1</span>].annotate(<span class="st">"Stockouts"</span>, xy<span class="op">=</span>(<span class="fl">0.01</span>, <span class="fl">0.2</span>),xycoords<span class="op">=</span><span class="st">'axes fraction'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>fig.subplots_adjust(hspace<span class="op">=</span><span class="fl">0.025</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Amazing, by reordering 350 units, we no longer ran into any stockouts! This is exactly what we were hoping for.</p>
+<p>We now have a system we can use to figure out the optimal stock to reorder for a single product. How can we now scale this to our entire inventory, or even inform the purchasing of new products?</p>
+</section>
+</section>
+<section id="next-steps-simulating-a-full-product-assortment" class="level1">
+<h1>Next Steps: Simulating a full product assortment</h1>
+<hr>
+<p>We’re going to borrow ideas from discrete choice literature (see <a href="https://eml.berkeley.edu/books/choice2.html">Kenneth Train’s Discrete Choice Methods with Simulation</a>) - each product has some inherent utility, <span class="math inline">\(U\)</span>, which determines how often its chosen.</p>
+<p>A decision maker, <span class="math inline">\(n\)</span>, has <span class="math inline">\(J\)</span> products they can choose from. The utility of a given product, <span class="math inline">\(j\)</span> for a given user <span class="math inline">\(n\)</span> is</p>
+<p><span class="math display">\[
+U_{nj} \sim \beta \: x_{nj} + \epsilon_{nj}
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon_{nj}\)</span> is an error term that follows a Gumbel distribution. Date effects can also be added, for instance sweaters may have higher utility in the winter. We’ll keep it simple for now and avoid date effects</p>
+<p>Why are we using this seemingly complicated representation? It has some really nice properties - namely that utilities are easy to convert to choice probabilities, even when the choice set (in this case the available product catalog) changes. All you have to do is take your utilities and feed them into a softmax equation to get choice probabilities for each product.</p>
+<p>This is particularly helpful for this sort of problem, because the choice set is frequently changing for customers as products go in and out of stock.</p>
+<p>We’re going to make one key simplification here - we’re going to measure utility for the population as a whole, and not condition on individual user features - since our goal right now is just to know how much stock to reorder, we dont really need to know heterogeneity in demand across users unless we expect a big shift in our customer mix in the near term.</p>
+<p>We can define a Multinomial Logit based inventory process as follows</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultinomialDemandInventory(RentalInventory):</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A model of rental inventory, modeling stock levels as returns and rentals occur each day.</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Currently supports a single product</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_products: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>, policies: np.ndarray <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(n_products, policies)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> demand_model(<span class="va">self</span>, available_stock, time):</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Models the true demand each day.</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Hyperparameters</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>        lambd_total <span class="op">=</span> numpyro.sample(<span class="st">"lambd"</span>, dist.Normal(<span class="dv">5000</span>, <span class="fl">0.01</span>))</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> numpyro.plate(<span class="st">"n_products"</span>, <span class="va">self</span>.n_products):</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>            utility <span class="op">=</span> numpyro.sample(<span class="st">"utility"</span>, dist.Gumbel(<span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Generative model</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>        total_rentals <span class="op">=</span> numpyro.sample(<span class="st">"total_rentals"</span>, dist.Poisson(lambd_total))</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Log measures of unconstrained demand</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>        avl_idx <span class="op">=</span> jnp.where(available_stock<span class="op">&gt;</span><span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>        p_j <span class="op">=</span> jax.nn.softmax(utility, where<span class="op">=</span>avl_idx, initial<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=</span> numpyro.deterministic(<span class="st">"unconstrained_demand"</span>, <span class="va">self</span>.total_rental_rate <span class="op">*</span> p_j)</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=</span> numpyro.sample(<span class="st">"unconstrained_rentals"</span>, dist.Multinomial(<span class="va">self</span>.total_rental_rate, p_j))</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Simulate from censored multinomial</span></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>        rentals <span class="op">=</span> numpyro.deterministic(<span class="st">"rentals"</span>, </span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>                    RentalInventory.censored_multinomial(n<span class="op">=</span>total_rentals, U_j<span class="op">=</span>utility, stock_j<span class="op">=</span>available_stock)</span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>        rentals_as_arr <span class="op">=</span> ( time <span class="op">==</span> jnp.arange(<span class="va">self</span>.max_periods) )<span class="op">*</span>rentals[:,<span class="va">None</span>]</span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> rentals_as_arr.astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This work will be continued in a follow up blog post…</p>
 
 
 </section>
