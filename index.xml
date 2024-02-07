@@ -31,7 +31,7 @@
 <section id="part-1-looking-at-the-data" class="level1">
 <h1>Part 1: Looking at the data</h1>
 <hr>
-<div id="ec7466ab" class="cell" data-execution_count="1">
+<div id="86fe69ee" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -121,7 +121,7 @@ font-style: inherit;">"ignore"</span>)</span></code></pre></div>
 <li><code>stock</code> showing available stock levels for that product over time</li>
 <li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
-<div id="33724532" class="cell" data-execution_count="2">
+<div id="8b732079" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">rentals <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (pd.read_csv(<span class="ss" style="color: #20794D;
@@ -197,7 +197,7 @@ font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 </div>
 </div>
 </div>
-<div id="60a621d6" class="cell" data-execution_count="3">
+<div id="26efe33a" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">stock <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (pd.read_csv(<span class="ss" style="color: #20794D;
@@ -272,7 +272,7 @@ font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 </div>
 </div>
 </div>
-<div id="8a57c115" class="cell" data-execution_count="4">
+<div id="0f59dfe3" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">purchases <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (pd.read_csv(<span class="ss" style="color: #20794D;
@@ -348,7 +348,7 @@ font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 </div>
 </div>
 <p>Lets convert the rental data to time series data and see what it looks like</p>
-<div id="2330e4a4" class="cell" data-execution_count="5">
+<div id="87b2f825" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
@@ -491,7 +491,7 @@ font-style: inherit;">None</span>)</span>
 </div>
 <p>It looks like theres typically 0-15 rentals per day for a given product, and there are typically 5000 rentals each day.</p>
 <p>Looking at the distribution of total rentals across products, we see that its mildly long-tailed</p>
-<div id="36500307" class="cell" data-execution_count="6">
+<div id="a31d0ca4" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -541,7 +541,7 @@ font-style: inherit;">=</span>ax )</span>
 </div>
 </div>
 <p>We can also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?</p>
-<div id="c87cdc10" class="cell" data-execution_count="7">
+<div id="d432cd85" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -594,7 +594,7 @@ font-style: inherit;">'Percent of products with a Stockout each day'</span>))</s
 <section id="looking-at-a-single-product" class="level1">
 <h1>Looking at a single product</h1>
 <p>We’re going to start with a single product and see if we can come up with a system that informs us how many units we should reorder</p>
-<div id="9c3f0e7a" class="cell" data-execution_count="8">
+<div id="94b805c0" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">j<span class="op" style="color: #5E5E5E;
@@ -760,7 +760,7 @@ font-style: inherit;">1</span>)</span>
 <p>As shown above, just looking at a time series of rentals each day is a bit confusing - soon after the product is published there’s a lot of rentals, which then drop off quickly. Then around June, theres a giant spike in rentals that drops off quickly again. When looking at a covariate, the total number of rentals that occur every day, there’s no obvious relationship - aka it seems like the spike in demand was moreso just for this product, not for all products.</p>
 <p>When we look at the overall stockout rate over time, it looks like the stockout rate drops at the same time demand increases for Product ID 493.</p>
 <p>Lets join stock data to rental data and see whats happening for this product</p>
-<div id="f3a7b64e" class="cell" data-execution_count="9">
+<div id="c2b7b926" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">daily_rentals <span class="op" style="color: #5E5E5E;
@@ -898,7 +898,7 @@ font-style: inherit;">"date"</span>])</span>
 </div>
 </div>
 <p>Now that we have this data joined, we can plot the rental data with corresponding stock data</p>
-<div id="79ee15ae" class="cell" data-execution_count="10">
+<div id="efc50c7c" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">ax <span class="op" style="color: #5E5E5E;
@@ -989,7 +989,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 <section id="prepating-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="prepating-the-data">Prepating the data</h3>
 <p>Its easy to see that there are plenty of rentals that are still out with customers and havent been returned yet. For these unreturned rentals, we cant calculate an accurate rental duration.</p>
-<div id="3a292561" class="cell" data-execution_count="11">
+<div id="41f08999" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">rentals.sample(<span class="dv" style="color: #AD0000;
@@ -1091,7 +1091,7 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 </div>
 <p>Its important to remember that even those these items arent returned, some have been rented out for 30, 40, 50 days, and its important information to know that some items have been out for atleast that long. A good example is that if its possible for some items to be rented out for 200 days, but we’ve only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used simple averaging.</p>
 <p>What we can instead do is calculate the rental duration to-date and then use a survival model to properly incorporate those unreturned items.</p>
-<div id="2b4be55a" class="cell" data-execution_count="12">
+<div id="2dee115d" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">curr_date <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.date.<span class="bu" style="color: null;
@@ -1144,49 +1144,49 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">232522</td>
-<td>323dc06a-38a0-4a3a-8806-2874a430c94e</td>
-<td>2022-05-25</td>
-<td>2022-06-12</td>
-<td>product_454</td>
-<td>18</td>
+<td data-quarto-table-cell-role="th">28933</td>
+<td>c53f607d-58f8-4799-b9b2-b8244229aece</td>
+<td>2022-04-24</td>
+<td>2022-06-05</td>
+<td>product_57</td>
+<td>42</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">381635</td>
-<td>98b155aa-74d6-4492-bab9-da21eb911de2</td>
-<td>2022-05-28</td>
-<td>2022-06-28</td>
-<td>product_758</td>
-<td>31</td>
+<td data-quarto-table-cell-role="th">227041</td>
+<td>4b484a6d-bf33-461c-ab60-0d70ad4203fd</td>
+<td>2022-06-21</td>
+<td>2022-07-04</td>
+<td>product_440</td>
+<td>13</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">342123</td>
-<td>61f6a324-6420-40bc-b719-db0b62489eee</td>
-<td>2022-07-01</td>
+<td data-quarto-table-cell-role="th">280290</td>
+<td>c38d678b-455c-4558-8cd9-27b24aa2fab0</td>
+<td>2022-06-22</td>
+<td>2022-07-08</td>
+<td>product_551</td>
+<td>16</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">482667</td>
+<td>24d0844a-c2a9-44fd-8840-17be86cf5a56</td>
+<td>2022-05-14</td>
+<td>2022-06-05</td>
+<td>product_965</td>
+<td>22</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">469697</td>
+<td>eef32fb4-9ac9-4d03-a2b2-9321475dada6</td>
+<td>2022-05-31</td>
 <td>NaT</td>
-<td>product_672</td>
-<td>8</td>
+<td>product_942</td>
+<td>39</td>
 <td>0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">109953</td>
-<td>d831e4c4-ac08-43a5-809e-0bcab0893874</td>
-<td>2022-06-11</td>
-<td>2022-06-14</td>
-<td>product_217</td>
-<td>3</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">308847</td>
-<td>71fa36cc-615b-434c-bd69-57f5308c4146</td>
-<td>2022-05-02</td>
-<td>2022-05-04</td>
-<td>product_608</td>
-<td>2</td>
-<td>1</td>
 </tr>
 </tbody>
 </table>
@@ -1203,7 +1203,7 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 <li><strong>If a return hasnt occurred yet</strong>, we tell the model that the rental duration is atleast as long as has been observed so far. This is done with stats via a survival function, or the complementary CDF (ccdf)</li>
 </ul>
 <p>For simplicity, we’re assuming the data is lognormally distributed (and we simulated the data that way). In reality, its best to plot distributions of your data and decide for yourself</p>
-<div id="1c25f973" class="cell" data-execution_count="13">
+<div id="f64014a4" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">def</span> censored_lognormal(theta, sigma, cens, y<span class="op" style="color: #5E5E5E;
@@ -1288,7 +1288,7 @@ background-color: null;
 font-style: inherit;">=</span>T)</span></code></pre></div>
 </div>
 <p>We can now use numpyro to fit a model and estimate the typical rental duration.</p>
-<div id="068b7e3a" class="cell" data-execution_count="14">
+<div id="328c2b90" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">E <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.query(<span class="ss" style="color: #20794D;
@@ -1353,14 +1353,14 @@ font-style: inherit;">=</span>T)</span>
 background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;22:31,  1.48it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  34%|███▎      | 671/2000 [00:00&lt;00:01, 1170.18it/s, 3 steps of size 1.20e+00. acc. prob=0.79]sample:  68%|██████▊   | 1369/2000 [00:00&lt;00:00, 2328.98it/s, 3 steps of size 8.53e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 2058.13it/s, 1 steps of size 8.53e-01. acc. prob=0.92]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  35%|███▍      | 693/2000 [00:00&lt;00:00, 6919.61it/s, 7 steps of size 1.00e+00. acc. prob=0.79]sample:  69%|██████▉   | 1385/2000 [00:00&lt;00:00, 6855.49it/s, 3 steps of size 8.51e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6772.52it/s, 3 steps of size 8.51e-01. acc. prob=0.92]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  32%|███▏      | 634/2000 [00:00&lt;00:00, 6332.77it/s, 3 steps of size 1.33e+00. acc. prob=0.79]sample:  66%|██████▌   | 1323/2000 [00:00&lt;00:00, 6655.36it/s, 3 steps of size 8.31e-01. acc. prob=0.92]sample:  99%|█████████▉| 1989/2000 [00:00&lt;00:00, 6522.12it/s, 3 steps of size 8.31e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6516.08it/s, 3 steps of size 8.31e-01. acc. prob=0.92]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  33%|███▎      | 663/2000 [00:00&lt;00:00, 6625.09it/s, 1 steps of size 9.02e-01. acc. prob=0.79]sample:  69%|██████▉   | 1384/2000 [00:00&lt;00:00, 6965.86it/s, 3 steps of size 8.31e-01. acc. prob=0.90]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6946.49it/s, 3 steps of size 8.31e-01. acc. prob=0.91]</code></pre>
+<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;23:00,  1.45it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  33%|███▎      | 669/2000 [00:00&lt;00:01, 1146.16it/s, 7 steps of size 7.53e-01. acc. prob=0.79]sample:  68%|██████▊   | 1366/2000 [00:00&lt;00:00, 2291.39it/s, 3 steps of size 8.53e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 2025.70it/s, 1 steps of size 8.53e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  35%|███▍      | 696/2000 [00:00&lt;00:00, 6958.13it/s, 3 steps of size 8.81e-01. acc. prob=0.79]sample:  70%|██████▉   | 1392/2000 [00:00&lt;00:00, 6851.90it/s, 7 steps of size 8.51e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6776.45it/s, 3 steps of size 8.51e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  32%|███▏      | 647/2000 [00:00&lt;00:00, 6468.25it/s, 3 steps of size 9.17e-01. acc. prob=0.79]sample:  67%|██████▋   | 1341/2000 [00:00&lt;00:00, 6744.89it/s, 3 steps of size 8.31e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6603.82it/s, 3 steps of size 8.31e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  33%|███▎      | 669/2000 [00:00&lt;00:00, 6688.06it/s, 1 steps of size 5.61e-01. acc. prob=0.79]sample:  70%|██████▉   | 1391/2000 [00:00&lt;00:00, 6999.27it/s, 1 steps of size 8.31e-01. acc. prob=0.90]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 6999.80it/s, 3 steps of size 8.31e-01. acc. prob=0.91]</code></pre>
 </div>
 </div>
 <p>Remember, this is simulated data so we know the truth. The true parameter values are covered by the model estimates, although they may be a little biased. Its possible my simulation code has a slight bug and should be double checked. However the estimated distribution is still pretty close to reality in this case and shouldnt impact too much for this demonstration</p>
-<div id="70eaf2b5" class="cell" data-execution_count="15">
+<div id="4b063a13" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -1467,7 +1467,7 @@ font-style: inherit;">1</span>].legend()</span>
 </div>
 </div>
 </div>
-<div id="4d7bfbd8" class="cell" data-execution_count="16">
+<div id="d792fc59" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -1556,7 +1556,7 @@ font-style: inherit;">"Estimated Rental Duration"</span>)</span>
 <h3 class="anchored" data-anchor-id="looking-at-the-demand-data">Looking at the demand data</h3>
 <p>The rental demand model is going to start simple for this single-product case - we’ll just estimate a poisson distribuion.</p>
 <p>Taking a look at the data again, its clear that demand is constrained, or censored, by stockouts here</p>
-<div id="2f680ce4" class="cell" data-execution_count="17">
+<div id="887ffdd8" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">ax <span class="op" style="color: #5E5E5E;
@@ -1611,7 +1611,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 </div>
 </div>
 <p>To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs.&nbsp;when there isnt - observed rentals are lower on days when there are stockouts - the sample size of stocked out periods is also smaller</p>
-<div id="1f19ab26" class="cell" data-execution_count="18">
+<div id="7a945cf9" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">(</span>
@@ -1678,7 +1678,7 @@ font-style: inherit;">2</span>)</span>
 <section id="defining-and-fitting-the-model-1" class="level3">
 <h3 class="anchored" data-anchor-id="defining-and-fitting-the-model-1">Defining and fitting the model</h3>
 <p>We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if theres a stockout, the model thinks that demand is atleast as high as the rentals that day, otherwise if there’s no stockout it thinks that demand is the number of rentals that day (plus some noise of course)</p>
-<div id="a8b659ba" class="cell" data-execution_count="19">
+<div id="6d41f5f8" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">def</span> censored_poisson(lambd, cens, y<span class="op" style="color: #5E5E5E;
@@ -1807,7 +1807,7 @@ background-color: null;
 font-style: inherit;">=</span>y)</span></code></pre></div>
 </div>
 <p>We can then fit this model with numpyro below</p>
-<div id="4371c2bb" class="cell" data-execution_count="20">
+<div id="81e76a37" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> daily_rentals.loc[<span class="ss" style="color: #20794D;
@@ -1881,14 +1881,14 @@ font-style: inherit;">=</span>y)</span>
 background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;22:45,  1.46it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  44%|████▍     | 877/2000 [00:00&lt;00:00, 1516.60it/s, 3 steps of size 5.71e-01. acc. prob=0.79]sample:  90%|█████████ | 1807/2000 [00:00&lt;00:00, 3058.54it/s, 3 steps of size 4.08e-01. acc. prob=0.93]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 2210.67it/s, 11 steps of size 4.08e-01. acc. prob=0.93]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  45%|████▍     | 892/2000 [00:00&lt;00:00, 8909.85it/s, 7 steps of size 7.09e-01. acc. prob=0.79]sample:  90%|█████████ | 1809/2000 [00:00&lt;00:00, 9059.88it/s, 7 steps of size 3.71e-01. acc. prob=0.94]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 9014.25it/s, 3 steps of size 3.71e-01. acc. prob=0.94]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  46%|████▌     | 916/2000 [00:00&lt;00:00, 9157.26it/s, 7 steps of size 7.46e-01. acc. prob=0.79]sample:  93%|█████████▎| 1868/2000 [00:00&lt;00:00, 9370.05it/s, 7 steps of size 4.21e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 9307.91it/s, 15 steps of size 4.21e-01. acc. prob=0.92]
-  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  44%|████▍     | 882/2000 [00:00&lt;00:00, 8814.90it/s, 3 steps of size 6.84e-01. acc. prob=0.79]sample:  94%|█████████▎| 1870/2000 [00:00&lt;00:00, 9439.66it/s, 3 steps of size 5.04e-01. acc. prob=0.88]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 9344.80it/s, 3 steps of size 5.04e-01. acc. prob=0.88]</code></pre>
+<pre><code>  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:   0%|          | 1/2000 [00:00&lt;23:02,  1.45it/s, 1 steps of size 2.34e+00. acc. prob=0.00]warmup:  45%|████▍     | 895/2000 [00:00&lt;00:00, 1531.15it/s, 7 steps of size 6.64e-01. acc. prob=0.79]sample:  89%|████████▉ | 1779/2000 [00:00&lt;00:00, 2966.70it/s, 15 steps of size 4.08e-01. acc. prob=0.93]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 2181.88it/s, 11 steps of size 4.08e-01. acc. prob=0.93]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  46%|████▌     | 913/2000 [00:00&lt;00:00, 9126.11it/s, 3 steps of size 3.96e-01. acc. prob=0.79]sample:  91%|█████████▏| 1826/2000 [00:00&lt;00:00, 8842.76it/s, 3 steps of size 3.71e-01. acc. prob=0.94]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 8861.80it/s, 3 steps of size 3.71e-01. acc. prob=0.94]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  43%|████▎     | 864/2000 [00:00&lt;00:00, 8638.61it/s, 1 steps of size 3.84e-01. acc. prob=0.79]sample:  88%|████████▊ | 1769/2000 [00:00&lt;00:00, 8877.50it/s, 3 steps of size 4.21e-01. acc. prob=0.92]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 8840.40it/s, 15 steps of size 4.21e-01. acc. prob=0.92]
+  0%|          | 0/2000 [00:00&lt;?, ?it/s]warmup:  44%|████▍     | 886/2000 [00:00&lt;00:00, 8854.25it/s, 7 steps of size 4.93e-01. acc. prob=0.79]sample:  91%|█████████ | 1814/2000 [00:00&lt;00:00, 9102.27it/s, 7 steps of size 5.04e-01. acc. prob=0.88]sample: 100%|██████████| 2000/2000 [00:00&lt;00:00, 9083.19it/s, 3 steps of size 5.04e-01. acc. prob=0.88]</code></pre>
 </div>
 </div>
 <p>we can check the estimated rental rate parameter, <img src="https://latex.codecogs.com/png.latex?%5Clambda">, against the actual value that we simulated and find that our model does have coverage over the ground truth.</p>
-<div id="7c624e24" class="cell" data-execution_count="21">
+<div id="98c7b3c7" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">params <span class="op" style="color: #5E5E5E;
@@ -1981,7 +1981,7 @@ font-style: inherit;">"Lambda estimate"</span>)</span>
 </div>
 </div>
 <p>Note that this is the base level of demand for the product - as competing products stock out, we expect <img src="https://latex.codecogs.com/png.latex?%5Clambda"> to increase. Currently, that is represented by <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> in the model above, which is the relationship of the products demand to global stockout rate. As global stockout rate climbs, <img src="https://latex.codecogs.com/png.latex?%5Clambda"> increases. We can estimate lambda at different stockout levels</p>
-<div id="bf876c51" class="cell" data-execution_count="22">
+<div id="96712e99" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
@@ -2591,7 +2591,7 @@ font-style: inherit;">return</span> rentals_as_arr</span></code></pre></div>
 <section id="simulating-the-impact-of-reordering-more-units" class="level2">
 <h2 class="anchored" data-anchor-id="simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</h2>
 <p>Lets dive in and simulate what would happen if we re-stocked different amounts</p>
-<div id="84ea5ef4" class="cell" data-execution_count="23">
+<div id="8b84cd50" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="im" style="color: #00769E;
@@ -2668,7 +2668,7 @@ background-color: null;
 font-style: inherit;">*</span>reorder_amount</span></code></pre></div>
 </details>
 </div>
-<div id="0282a566" class="cell" data-execution_count="24">
+<div id="b0447894" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># set initial state to last observed state in dataset</span></span>
@@ -2809,7 +2809,7 @@ font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest value, but thats a problem for later.</p>
 <p>Lets look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of possible different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out</p>
-<div id="4a7f64c9" class="cell" data-execution_count="25">
+<div id="52bbb487" class="cell" data-execution_count="25">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">sample_idx <span class="op" style="color: #5E5E5E;
@@ -2908,7 +2908,7 @@ font-style: inherit;">'Reorder'</span>)</span>
 </div>
 </div>
 <p>We can summarize all of these simulations with uncertainty intervals</p>
-<div id="b0e42766" class="cell" data-execution_count="26">
+<div id="7ff363e9" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -3137,10 +3137,7 @@ font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>)</span>
 <span id="cb32-28"></span>
-<span id="cb32-29"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(daily_ending_stock_sim.shape)</span>
-<span id="cb32-30">axes[<span class="op" style="color: #5E5E5E;
+<span id="cb32-29">axes[<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
@@ -3165,12 +3162,12 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>)</span>
-<span id="cb32-31">axes[<span class="op" style="color: #5E5E5E;
+<span id="cb32-30">axes[<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>].set_yticks([])</span>
-<span id="cb32-32">axes[<span class="op" style="color: #5E5E5E;
+<span id="cb32-31">axes[<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
@@ -3191,26 +3188,23 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">14</span>)</span>
-<span id="cb32-33"></span>
-<span id="cb32-34">plt.show()</span></code></pre></div>
+<span id="cb32-32"></span>
+<span id="cb32-33">plt.show()</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>(250, 100)</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-27-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>This view makes it a little more obvious that there are probably stockouts happening, but it doesnt tell us for sure. We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.</p>
 <p>We could also go back and update the simulator to log things like <em>“missed rentals due to stockouts”</em> or other quantities that might be helpful</p>
-<div id="f821911d" class="cell" data-execution_count="27">
+<div id="94a9bb0f" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">fig, ax <span class="op" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1">fig, ax <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -3223,7 +3217,7 @@ background-color: null;
 font-style: inherit;">12</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">5</span>))</span>
-<span id="cb34-2">p_stockout <span class="op" style="color: #5E5E5E;
+<span id="cb33-2">p_stockout <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (daily_ending_stock_sim<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3232,12 +3226,12 @@ background-color: null;
 font-style: inherit;">0</span>).mean(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>)</span>
-<span id="cb34-3">ax.plot(dates[<span class="dv" style="color: #AD0000;
+<span id="cb33-3">ax.plot(dates[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">100</span>:<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">200</span>], p_stockout)</span>
-<span id="cb34-4">ax.axvline(dates[<span class="dv" style="color: #AD0000;
+<span id="cb33-4">ax.axvline(dates[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">100</span>], color<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3252,7 +3246,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Reorder Time'</span>)</span>
-<span id="cb34-5">ax.<span class="bu" style="color: null;
+<span id="cb33-5">ax.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">set</span>(title<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3263,13 +3257,13 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Stockout Rate'</span>)</span>
-<span id="cb34-6">ax.legend()</span>
-<span id="cb34-7">ax.yaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv" style="color: #AD0000;
+<span id="cb33-6">ax.legend()</span>
+<span id="cb33-7">ax.yaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>))</span>
-<span id="cb34-8">plt.show()</span></code></pre></div>
+<span id="cb33-8">plt.show()</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -3279,9 +3273,398 @@ font-style: inherit;">0</span>))</span>
 </div>
 </div>
 </div>
-<p>It appears that the current reorder guidance isnt enough - so what should reorder?</p>
+<p>It appears that the current reorder guidance isnt enough - so what should reorder? Lets try and estimate what would happen if we reordered more</p>
+<div id="0fd61fda" class="cell" data-execution_count="28">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try estimating the impact of 500 new units at time T=100</span></span>
+<span id="cb34-2">reorder_amount <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span></span>
+<span id="cb34-3">reorder_policy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> reorder_as_array(reorder_amount, reorder_time<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)[<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>,:]</span>
+<span id="cb34-4"></span>
+<span id="cb34-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Define Simulation</span></span>
+<span id="cb34-6">nsamples <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">250</span></span>
+<span id="cb34-7">rental_inventory <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> PoissonDemandInventory(n_products <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, policies<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>reorder_policy)</span>
+<span id="cb34-8"></span>
+<span id="cb34-9">simulation <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> numpyro.infer.Predictive(</span>
+<span id="cb34-10">    rental_inventory.model, </span>
+<span id="cb34-11">    num_samples <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> nsamples,</span>
+<span id="cb34-12">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Input our learned parameters from the previous models</span></span>
+<span id="cb34-13">    posterior_samples<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>{</span>
+<span id="cb34-14">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lambd"</span>:idata_demand[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'lambd'</span>][:nsamples,[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]], </span>
+<span id="cb34-15">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"theta"</span>:idata[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'theta'</span>][:nsamples,<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>],</span>
+<span id="cb34-16">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sigma"</span>:idata[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sigma'</span>][:nsamples,<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">None</span>]</span>
+<span id="cb34-17">    }</span>
+<span id="cb34-18"></span>
+<span id="cb34-19">)</span>
+<span id="cb34-20"></span>
+<span id="cb34-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run Simulation</span></span>
+<span id="cb34-22">results <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> simulation(random.PRNGKey(SEED), init_state, start_time<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, end_time<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>)</span>
+<span id="cb34-23"></span>
+<span id="cb34-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot</span></span>
+<span id="cb34-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#| code-fold: true</span></span>
+<span id="cb34-26">fig, axes <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb34-27">        gridspec_kw<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(width_ratios<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>], height_ratios<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]), </span>
+<span id="cb34-28">        sharex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, </span>
+<span id="cb34-29">        figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>))</span>
+<span id="cb34-30"></span>
+<span id="cb34-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot simulations</span></span>
+<span id="cb34-32">daily_ending_stock_sim <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> results[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ending_stock'</span>].squeeze(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb34-33">az.plot_hdi(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>:], daily_ending_stock_sim, smooth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>,ax<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>, fill_kwargs<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>),)</span>
+<span id="cb34-34">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].plot(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>:], daily_ending_stock_sim.mean(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>, ls<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'--'</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Simulated Stock Levels'</span>)</span>
+<span id="cb34-35"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># axes[0].axvline(dates[60], color='C0',ls='--', label='Reorder (40 units)')</span></span>
+<span id="cb34-36">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].axvline(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>], color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'k'</span>,ls<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'--'</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Reorder'</span>)</span>
+<span id="cb34-37">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span>(</span>
+<span id="cb34-38">    title<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'Simulated Stock Levels: what would happen after reordering </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>reorder_amount<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> units?'</span>,</span>
+<span id="cb34-39">    ylabel<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stock Levels'</span>,</span>
+<span id="cb34-40">    xlabel<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span></span>
+<span id="cb34-41">)</span>
+<span id="cb34-42"></span>
+<span id="cb34-43"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot actuals</span></span>
+<span id="cb34-44">historical_data.ending_units.plot(color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'k'</span>,ax<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Historical Stock Levels'</span>)</span>
+<span id="cb34-45"></span>
+<span id="cb34-46"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Overlay some simulations to confirm its lining up with the plot</span></span>
+<span id="cb34-47">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].plot(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>:], daily_ending_stock_sim[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>,:].T, alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'k'</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb34-48">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].plot(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>:], daily_ending_stock_sim[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,:].T, alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'k'</span>,label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Individual Simulations'</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb34-49">axes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].legend()</span>
+<span id="cb34-50"></span>
+<span id="cb34-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># plot stockouts</span></span>
+<span id="cb34-52">axes[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].vlines(dates[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>][(historical_data.ending_units<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>).values],<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>, lw<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb34-53"></span>
+<span id="cb34-54">axes[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].vlines(np.unique(dates[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>:][np.where((daily_ending_stock_sim.T<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>))[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]]),<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r'</span>, lw<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb34-55">axes[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].set_yticks([])</span>
+<span id="cb34-56">axes[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].annotate(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Stockouts"</span>, xy<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>),xycoords<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'axes fraction'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>)</span>
+<span id="cb34-57"></span>
+<span id="cb34-58">plt.show()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Clearly this is now way too much stock and we’d be over-ordering. So how can we identify the right amount to stock so that we don’t have stockouts but we don’t over-order?</p>
 <p>We could just simulate repeatedly with different stock reorder inputs like below</p>
-<div id="51ec8aaa" class="cell" data-execution_count="28">
+<div id="28d97103" class="cell" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">def</span> sim_stockout_rate(stock_reorder, samples_per_iter<span class="op" style="color: #5E5E5E;
@@ -3493,14 +3876,14 @@ font-style: inherit;">'Estimated Stockout Rate as we reorder more units'</span>)
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Its clear that right around 350 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.</p>
 <p>Thats an exercise for another time. Lets reorder 350 units like we’re recommending and see what happens</p>
-<div id="035cb46d" class="cell" data-execution_count="29">
+<div id="d8285c31" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1">n_products, max_periods <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
@@ -3612,7 +3995,7 @@ background-color: null;
 font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>Notice that this time we’re not loading in any parameters into the <code>Predictive</code> call. Thats because we’re using the true data-generating process to simulate what happens this time. We’re basically observing one possible future in the original fake world we created</p>
-<div id="95fa0a4e" class="cell" data-execution_count="30">
+<div id="f63f9b0d" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">fig, axes <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
@@ -3808,7 +4191,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-32-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
