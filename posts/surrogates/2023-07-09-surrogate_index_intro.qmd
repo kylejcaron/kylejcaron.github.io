@@ -199,6 +199,7 @@ def transmitter(
 
 We'll use the historical dataset to fit the surrogate index model, mapping $S \rightarrow Y$
 
+
 ```{python}
 S_vars = " + ".join( historical_data.filter(like="S").columns )
 X_vars = " + ".join( historical_data.filter(like="X").columns )
@@ -283,7 +284,7 @@ def estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):
     return ATE, ATE_sd
 
 ATE, ATE_sd = estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)
-sns.histplot(np.random.normal(ATE, ATE_sd,size=10000), stat='probability')
+sns.histplot(np.random.normal(ATE, ATE_sd, size=10000), stat='probability')
 plt.axvline( GROUND_TRUTH['ATE'], color='r', ls='--', label='True ATE')
 plt.legend()
 plt.xlabel("ATE")

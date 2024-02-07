@@ -105,7 +105,7 @@ def transmitter(
     Z = rng.normal(0,1, size=(Zdims, n_users))
 
     # Some observed pre-TX measures
-    X = alphaX[:,None] + (bZX @ Z)
+    X = rng.normal(alphaX[:,None] + (bZX @ Z), 0.025)
 
     # Intermediate outcomes
     S = alphaS[:,None] + (bXS @ X) 
@@ -117,7 +117,7 @@ def transmitter(
     S += avg_tx_term.T + hetergeneous_tx_term
 
     # expectation of long term outcome
-    eta = 0 + (bSY @ S)
+    eta = rng.normal(0 + (bSY @ S), 0.025)
 
     # Long term outcome
     if logit_link:
