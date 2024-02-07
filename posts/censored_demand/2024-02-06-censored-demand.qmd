@@ -42,7 +42,7 @@ warnings.filterwarnings("ignore")
 
 __The Problem:__ You work at a clothing rental service that is suffering from high periods of churn. You've found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. __How can we determine how much stock to reorder?__
 
-The idea of this project is to borrow ideas from first principles modeling - basically think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
+The idea of this project is to borrow ideas from first principles modeling - think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
 
 Products with extreme stockouts have misleading demand estimates under classic demand models. The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that demand is atleast 5 rentals. Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information. 
 
@@ -136,7 +136,7 @@ fig, ax = plt.subplots(1,1,figsize=(12,5))
 plt.show()
 ```
 
-# Starting simple: Looking at a single product
+# Looking at a single product
 We're going to start with a single product and see if we can come up with a system that informs us how many units we should reorder
 
 
@@ -174,7 +174,7 @@ ax['C'].set_ylim(0,1)
 plt.show()
 ```
 
-As shown above, just looking at a time series of rentals each day is a bit confusing - soon after the product is published there's a lot of rentals, which then drop off quickly. Then around June, theres a giant spike in rentals that drops off quickly again. When looking at a simple covariate, the total number of rentals that occur every day, there's no obvious relationship - aka it seems like the spike in demand was moreso just for this product, not for all products.
+As shown above, just looking at a time series of rentals each day is a bit confusing - soon after the product is published there's a lot of rentals, which then drop off quickly. Then around June, theres a giant spike in rentals that drops off quickly again. When looking at a covariate, the total number of rentals that occur every day, there's no obvious relationship - aka it seems like the spike in demand was moreso just for this product, not for all products.
 
 When we look at the overall stockout rate over time, it looks like the stockout rate drops at the same time demand increases for Product ID 493.
 
@@ -224,7 +224,9 @@ It's time to introduce a key concept - the difference between rental demand and 
 First, lets reiterate our goal. We want to know how many more units to purchase for this rental product so we dont end up with any more stockouts. To do so, we need to know what stock levels will be if we have more units in stock
 
 $$
+\small{
 E[\text{stock}_t | \text{do(stock}_{t=0}=X), \text{demand}_{t-1},\text{stock}_{t-1}, \text{active rentals}_{0:t}]
+}
 $$
 
 When we think of the __data generating process__ for rental demand and stock levels its the following: 
@@ -277,7 +279,7 @@ rentals.sample(5)
 
 ### Defining and fitting the model
 
-We can write up a simple survival model in numpyro. The idea of survival analysis is that 
+We can write up a basic survival model in numpyro. The idea of survival analysis is that 
  * __if a return has already occurred__, we fit the model as usual with the observed rental duration.
  * __If a return hasnt occurred yet__, we tell the model that the rental duration is atleast as long as has been observed so far. This is done with stats via a survival function, or the complementary CDF (ccdf)
 
@@ -387,7 +389,7 @@ plt.legend()
 plt.show()
 ```
 
-To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs. when there isnt - its clear that demand is much less on days when there are stockouts - the sample size of stocked out periods is also very small
+To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs. when there isnt - demand is much less on days when there are stockouts - the sample size of stocked out periods is also very small
 
 
 ```{python}
@@ -489,7 +491,7 @@ Ok cool, now that we have a rental duration model and a rental demand model, let
 
 ## The simulation code
 
-We can leverage numpyro to simulate this. They have a `scan` operator that basically iterates day over day which fits well with this problem. Here's the initial simulation model structure. 
+We can leverage numpyro to simulate this. They have a `scan` operator that iterates day over day which fits well with this problem. Here's the initial simulation model structure. 
 
 We'll start by building a base class, `RentalInventory` that can be inherited by other classes. If you look at the `model` method, it takes in an initial state, and iterates over the `model_single_day` method each day we tell it to. 
 
@@ -625,11 +627,14 @@ class PoissonDemandInventory(RentalInventory):
 Rentals are simulated according to a poisson distribution for each product, and if there isnt enough stock, then rentals are constrained. For example
 
 $$
+\small{
 \displaylines{
-\text{demand}_{\text{[product,t]}} \sim \text{Poisson}(\lambda_{\text{[product]}}) \\
-\text{rentals}_{\text{[product,t]}} = \text{min}(\text{demand}_{\text{[product,t]}},\ \text{stock}_{\text{[product,t]}})
-}
+\text{demand}_{\text{[j,t]}} \sim \text{Poisson}(\lambda_{\text{[j]}}) \\
+\text{rentals}_{\text{[j,t]}} = \text{min}(\text{demand}_{\text{[j,t]}},\ \text{stock}_{\text{[j,t]}})
+}}
 $$
+
+for $j \in J$ products
 
 
 ## Simulating the impact of reordering more units
@@ -716,29 +721,43 @@ We can summarize all of these simulations with uncertainty intervals
 
 ```{python}
 #| code-fold: true
+fig, axes = plt.subplots(2,1,
+        gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
+        sharex=True, 
+        figsize=(12,6))
 
-daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
-
-fig, ax = plt.subplots(1,1,figsize=(12,5))
-az.plot_hdi(dates[100:], daily_ending_stock_sim, smooth=False,ax=ax, color='r', fill_kwargs=dict(alpha=0.25),)
-ax.plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', label='Simulated Stock Levels')
-historical_data.ending_units.plot(color='k',ax=ax, label='Historical Stock Levels')
-ax.axvline(dates[100], color='k',ls='--', label='Reorder')
-ax.set(
+# Plot simulations
+az.plot_hdi(dates[100:], daily_ending_stock_sim, smooth=False,ax=axes[0], color='r', fill_kwargs=dict(alpha=0.25),)
+axes[0].plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', label='Simulated Stock Levels')
+# axes[0].axvline(dates[60], color='C0',ls='--', label='Reorder (40 units)')
+axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
+axes[0].set(
     title=f'Simulated Stock Levels: what would happen after reordering {reorder_amount} units?',
     ylabel='Stock Levels',
-    xlabel='Date'
+    xlabel=''
 )
 
-# Overlay some simulations to confirm its lining up with the plot
-ax.plot(dates[100:], daily_ending_stock_sim[:20,:].T, alpha=0.1, color='k');
-ax.plot(dates[100:], daily_ending_stock_sim[0,:].T, alpha=0.1, color='k',label='Individual Simulations');
+# Plot actuals
+daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
+historical_data.ending_units.plot(color='k',ax=axes[0], label='Historical Stock Levels')
 
-ax.legend()
+# Overlay some simulations to confirm its lining up with the plot
+axes[0].plot(dates[100:], daily_ending_stock_sim[:20,:].T, alpha=0.1, color='k');
+axes[0].plot(dates[100:], daily_ending_stock_sim[0,:].T, alpha=0.1, color='k',label='Individual Simulations');
+axes[0].legend()
+
+# plot stockouts
+axes[-1].vlines(dates[:100][(historical_data.ending_units==0).values],0,1, color='r', lw=5)
+
+print(daily_ending_stock_sim.shape)
+axes[-1].vlines(np.unique(dates[100:][np.where((daily_ending_stock_sim.T==0))[0]]),0,1, color='r', lw=5)
+axes[-1].set_yticks([])
+axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize=14)
+
 plt.show()
 ```
 
-This view makes it a little more clear that there are probably stockouts happening, but it doesnt tell us for sure. 
+This view makes it a little more obvious that there are probably stockouts happening, but it doesnt tell us for sure. 
 We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.
 
 We could also go back and update the simulator to log things like *"missed rentals due to stockouts"* or other quantities that might be helpful
@@ -751,13 +770,13 @@ fig, ax = plt.subplots(1,1,figsize=(12,5))
 p_stockout = (daily_ending_stock_sim==0).mean(0)
 ax.plot(dates[100:200], p_stockout)
 ax.axvline(dates[100], color='k', ls='--', label='Reorder Time')
-ax.set(title='Estimated Stockout Probability after reordering 150 units', ylabel='Stockout Rate')
+ax.set(title='Estimated Stockout Probability after reordering 125 units', ylabel='Stockout Rate')
 ax.legend()
 ax.yaxis.set_major_formatter(mtick.PercentFormatter(1,0))
 plt.show()
 ```
 
-Ok so clearly the current reorder guidance isnt enough - so what should reorder? 
+It appears that the current reorder guidance isnt enough - so what should reorder? 
 
 We could just simulate repeatedly with different stock reorder inputs like below
 
@@ -809,7 +828,7 @@ ax.set(ylabel='Est. Stockout Rate', xlabel='Units Reordered', title='Estimated S
 plt.show()
 ```
 
-Its clear that right around 350 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One simple way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.
+Its clear that right around 350 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.
 
 Thats an exercise for another time. Lets reorder 350 units like we're recommending and see what happens
 
@@ -876,6 +895,19 @@ Amazing, by reordering 350 units, we no longer ran into any stockouts! This is e
 
 We now have a system we can use to figure out the optimal stock to reorder for a single product. How can we now scale this to our entire inventory, or even inform the purchasing of new products?
 
+
+# Conclusion
+
+---
+
+This was a difficult problem that didn't fall under the lens of a classic tabular data science problem. By using first principles, it's possible to break down the problem into more explainable pieces. The data generating process was the following
+ 1. Customers come in and rent $y \sim \text{min}(\text{Poisson}(\lambda), \text{stock})$ units each day
+ 2. Those units tend to have some learnable distribution of rental duration, $t \sim \text{LogNormal}(\theta, \sigma)$
+ 3. The stock levels vary as those rentals occur and get returned
+
+We found that modeling each individual component of the data generating process and combining them into a simulation was sufficient to inform a reorder for a product and is also very explainable. 
+
+
 # Next Steps: Modeling a full product assortment
 
 ---
@@ -888,7 +920,7 @@ $$
 U_{nj} \sim \beta \: x_{nj} + \epsilon_{nj}
 $$
 
-where $\epsilon_{nj}$ is an error term that follows a Gumbel distribution. Date effects can also be added, for instance sweaters may have higher utility in the winter. We'll keep it simple for now and avoid date effects
+where $\epsilon_{nj}$ is an error term that follows a Gumbel distribution. Date effects can also be added, for instance sweaters may have higher utility in the winter. We'll keep it more simple for now and avoid date effects
 
 Why are we using this seemingly complicated representation? It has some really nice properties - namely that utilities are easy to convert to choice probabilities, even when the choice set (in this case the available product catalog) changes. All you have to do is take your utilities and feed them into a softmax equation to get choice probabilities for each product.
 
