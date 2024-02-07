@@ -1,7 +1,22 @@
 [
   {
+    "listing": "/blog.html",
+    "items": [
+      "/posts/censored_demand/2024-02-06-censored-demand.html",
+      "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
+      "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
+      "/posts/weibull_survival_analysis/weibull_survival_tools.html",
+      "/posts/experiment_design.html",
+      "/posts/2022-04-17-out-of-sample-pymc.html",
+      "/posts/2022-04-05-ab-test-duration.html",
+      "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
+      "/posts/2022-04-03-explainable-ai-is-not-causal.html"
+    ]
+  },
+  {
     "listing": "/archive.html",
     "items": [
+      "/posts/censored_demand/2024-02-06-censored-demand.html",
       "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",
@@ -15,19 +30,7 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
-      "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
-      "/posts/weibull_survival_analysis/weibull_survival_tools.html",
-      "/posts/experiment_design.html",
-      "/posts/2022-04-17-out-of-sample-pymc.html",
-      "/posts/2022-04-05-ab-test-duration.html",
-      "/posts/2022-04-11-uncertainty_intervals_over_pvals.html",
-      "/posts/2022-04-03-explainable-ai-is-not-causal.html"
-    ]
-  },
-  {
-    "listing": "/blog.html",
-    "items": [
+      "/posts/censored_demand/2024-02-06-censored-demand.html",
       "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
       "/posts/weibull_survival_analysis/weibull_survival_tools.html",

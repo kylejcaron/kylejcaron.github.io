@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2022-04-03">
+<meta name="dcterms.date" content="2023-07-09">
 
-<title>Kyle Caron - Explainable AI is not Causal Inference</title>
+<title>Kyle Caron - Modeling Anything With First Principles: Inventory Demand under extreme stockouts</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,59 +21,25 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -103,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="../theme.scss">
+<link rel="stylesheet" href="../../theme.scss">
 </head>
 
 <body class="nav-fixed">
@@ -113,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Kyle Caron</span>
     </a>
   </div>
@@ -124,7 +90,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item compact">
@@ -148,8 +114,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Explainable AI is not Causal Inference</h1>
-                      </div>
+      <h1 class="title">Modeling Anything With First Principles: Inventory Demand under extreme stockouts</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">experimentation</div>
+                <div class="quarto-category">Causal Inference</div>
+              </div>
+                  </div>
   </div>
     
   
@@ -159,7 +129,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">April 3, 2022</p>
+        <p class="date">July 9, 2023</p>
       </div>
     </div>
     
@@ -175,11 +145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#starting-simple-simulating-some-fake-data" id="toc-starting-simple-simulating-some-fake-data" class="nav-link active" data-scroll-target="#starting-simple-simulating-some-fake-data">Starting simple: simulating some fake data</a></li>
-  <li><a href="#test-1-whats-the-impact-of-x1-on-y" id="toc-test-1-whats-the-impact-of-x1-on-y" class="nav-link" data-scroll-target="#test-1-whats-the-impact-of-x1-on-y">Test 1: What’s the impact of X1 on Y?</a></li>
-  <li><a href="#what-about-estimating-the-effect-of-x4-on-y" id="toc-what-about-estimating-the-effect-of-x4-on-y" class="nav-link" data-scroll-target="#what-about-estimating-the-effect-of-x4-on-y">What about estimating the effect of X4 on Y?</a></li>
-  <li><a href="#can-we-use-explainable-ai-for-causal-inference-at-all" id="toc-can-we-use-explainable-ai-for-causal-inference-at-all" class="nav-link" data-scroll-target="#can-we-use-explainable-ai-for-causal-inference-at-all">Can we use Explainable AI for causal inference at all?</a></li>
-  <li><a href="#take-aways" id="toc-take-aways" class="nav-link" data-scroll-target="#take-aways">Take Aways</a></li>
+  <li><a href="#part-1-looking-at-the-data" id="toc-part-1-looking-at-the-data" class="nav-link active" data-scroll-target="#part-1-looking-at-the-data">Part 1: Looking at the data</a></li>
   </ul>
 </nav>
     </div>
@@ -190,135 +156,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>Explainable AI is all the rage these days. Black box ML models come along with some fun tools such as LIME, SHAP, or Partial Depence Plots that try to give visibility into how the model is interpreting data and making predictions. It’s a common misconception that these are causal inference techniques - sadly we’ve all been mislead.</p>
-<p>We’re going to walk through an example that shows these tools fall victim to the same rules of causal inference as everything else. A confound is still a confound, and if you want to measure some causal effect there’s still no way around that without careful deliberation of which variables to include in your models.</p>
-<p>The code for this blogpost can be found <a href="https://github.com/kylejcaron/case_studies/blob/master/Explainable%20AI%20vs%20Causal%20Inference.ipynb">here</a></p>
-<section id="starting-simple-simulating-some-fake-data" class="level1">
-<h1>Starting simple: simulating some fake data</h1>
-<p>Let’s start with a simple scenario. Our goal is to estimate some causal effects. We’re going to simulate out data ourself so we know the true causal effects. We can see how good some popular “explainable AI” algorithms actually are at causal inference. We’ll simulate data from the following DAG:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_dag1.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
+<p><strong>The Problem:</strong> You work at a clothing rental service that is suffering from high periods of churn. You’ve found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. <strong>How can we determine how much stock to reorder?</strong></p>
+<p>The idea of this project is to borrow ideas from first principles modeling - basically think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation.</p>
+<p>Products with extreme stockouts have misleading demand estimates under classic demand models. The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that demand is atleast 5 rentals. Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information.</p>
+<p>The idea is to start simple(-ish) and add complexity. We’ll first model a single product and test different ordering policies, and then begin modeling multiple products.</p>
+<section id="part-1-looking-at-the-data" class="level1">
+<h1>Part 1: Looking at the data</h1>
 <hr>
-<p><strong>What’s a DAG?</strong> A dag is a directed acyclic graph, or fancy talk for a flowchart that goes in 1 direction. It’s really just a diagram of a true data generating process. <strong>They’re typically assumed based on domain knowledge</strong> (like all models), although ocassionally there are some validation checks you can perform.</p>
-<p>Edges in the graph are assumed to be true causal effects. So for example,</p>
+<p>We have three datasets:</p>
 <ul>
-<li><code>X3</code> influences <code>Y</code></li>
-<li><code>X5</code> influences <code>X1</code> which influences <code>Y</code></li>
-<li>Some unobserved variable <code>U</code> influences both <code>X1</code> and <code>Y</code>. By unobserved, what I mean is that its some variable we don’t have data for.</li>
-</ul>
-<p>For those familiar with causal inference, this DAG in particular is also riddled with confounds.</p>
-<hr>
-<p>Ok back on track. We’ll get out one of the more popular Explainable AI tools nowadays, <code>XGBoost</code>. I’m going to start in the most dangerous way possible - I’m going to toss everything in the model.</p>
-</section>
-<section id="test-1-whats-the-impact-of-x1-on-y" class="level1">
-<h1>Test 1: What’s the impact of X1 on Y?</h1>
-<p>We know for a fact that X1 influences Y. Let’s see how well Partial Dependence Plots and SHAP values do at identifying the true causal effect</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig2.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>These SHAP values arent just wrong, but the effect is in the wrong direction. The reason for this: there’s a <strong>Fork Confound.</strong></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig3.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Some variable <code>Z</code> confounds <code>X</code>s true effect on <code>Y</code>.</p>
-<blockquote class="blockquote">
-<p>A very common example of a fork confound is <code>warm weather (Z)</code> on the relationship between <code>ice cream sales (X)</code> and <code>crime (Y)</code>. Ice cream sales obviously have no influence on crime, but ice cream sales are higher during warmer weather, and crime is higher during warmer weather.</p>
-</blockquote>
-<p>So back to our main point - Explainable AI can’t get around a fork confound. This is our first lesson on why SHAP / explainable AI is different from causal inference.</p>
-<p>Luckily in this case, statistics can solve this problem.</p>
-<p>Using some domain knowledge about the generating process, we notice an instrument, <code>X5</code>, that can be used to estimate the causal effect of <code>X1</code> on <code>Y</code></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig4.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>I won’t go into the details of instrumental variable analysis since the goal of this article is to highlight that Explainable AI can’t replace causal inference. To learn more about it, see <a href="https://mixtape.scunning.com/instrumental-variables.html?panelset=python-code&amp;panelset1=python-code2">Scott Cunningham’s Causal Inference the Mixtape</a>.</p>
-<p>But for now, I will show that a classic causal inference method succeeds where XGBoost and SHAP values fail</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> linearmodels <span class="im">import</span> IV2SLS</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.dagtools <span class="im">import</span> get_effect</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Instrumental variable analysis</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>iv_model <span class="op">=</span> IV2SLS.from_formula(<span class="st">"Y ~ 1 + [X1 ~ X5]"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># pull true effect</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>true_effect <span class="op">=</span> get_effect(DAG, <span class="st">"X1"</span>, <span class="st">"Y"</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">4</span>))</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Instrumental Variable Analysis</span><span class="ch">\n</span><span class="st">Recovers True effect"</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>plot_model_estimate(iv_model, true_effect<span class="op">=</span>true_effect, feat<span class="op">=</span><span class="st">"X1"</span>, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig5.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>As we can see, a simple statistics technique succeeds where explainable AI fails.</p>
-</section>
-<section id="what-about-estimating-the-effect-of-x4-on-y" class="level1">
-<h1>What about estimating the effect of X4 on Y?</h1>
-<p>This relationship is slightly more complicated, but certainly measurable. <code>X4</code> influences <code>X2</code> which influences <code>Y</code>. Here’s the DAG again for reference</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_dag1.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>The plots below show how well explainable AI does at estimating the causal effect of this relationship.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig6.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Unfortunately, they don’t pick up an effect at all! And if our goal was to increase <code>Y</code> we’d end up missing a pretty good lever for it. There’s another simple explanation here for why explainable AI: there’s a <strong>Pipe Confound</strong></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig7.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>When trying to measure the effect of <code>X -&gt; Y</code>, conditioning on <code>Z</code> (aka including it in a model as a covariate with X) ends up blocking inference.</p>
-<p>For more details on how a Pipe confound works, I recommend chapters 5 and 6 of <a href="https://xcelab.net/rm/statistical-rethinking/">Richard McElreath’s Statistical Rethinking v2</a> (where I borrowed the example from as well).</p>
-<p>The main things to note here are that pipes are common and Explainable AI doesn’t get around them.</p>
-<p>We can recover an unbiased estimate of the true effect simply with OLS</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit simple OLS model</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> sm.OLS.from_formula(<span class="st">"Y ~ X4"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># pull true effect</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>true_effect <span class="op">=</span> get_effect(DAG, <span class="st">"X4"</span>, <span class="st">"X2"</span>) <span class="op">*</span> get_effect(DAG, <span class="st">"X2"</span>, <span class="st">"Y"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot (see notebok for plot_model_estimate function)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">4</span>))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Instrumental Variable Analysis</span><span class="ch">\n</span><span class="st">Recovers True effect"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plot_model_estimate(model, true_effect<span class="op">=</span>true_effect, feat<span class="op">=</span><span class="st">"X4"</span>, ax<span class="op">=</span>ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig8.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-<section id="can-we-use-explainable-ai-for-causal-inference-at-all" class="level1">
-<h1>Can we use Explainable AI for causal inference at all?</h1>
-<p>We can! We just need to be deliberate in which variables we include in our models, and the only way to do that right is to use DAGs! The example below looks at an XGBoost model that doesnt condition on <code>X2</code> (allowing us to estimate the causal effect of <code>X4 -&gt; Y</code>).</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/explainable_ai_fig9.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-<section id="take-aways" class="level1">
-<h1>Take Aways</h1>
-<p>Explainable AI is not some magic tool for causal inference. What these tools are good at is explaining why complicated models make the decisions they do. Explainable AI tools suffer from the same limitations for causal inference as all other statistical estimators.</p>
-<p>At the end of the day when causal inference is your goal, nothing beats using DAGs to inform deliberate variable selection.</p>
-<p>If you’re new to the subject, I highly recommend the following resources that will teach you how to use causal inference properly:</p>
-<ul>
-<li>Chapter’s 5 and 6 of Statistical Rethinking v2, by Richard McElreath</li>
-<li>Causal Inference for the Brave and True by Matheus Facure</li>
-<li>Causal Inference the Mixtape, by Scott Cunningham</li>
+<li><code>rentals</code> showing rental events and when those rentals were returned for a single product</li>
+<li><code>stock</code> showing available stock levels for that product over time</li>
+<li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
 
 

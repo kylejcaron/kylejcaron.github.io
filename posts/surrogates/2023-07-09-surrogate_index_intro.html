@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.163">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -18,11 +18,12 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -47,47 +48,17 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -109,7 +80,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -118,15 +95,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../theme.scss">
 </head>
@@ -134,35 +141,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Kyle Caron</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../blog.html">Blog</a>
+    <a class="nav-link" href="../../blog.html"> 
+<span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/kylejcaron"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/kylejcaron"> <i class="bi bi-github" role="img">
 </i> 
- </a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
 </i> 
- </a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -188,6 +198,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p class="date">July 9, 2023</p>
       </div>
     </div>
+    
       
     </div>
     
@@ -215,6 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
+
 
 
 
@@ -249,46 +261,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Surrogate indexes are a way to use short term proxies to estimate long-term treatment effects. For instance, lets say you’re a subscription company and you want to see how some intervention improves retention. But churn takes a long time to observe, so your experiment could go on for months. <strong>TLDR;</strong> is that with this approach, instead of measuring churn as your <strong>overall evaluation criteria (OEC</strong>), you measure <code>predicted churn</code> (with some caveats) as the OEC.</p>
 <p>A common response might be “thats complicated, can we try something more simple for now?” Of course you can. You can always try to choose some single short term proxy as your OEC for an experiment. But be careful because you could end up over-optimizing that proxy and not seeing the improvement in your long term outcome that you want. Surrogate indexes instead have many short term proxies, and they are validated over a set of historical data to ensure they’re an unbiased estimator of long term treatment effects.</p>
 <p>How do they work? Let’s start with a DAG</p>
-<div class="cell">
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
-<p>
-<svg width="672" height="480" viewbox="0.00 0.00 134.00 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
+<p></p><figure class="figure"><p></p>
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 134.00 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
-<title>
-G
-</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 130,-184 130,4 -4,4"></polygon> <!-- X --> <g id="node1" class="node">
-<title>
-X
-</title>
-<ellipse fill="none" stroke="black" cx="27" cy="-162" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">X</text> </g> <!-- S --> <g id="node2" class="node">
-<title>
-S
-</title>
-<ellipse fill="none" stroke="black" cx="63" cy="-90" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="63" y="-85.8" font-family="Times,serif" font-size="14.00">S</text> </g> <!-- X&#45;&gt;S --> <g id="edge1" class="edge">
-<title>
-X-&gt;S
-</title>
-<path fill="none" stroke="black" d="M35.35,-144.76C39.71,-136.28 45.15,-125.71 50.04,-116.2"></path> <polygon fill="black" stroke="black" points="53.23,-117.64 54.7,-107.15 47.01,-114.44 53.23,-117.64"></polygon> </g> <!-- Y --> <g id="node4" class="node">
-<title>
-Y
-</title>
-<ellipse fill="none" stroke="black" cx="63" cy="-18" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="63" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text> </g> <!-- S&#45;&gt;Y --> <g id="edge3" class="edge">
-<title>
-S-&gt;Y
-</title>
-<path fill="none" stroke="black" d="M63,-71.7C63,-63.98 63,-54.71 63,-46.11"></path> <polygon fill="black" stroke="black" points="66.5,-46.1 63,-36.1 59.5,-46.1 66.5,-46.1"></polygon> </g> <!-- Tx --> <g id="node3" class="node">
-<title>
-Tx
-</title>
-<ellipse fill="none" stroke="black" cx="99" cy="-162" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">Tx</text> </g> <!-- Tx&#45;&gt;S --> <g id="edge2" class="edge">
-<title>
-Tx-&gt;S
-</title>
-<path fill="none" stroke="black" d="M90.65,-144.76C86.29,-136.28 80.85,-125.71 75.96,-116.2"></path> <polygon fill="black" stroke="black" points="78.99,-114.44 71.3,-107.15 72.77,-117.64 78.99,-114.44"></polygon> </g> </g>
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 130,-184 130,4 -4,4"></polygon>
+<!-- X -->
+<g id="node1" class="node">
+<title>X</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">X</text>
+</g>
+<!-- S -->
+<g id="node2" class="node">
+<title>S</title>
+<ellipse fill="none" stroke="black" cx="63" cy="-90" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="63" y="-85.8" font-family="Times,serif" font-size="14.00">S</text>
+</g>
+<!-- X&#45;&gt;S -->
+<g id="edge1" class="edge">
+<title>X-&gt;S</title>
+<path fill="none" stroke="black" d="M35.35,-144.76C39.71,-136.28 45.15,-125.71 50.04,-116.2"></path>
+<polygon fill="black" stroke="black" points="53.23,-117.64 54.7,-107.15 47.01,-114.44 53.23,-117.64"></polygon>
+</g>
+<!-- Y -->
+<g id="node4" class="node">
+<title>Y</title>
+<ellipse fill="none" stroke="black" cx="63" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="63" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text>
+</g>
+<!-- S&#45;&gt;Y -->
+<g id="edge3" class="edge">
+<title>S-&gt;Y</title>
+<path fill="none" stroke="black" d="M63,-71.7C63,-63.98 63,-54.71 63,-46.11"></path>
+<polygon fill="black" stroke="black" points="66.5,-46.1 63,-36.1 59.5,-46.1 66.5,-46.1"></polygon>
+</g>
+<!-- Tx -->
+<g id="node3" class="node">
+<title>Tx</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">Tx</text>
+</g>
+<!-- Tx&#45;&gt;S -->
+<g id="edge2" class="edge">
+<title>Tx-&gt;S</title>
+<path fill="none" stroke="black" d="M90.65,-144.76C86.29,-136.28 80.85,-125.71 75.96,-116.2"></path>
+<polygon fill="black" stroke="black" points="78.99,-114.44 71.3,-107.15 72.77,-117.64 78.99,-114.44"></polygon>
+</g>
+</g>
 </svg>
-</p>
+</div>
+<p></p></figure><p></p>
 </div>
 </div>
 </div>
@@ -296,62 +323,90 @@ Tx-&gt;S
 <p>There’s also a treatment, <span class="math inline">\(\text{Tx}\)</span>, that influences <span class="math inline">\(S\)</span>. It may influence different short term outcomes in S in different ways.</p>
 <p>Lastly there’s <span class="math inline">\(Y\)</span>, our long-term outcome of interest. Notice that all of the effect of the treatment on <span class="math inline">\(Y\)</span> flows through <span class="math inline">\(S\)</span>. This is saying that the entire causal effect of the treatment on <span class="math inline">\(Y\)</span> is explained by the effect of the treatment on <span class="math inline">\(S\)</span>. Keep note of that, because its a key assumption for Surrogate Indexes to work.</p>
 <p>A more detailed way to show this is through the use of <a href="https://academic.oup.com/ije/article/50/2/613/5998421">IDAGs</a>, a newer way to represent DAGs with interactions</p>
-<div class="cell">
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
-<p>
-<svg width="672" height="480" viewbox="0.00 0.00 220.79 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)"> <polygon fill="white" stroke="transparent" points="-4,4 -4,-184 216.79,-184 216.79,4 -4,4"></polygon> <!-- x --> <g id="node1" class="node">
-<title>
-x
-</title>
-<ellipse fill="none" stroke="black" cx="27" cy="-162" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">X</text> </g> <!-- s --> <g id="node2" class="node">
-<title>
-s
-</title>
-<ellipse fill="none" stroke="black" cx="61" cy="-90" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="61" y="-85.8" font-family="Times,serif" font-size="14.00">S</text> </g> <!-- x&#45;&gt;s --> <g id="edge1" class="edge">
-<title>
-x-&gt;s
-</title>
-<path fill="none" stroke="black" d="M34.89,-144.76C38.9,-136.49 43.89,-126.23 48.42,-116.9"></path> <polygon fill="black" stroke="black" points="51.7,-118.16 52.92,-107.63 45.4,-115.1 51.7,-118.16"></polygon> </g> <!-- y --> <g id="node3" class="node">
-<title>
-y
-</title>
-<ellipse fill="none" stroke="black" cx="61" cy="-18" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="61" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text> </g> <!-- s&#45;&gt;y --> <g id="edge3" class="edge">
-<title>
-s-&gt;y
-</title>
-<path fill="none" stroke="black" d="M61,-71.7C61,-63.98 61,-54.71 61,-46.11"></path> <polygon fill="black" stroke="black" points="64.5,-46.1 61,-36.1 57.5,-46.1 64.5,-46.1"></polygon> </g> <!-- t --> <g id="node4" class="node">
-<title>
-t
-</title>
-<ellipse fill="none" stroke="black" cx="99" cy="-162" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">Tx</text> </g> <!-- t&#45;&gt;s --> <g id="edge2" class="edge">
-<title>
-t-&gt;s
-</title>
-<path fill="none" stroke="black" d="M90.19,-144.76C85.58,-136.28 79.84,-125.71 74.68,-116.2"></path> <polygon fill="black" stroke="black" points="77.61,-114.27 69.77,-107.15 71.46,-117.61 77.61,-114.27"></polygon> </g> <!-- X --> <g id="node5" class="node">
-<title>
-X
-</title>
-<ellipse fill="none" stroke="black" cx="176" cy="-162" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="176" y="-157.8" font-family="Times,serif" font-size="14.00">X</text> </g> <!-- ΔS_Tx --> <g id="node6" class="node">
-<title>
-ΔS_Tx
-</title>
-<ellipse fill="none" stroke="black" cx="176" cy="-90" rx="36.58" ry="18"></ellipse> <text text-anchor="middle" x="176" y="-85.8" font-family="Times,serif" font-size="14.00">ΔS_Tx</text> </g> <!-- X&#45;&gt;ΔS_Tx --> <g id="edge4" class="edge">
-<title>
-X-&gt;ΔS_Tx
-</title>
-<path fill="none" stroke="black" d="M176,-143.7C176,-135.98 176,-126.71 176,-118.11"></path> <polygon fill="black" stroke="black" points="179.5,-118.1 176,-108.1 172.5,-118.1 179.5,-118.1"></polygon> </g> <!-- Y --> <g id="node7" class="node">
-<title>
-Y
-</title>
-<ellipse fill="none" stroke="black" cx="176" cy="-18" rx="27" ry="18"></ellipse> <text text-anchor="middle" x="176" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text> </g> <!-- ΔS_Tx&#45;&gt;Y --> <g id="edge5" class="edge">
-<title>
-ΔS_Tx-&gt;Y
-</title>
-<path fill="none" stroke="black" d="M176,-71.7C176,-63.98 176,-54.71 176,-46.11"></path> <polygon fill="black" stroke="black" points="179.5,-46.1 176,-36.1 172.5,-46.1 179.5,-46.1"></polygon> </g> </g>
+<p></p><figure class="figure"><p></p>
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 220.79 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 216.79,-184 216.79,4 -4,4"></polygon>
+<!-- x -->
+<g id="node1" class="node">
+<title>x</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">X</text>
+</g>
+<!-- s -->
+<g id="node2" class="node">
+<title>s</title>
+<ellipse fill="none" stroke="black" cx="61" cy="-90" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="61" y="-85.8" font-family="Times,serif" font-size="14.00">S</text>
+</g>
+<!-- x&#45;&gt;s -->
+<g id="edge1" class="edge">
+<title>x-&gt;s</title>
+<path fill="none" stroke="black" d="M34.89,-144.76C38.9,-136.49 43.89,-126.23 48.42,-116.9"></path>
+<polygon fill="black" stroke="black" points="51.7,-118.16 52.92,-107.63 45.4,-115.1 51.7,-118.16"></polygon>
+</g>
+<!-- y -->
+<g id="node3" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="61" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="61" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text>
+</g>
+<!-- s&#45;&gt;y -->
+<g id="edge3" class="edge">
+<title>s-&gt;y</title>
+<path fill="none" stroke="black" d="M61,-71.7C61,-63.98 61,-54.71 61,-46.11"></path>
+<polygon fill="black" stroke="black" points="64.5,-46.1 61,-36.1 57.5,-46.1 64.5,-46.1"></polygon>
+</g>
+<!-- t -->
+<g id="node4" class="node">
+<title>t</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">Tx</text>
+</g>
+<!-- t&#45;&gt;s -->
+<g id="edge2" class="edge">
+<title>t-&gt;s</title>
+<path fill="none" stroke="black" d="M90.19,-144.76C85.58,-136.28 79.84,-125.71 74.68,-116.2"></path>
+<polygon fill="black" stroke="black" points="77.61,-114.27 69.77,-107.15 71.46,-117.61 77.61,-114.27"></polygon>
+</g>
+<!-- X -->
+<g id="node5" class="node">
+<title>X</title>
+<ellipse fill="none" stroke="black" cx="176" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="176" y="-157.8" font-family="Times,serif" font-size="14.00">X</text>
+</g>
+<!-- ΔS_Tx -->
+<g id="node6" class="node">
+<title>ΔS_Tx</title>
+<ellipse fill="none" stroke="black" cx="176" cy="-90" rx="36.58" ry="18"></ellipse>
+<text text-anchor="middle" x="176" y="-85.8" font-family="Times,serif" font-size="14.00">ΔS_Tx</text>
+</g>
+<!-- X&#45;&gt;ΔS_Tx -->
+<g id="edge4" class="edge">
+<title>X-&gt;ΔS_Tx</title>
+<path fill="none" stroke="black" d="M176,-143.7C176,-135.98 176,-126.71 176,-118.11"></path>
+<polygon fill="black" stroke="black" points="179.5,-118.1 176,-108.1 172.5,-118.1 179.5,-118.1"></polygon>
+</g>
+<!-- Y -->
+<g id="node7" class="node">
+<title>Y</title>
+<ellipse fill="none" stroke="black" cx="176" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="176" y="-13.8" font-family="Times,serif" font-size="14.00">Y</text>
+</g>
+<!-- ΔS_Tx&#45;&gt;Y -->
+<g id="edge5" class="edge">
+<title>ΔS_Tx-&gt;Y</title>
+<path fill="none" stroke="black" d="M176,-71.7C176,-63.98 176,-54.71 176,-46.11"></path>
+<polygon fill="black" stroke="black" points="179.5,-46.1 176,-36.1 172.5,-46.1 179.5,-46.1"></polygon>
+</g>
+</g>
 </svg>
-</p>
+</div>
+<p></p></figure><p></p>
 </div>
 </div>
 </div>
@@ -370,7 +425,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <section id="step-1-simulating-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-simulating-the-data">Step 1: Simulating the data</h2>
 <p>We’ll start by simulating two datasets: A historical dataset and an experiment dataset. The advantage to simulating data is that we know the exact effects, so when we try and estimate them we can confirm our methods are recovering the true effect.</p>
-<div class="cell" data-execution_count="1">
+<div id="e2b7160b" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -401,290 +456,399 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the historical dataset </span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>display(historical_data.head(<span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.</code></pre>
+</div>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>X0</th>
-      <th>X1</th>
-      <th>X2</th>
-      <th>X3</th>
-      <th>X4</th>
-      <th>T</th>
-      <th>S0</th>
-      <th>S1</th>
-      <th>S2</th>
-      <th>S3</th>
-      <th>S4</th>
-      <th>S5</th>
-      <th>S6</th>
-      <th>S7</th>
-      <th>Y</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.122906</td>
-      <td>0.870259</td>
-      <td>-1.054623</td>
-      <td>-0.139527</td>
-      <td>-1.433731</td>
-      <td>0.0</td>
-      <td>1.136292</td>
-      <td>0.470017</td>
-      <td>-0.263080</td>
-      <td>0.486101</td>
-      <td>0.723525</td>
-      <td>0.129917</td>
-      <td>-0.493243</td>
-      <td>0.679735</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.736599</td>
-      <td>-0.706638</td>
-      <td>1.337368</td>
-      <td>-0.111941</td>
-      <td>-0.838790</td>
-      <td>0.0</td>
-      <td>0.151892</td>
-      <td>-0.107404</td>
-      <td>0.140590</td>
-      <td>-0.815408</td>
-      <td>0.274605</td>
-      <td>-0.446996</td>
-      <td>0.354266</td>
-      <td>-1.318440</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>1.110126</td>
-      <td>-1.617668</td>
-      <td>1.262500</td>
-      <td>1.049915</td>
-      <td>-0.592917</td>
-      <td>0.0</td>
-      <td>-0.166384</td>
-      <td>-0.147854</td>
-      <td>0.565484</td>
-      <td>-1.401817</td>
-      <td>-0.086840</td>
-      <td>-0.453305</td>
-      <td>0.529608</td>
-      <td>-1.086965</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.475479</td>
-      <td>-0.507716</td>
-      <td>0.324226</td>
-      <td>1.259292</td>
-      <td>-0.366888</td>
-      <td>0.0</td>
-      <td>0.154545</td>
-      <td>0.161311</td>
-      <td>0.087151</td>
-      <td>-0.750579</td>
-      <td>0.103096</td>
-      <td>-0.098244</td>
-      <td>0.131146</td>
-      <td>0.032963</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.290787</td>
-      <td>-0.575874</td>
-      <td>0.867617</td>
-      <td>0.844031</td>
-      <td>-0.098109</td>
-      <td>0.0</td>
-      <td>-0.089913</td>
-      <td>0.078953</td>
-      <td>0.067596</td>
-      <td>-0.773764</td>
-      <td>0.041729</td>
-      <td>-0.170939</td>
-      <td>0.318613</td>
-      <td>-0.506544</td>
-      <td>0</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">X0</th>
+<th data-quarto-table-cell-role="th">X1</th>
+<th data-quarto-table-cell-role="th">X2</th>
+<th data-quarto-table-cell-role="th">X3</th>
+<th data-quarto-table-cell-role="th">X4</th>
+<th data-quarto-table-cell-role="th">T</th>
+<th data-quarto-table-cell-role="th">S0</th>
+<th data-quarto-table-cell-role="th">S1</th>
+<th data-quarto-table-cell-role="th">S2</th>
+<th data-quarto-table-cell-role="th">S3</th>
+<th data-quarto-table-cell-role="th">S4</th>
+<th data-quarto-table-cell-role="th">S5</th>
+<th data-quarto-table-cell-role="th">S6</th>
+<th data-quarto-table-cell-role="th">S7</th>
+<th data-quarto-table-cell-role="th">Y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>-0.112296</td>
+<td>0.858491</td>
+<td>-1.054248</td>
+<td>-0.148359</td>
+<td>-1.445868</td>
+<td>0.0</td>
+<td>1.124882</td>
+<td>0.470750</td>
+<td>-0.256719</td>
+<td>0.490501</td>
+<td>0.717733</td>
+<td>0.112275</td>
+<td>-0.469665</td>
+<td>0.685521</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>0.742275</td>
+<td>-0.713454</td>
+<td>1.338420</td>
+<td>-0.110851</td>
+<td>-0.858061</td>
+<td>0.0</td>
+<td>0.164344</td>
+<td>-0.098284</td>
+<td>0.145100</td>
+<td>-0.824628</td>
+<td>0.287690</td>
+<td>-0.437757</td>
+<td>0.349465</td>
+<td>-1.338357</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1.120252</td>
+<td>-1.605373</td>
+<td>1.248297</td>
+<td>1.041319</td>
+<td>-0.607336</td>
+<td>0.0</td>
+<td>-0.137178</td>
+<td>-0.151111</td>
+<td>0.565121</td>
+<td>-1.408072</td>
+<td>-0.061795</td>
+<td>-0.443625</td>
+<td>0.518400</td>
+<td>-1.081136</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>0.473632</td>
+<td>-0.493766</td>
+<td>0.312885</td>
+<td>1.267837</td>
+<td>-0.368449</td>
+<td>0.0</td>
+<td>0.156102</td>
+<td>0.163492</td>
+<td>0.085546</td>
+<td>-0.745953</td>
+<td>0.096308</td>
+<td>-0.080255</td>
+<td>0.126942</td>
+<td>0.045388</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0.294106</td>
+<td>-0.571930</td>
+<td>0.861256</td>
+<td>0.833036</td>
+<td>-0.110088</td>
+<td>0.0</td>
+<td>-0.082428</td>
+<td>0.061585</td>
+<td>0.061670</td>
+<td>-0.762393</td>
+<td>0.048130</td>
+<td>-0.173321</td>
+<td>0.307335</td>
+<td>-0.504886</td>
+<td>1</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
 <p>The underlying simulation code is below if you’re interested</p>
-<div class="cell" data-execution_count="2">
-<details>
+<div id="447c6916" class="cell" data-execution_count="2">
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Dict</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transmitter(</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    params: Dict,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    add_treatment: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    n_users: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    logit_link: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Simulates outcomes based on some ground truth parameters. </span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">    -----------</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">        params: The ground truth parameters (effects and biases) to simulate based off of</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">        add_treatment: adds a randomly allocated treatment when true, with effect `bTS`</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">        n_users: The number of users to simulate</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">        logit_link: whether the data generating process is a bernoulli outcome or not</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">        rng: A numpy random generator </span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">    --------</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">        A pandas dataframe with simulated data, including pre-treatment covariates,</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">         surrogate outcomes, a treatment indicator, and a long term outcome, Y</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        seed <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span>seed)</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unpack params</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    Zdims, Xdims, Sdims <span class="op">=</span>  params[<span class="st">'bZX'</span>].shape[<span class="dv">1</span>],  params[<span class="st">'bZX'</span>].shape[<span class="dv">0</span>],  params[<span class="st">'bXS'</span>].shape[<span class="dv">0</span>]</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    alphaX,alphaS,alphaY  <span class="op">=</span> params[<span class="st">'alphaX'</span>], params[<span class="st">'alphaS'</span>], params[<span class="st">'alphaY'</span>] <span class="co"># bias terms</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    bZX,bXS,bSY <span class="op">=</span> params[<span class="st">'bZX'</span>], params[<span class="st">'bXS'</span>],params[<span class="st">'bSY'</span>] <span class="co"># causal relationships</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    bTS,bXTS <span class="op">=</span> params[<span class="st">'bTS'</span>], params[<span class="st">'bXTS'</span>] <span class="co"># tx effects</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unobserved variable Z representing latent customer traits</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> rng.normal(<span class="dv">0</span>,<span class="dv">1</span>, size<span class="op">=</span>(Zdims, n_users))</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Some observed pre-TX measures</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> alphaX[:,<span class="va">None</span>] <span class="op">+</span> (bZX <span class="op">@</span> Z)</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Intermediate outcomes</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> alphaS[:,<span class="va">None</span>] <span class="op">+</span> (bXS <span class="op">@</span> X) </span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add in treatment effect if applicable</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> rng.binomial(<span class="dv">1</span>,<span class="fl">0.5</span>,size<span class="op">=</span>n_users) <span class="cf">if</span> add_treatment <span class="cf">else</span> np.zeros(n_users)        </span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    avg_tx_term <span class="op">=</span> (bTS <span class="op">*</span> T[:,<span class="va">None</span>])        </span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    hetergeneous_tx_term <span class="op">=</span> (bXTS <span class="op">@</span> (X<span class="op">*</span>T))</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    S <span class="op">+=</span> avg_tx_term.T <span class="op">+</span> hetergeneous_tx_term</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># expectation of long term outcome</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    eta <span class="op">=</span> <span class="dv">0</span> <span class="op">+</span> (bSY <span class="op">@</span> S)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Long term outcome</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> logit_link:</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> rng.binomial(<span class="dv">1</span>, sp.expit(eta) )</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> rng.normal(eta, <span class="fl">0.025</span>)</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Output as dataframe</span></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    Xdf <span class="op">=</span> pd.DataFrame(X.T, columns<span class="op">=</span>[<span class="ss">f'X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Xdims)]).assign(T<span class="op">=</span>T)</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    Sdf <span class="op">=</span> pd.DataFrame(S.T, columns<span class="op">=</span>[<span class="ss">f'S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Sdims)])</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    Ydf <span class="op">=</span> pd.DataFrame(Y.ravel(), columns<span class="op">=</span>[<span class="st">'Y'</span>])</span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.concat((Xdf, Sdf, Ydf),axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Dict</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transmitter(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    params: Dict,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    add_treatment: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    n_users: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    logit_link: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Simulates outcomes based on some ground truth parameters. </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">    -----------</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">        params: The ground truth parameters (effects and biases) to simulate based off of</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">        add_treatment: adds a randomly allocated treatment when true, with effect `bTS`</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">        n_users: The number of users to simulate</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">        logit_link: whether the data generating process is a bernoulli outcome or not</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">        rng: A numpy random generator </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">    --------</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">        A pandas dataframe with simulated data, including pre-treatment covariates,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">         surrogate outcomes, a treatment indicator, and a long term outcome, Y</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        seed <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">1000</span>))</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span>seed)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unpack params</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    Zdims, Xdims, Sdims <span class="op">=</span>  params[<span class="st">'bZX'</span>].shape[<span class="dv">1</span>],  params[<span class="st">'bZX'</span>].shape[<span class="dv">0</span>],  params[<span class="st">'bXS'</span>].shape[<span class="dv">0</span>]</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    alphaX,alphaS,alphaY  <span class="op">=</span> params[<span class="st">'alphaX'</span>], params[<span class="st">'alphaS'</span>], params[<span class="st">'alphaY'</span>] <span class="co"># bias terms</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    bZX,bXS,bSY <span class="op">=</span> params[<span class="st">'bZX'</span>], params[<span class="st">'bXS'</span>],params[<span class="st">'bSY'</span>] <span class="co"># causal relationships</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    bTS,bXTS <span class="op">=</span> params[<span class="st">'bTS'</span>], params[<span class="st">'bXTS'</span>] <span class="co"># tx effects</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unobserved variable Z representing latent customer traits</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> rng.normal(<span class="dv">0</span>,<span class="dv">1</span>, size<span class="op">=</span>(Zdims, n_users))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Some observed pre-TX measures</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> alphaX[:,<span class="va">None</span>] <span class="op">+</span> (bZX <span class="op">@</span> Z)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Intermediate outcomes</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    S <span class="op">=</span> alphaS[:,<span class="va">None</span>] <span class="op">+</span> (bXS <span class="op">@</span> X) </span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add in treatment effect if applicable</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> rng.binomial(<span class="dv">1</span>,<span class="fl">0.5</span>,size<span class="op">=</span>n_users) <span class="cf">if</span> add_treatment <span class="cf">else</span> np.zeros(n_users)        </span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    avg_tx_term <span class="op">=</span> (bTS <span class="op">*</span> T[:,<span class="va">None</span>])        </span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    hetergeneous_tx_term <span class="op">=</span> (bXTS <span class="op">@</span> (X<span class="op">*</span>T))</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    S <span class="op">+=</span> avg_tx_term.T <span class="op">+</span> hetergeneous_tx_term</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># expectation of long term outcome</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    eta <span class="op">=</span> <span class="dv">0</span> <span class="op">+</span> (bSY <span class="op">@</span> S)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Long term outcome</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> logit_link:</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> rng.binomial(<span class="dv">1</span>, sp.expit(eta) )</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> rng.normal(eta, <span class="fl">0.025</span>)</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Output as dataframe</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    Xdf <span class="op">=</span> pd.DataFrame(X.T, columns<span class="op">=</span>[<span class="ss">f'X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Xdims)]).assign(T<span class="op">=</span>T)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    Sdf <span class="op">=</span> pd.DataFrame(S.T, columns<span class="op">=</span>[<span class="ss">f'S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(Sdims)])</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    Ydf <span class="op">=</span> pd.DataFrame(Y.ravel(), columns<span class="op">=</span>[<span class="st">'Y'</span>])</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.concat((Xdf, Sdf, Ydf),axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="step-2-fitting-a-surrogate-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-fitting-a-surrogate-model">Step 2: Fitting a surrogate model</h2>
 <p>We’ll use the historical dataset to fit the surrogate index model, mapping <span class="math inline">\(S \rightarrow Y\)</span></p>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>S_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"S"</span>).columns )</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"X"</span>).columns )</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: fit a surrogate index model on complete historical data</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>surrogate_model <span class="op">=</span> sm.OLS.from_formula(<span class="ss">f"Y ~ </span><span class="sc">{</span>S_vars<span class="sc">}</span><span class="ss">"</span>, data<span class="op">=</span>historical_data).fit()</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the variance in the estimator, \hat{sigma^2}. This is used for bias corrections later</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>predicted_sigma2 <span class="op">=</span> np.var( surrogate_model.fittedvalues <span class="op">-</span> historical_data.Y,  ddof<span class="op">=</span><span class="dv">1</span> )</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the model summary</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>surrogate_model.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="ca9b047f" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>S_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"S"</span>).columns )</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"X"</span>).columns )</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: fit a surrogate index model on complete historical data</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>surrogate_model <span class="op">=</span> sm.OLS.from_formula(<span class="ss">f"Y ~ </span><span class="sc">{</span>S_vars<span class="sc">}</span><span class="ss">"</span>, data<span class="op">=</span>historical_data).fit()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the variance in the estimator, \hat{sigma^2}. This is used for bias corrections later</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>predicted_sigma2 <span class="op">=</span> np.var( surrogate_model.fittedvalues <span class="op">-</span> historical_data.Y,  ddof<span class="op">=</span><span class="dv">1</span> )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Show the model summary</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>surrogate_model.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-
-<table class="simpletable">
+<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>OLS Regression Results</caption>
-<tbody><tr>
-  <th>Dep. Variable:</th>            <td>Y</td>        <th>  R-squared:         </th> <td>   0.109</td> 
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Dep. Variable:</td>
+<td>Y</td>
+<td data-quarto-table-cell-role="th">R-squared:</td>
+<td>0.110</td>
 </tr>
-<tr>
-  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.109</td> 
+<tr class="even">
+<td data-quarto-table-cell-role="th">Model:</td>
+<td>OLS</td>
+<td data-quarto-table-cell-role="th">Adj. R-squared:</td>
+<td>0.110</td>
 </tr>
-<tr>
-  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   1227.</td> 
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Method:</td>
+<td>Least Squares</td>
+<td data-quarto-table-cell-role="th">F-statistic:</td>
+<td>776.2</td>
 </tr>
-<tr>
-  <th>Date:</th>             <td>Tue, 26 Sep 2023</td> <th>  Prob (F-statistic):</th>  <td>  0.00</td>  
+<tr class="even">
+<td data-quarto-table-cell-role="th">Date:</td>
+<td>Tue, 06 Feb 2024</td>
+<td data-quarto-table-cell-role="th">Prob (F-statistic):</td>
+<td>0.00</td>
 </tr>
-<tr>
-  <th>Time:</th>                 <td>20:23:12</td>     <th>  Log-Likelihood:    </th> <td> -33395.</td> 
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Time:</td>
+<td>22:01:34</td>
+<td data-quarto-table-cell-role="th">Log-Likelihood:</td>
+<td>-33362.</td>
 </tr>
-<tr>
-  <th>No. Observations:</th>      <td> 50000</td>      <th>  AIC:               </th> <td>6.680e+04</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">No. Observations:</td>
+<td>50000</td>
+<td data-quarto-table-cell-role="th">AIC:</td>
+<td>6.674e+04</td>
 </tr>
-<tr>
-  <th>Df Residuals:</th>          <td> 49994</td>      <th>  BIC:               </th> <td>6.686e+04</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Df Residuals:</td>
+<td>49991</td>
+<td data-quarto-table-cell-role="th">BIC:</td>
+<td>6.682e+04</td>
 </tr>
-<tr>
-  <th>Df Model:</th>              <td>     5</td>      <th>                     </th>     <td> </td>    
+<tr class="even">
+<td data-quarto-table-cell-role="th">Df Model:</td>
+<td>8</td>
+<td data-quarto-table-cell-role="th"></td>
+<td></td>
 </tr>
-<tr>
-  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>    
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Covariance Type:</td>
+<td>nonrobust</td>
+<td data-quarto-table-cell-role="th"></td>
+<td></td>
 </tr>
-</tbody></table>
-<table class="simpletable">
-<tbody><tr>
-      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P&gt;|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tbody>
+</table>
+<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td></td>
+<td data-quarto-table-cell-role="th">coef</td>
+<td data-quarto-table-cell-role="th">std err</td>
+<td data-quarto-table-cell-role="th">t</td>
+<td data-quarto-table-cell-role="th">P&gt;|t|</td>
+<td data-quarto-table-cell-role="th">[0.025</td>
+<td data-quarto-table-cell-role="th">0.975]</td>
 </tr>
-<tr>
-  <th>Intercept</th> <td>    0.4987</td> <td>    0.002</td> <td>  236.271</td> <td> 0.000</td> <td>    0.495</td> <td>    0.503</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Intercept</td>
+<td>0.5014</td>
+<td>0.002</td>
+<td>237.696</td>
+<td>0.000</td>
+<td>0.497</td>
+<td>0.506</td>
 </tr>
-<tr>
-  <th>S0</th>        <td>    0.0361</td> <td>    0.004</td> <td>   10.244</td> <td> 0.000</td> <td>    0.029</td> <td>    0.043</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">S0</td>
+<td>-0.2217</td>
+<td>0.122</td>
+<td>-1.820</td>
+<td>0.069</td>
+<td>-0.461</td>
+<td>0.017</td>
 </tr>
-<tr>
-  <th>S1</th>        <td>    0.1035</td> <td>    0.005</td> <td>   21.661</td> <td> 0.000</td> <td>    0.094</td> <td>    0.113</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">S1</td>
+<td>0.2005</td>
+<td>0.107</td>
+<td>1.869</td>
+<td>0.062</td>
+<td>-0.010</td>
+<td>0.411</td>
 </tr>
-<tr>
-  <th>S2</th>        <td>   -0.0399</td> <td>    0.005</td> <td>   -8.396</td> <td> 0.000</td> <td>   -0.049</td> <td>   -0.031</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">S2</td>
+<td>0.0646</td>
+<td>0.054</td>
+<td>1.187</td>
+<td>0.235</td>
+<td>-0.042</td>
+<td>0.171</td>
 </tr>
-<tr>
-  <th>S3</th>        <td>    0.1833</td> <td>    0.004</td> <td>   49.916</td> <td> 0.000</td> <td>    0.176</td> <td>    0.190</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">S3</td>
+<td>0.1787</td>
+<td>0.048</td>
+<td>3.692</td>
+<td>0.000</td>
+<td>0.084</td>
+<td>0.274</td>
 </tr>
-<tr>
-  <th>S4</th>        <td>    0.0482</td> <td>    0.002</td> <td>   29.074</td> <td> 0.000</td> <td>    0.045</td> <td>    0.051</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">S4</td>
+<td>0.3173</td>
+<td>0.172</td>
+<td>1.840</td>
+<td>0.066</td>
+<td>-0.021</td>
+<td>0.655</td>
 </tr>
-<tr>
-  <th>S5</th>        <td>    0.0674</td> <td>    0.002</td> <td>   29.208</td> <td> 0.000</td> <td>    0.063</td> <td>    0.072</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">S5</td>
+<td>-0.0823</td>
+<td>0.188</td>
+<td>-0.438</td>
+<td>0.661</td>
+<td>-0.451</td>
+<td>0.286</td>
 </tr>
-<tr>
-  <th>S6</th>        <td>   -0.0057</td> <td>    0.002</td> <td>   -2.350</td> <td> 0.019</td> <td>   -0.010</td> <td>   -0.001</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">S6</td>
+<td>-0.1860</td>
+<td>0.182</td>
+<td>-1.024</td>
+<td>0.306</td>
+<td>-0.542</td>
+<td>0.170</td>
 </tr>
-<tr>
-  <th>S7</th>        <td>    0.0054</td> <td>    0.003</td> <td>    1.970</td> <td> 0.049</td> <td> 2.64e-05</td> <td>    0.011</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">S7</td>
+<td>0.0394</td>
+<td>0.065</td>
+<td>0.609</td>
+<td>0.543</td>
+<td>-0.088</td>
+<td>0.166</td>
 </tr>
-</tbody></table>
-<table class="simpletable">
-<tbody><tr>
-  <th>Omnibus:</th>       <td>250873.640</td> <th>  Durbin-Watson:     </th> <td>   1.993</td>
+</tbody>
+</table>
+<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Omnibus:</td>
+<td>253631.416</td>
+<td data-quarto-table-cell-role="th">Durbin-Watson:</td>
+<td>2.001</td>
 </tr>
-<tr>
-  <th>Prob(Omnibus):</th>   <td> 0.000</td>   <th>  Jarque-Bera (JB):  </th> <td>5244.738</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Prob(Omnibus):</td>
+<td>0.000</td>
+<td data-quarto-table-cell-role="th">Jarque-Bera (JB):</td>
+<td>5202.355</td>
 </tr>
-<tr>
-  <th>Skew:</th>            <td> 0.004</td>   <th>  Prob(JB):          </th> <td>    0.00</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Skew:</td>
+<td>-0.005</td>
+<td data-quarto-table-cell-role="th">Prob(JB):</td>
+<td>0.00</td>
 </tr>
-<tr>
-  <th>Kurtosis:</th>        <td> 1.413</td>   <th>  Cond. No.          </th> <td>1.96e+16</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">Kurtosis:</td>
+<td>1.420</td>
+<td data-quarto-table-cell-role="th">Cond. No.</td>
+<td>136.</td>
 </tr>
-</tbody></table><br><br>Notes:<br>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.<br>[2] The smallest eigenvalue is 2.41e-28. This might indicate that there are<br>strong multicollinearity problems or that the design matrix is singular.
+</tbody>
+</table>
+<br><br>Notes:<br>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 </div>
 </div>
 <p>There are 3 important things to note here:</p>
@@ -698,197 +862,218 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <h2 class="anchored" data-anchor-id="step-3-estimate-long-term-treatment-effect">Step 3: Estimate Long Term Treatment Effect</h2>
 <p>We’ll now use the surrogate index to estimate a long term treatment effect</p>
 <p>Let’s take our experiment dataset and estimate <span class="math inline">\(E[\delta_{\text{LTO}}]\)</span>, the average treatment effect on the long term outcome. Notice, the long term outcome, <span class="math inline">\(Y\)</span>, hasn’t been observed yet.</p>
-<div class="cell" data-execution_count="4">
-<details>
+<div id="1f6eb378" class="cell" data-execution_count="4">
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>display(experiment_data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(experiment_data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-
 <div>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>X0</th>
-      <th>X1</th>
-      <th>X2</th>
-      <th>X3</th>
-      <th>X4</th>
-      <th>T</th>
-      <th>S0</th>
-      <th>S1</th>
-      <th>S2</th>
-      <th>S3</th>
-      <th>S4</th>
-      <th>S5</th>
-      <th>S6</th>
-      <th>S7</th>
-      <th>Y</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.524763</td>
-      <td>2.462224</td>
-      <td>-0.550430</td>
-      <td>0.771123</td>
-      <td>0.435625</td>
-      <td>0</td>
-      <td>0.699780</td>
-      <td>0.013300</td>
-      <td>-1.550533</td>
-      <td>0.516532</td>
-      <td>0.555615</td>
-      <td>0.259520</td>
-      <td>-0.912439</td>
-      <td>1.968729</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.852718</td>
-      <td>2.363775</td>
-      <td>-1.233271</td>
-      <td>-0.064883</td>
-      <td>0.007073</td>
-      <td>1</td>
-      <td>0.401477</td>
-      <td>0.150007</td>
-      <td>-1.056908</td>
-      <td>1.090094</td>
-      <td>0.319569</td>
-      <td>1.315168</td>
-      <td>-1.060364</td>
-      <td>1.639560</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-1.845904</td>
-      <td>-0.143859</td>
-      <td>1.205996</td>
-      <td>-2.574407</td>
-      <td>-0.338278</td>
-      <td>1</td>
-      <td>-0.617663</td>
-      <td>-0.031722</td>
-      <td>0.353283</td>
-      <td>0.503690</td>
-      <td>-0.077284</td>
-      <td>0.706088</td>
-      <td>0.401262</td>
-      <td>-2.388860</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.860914</td>
-      <td>-1.382552</td>
-      <td>0.295809</td>
-      <td>-2.023966</td>
-      <td>-0.018137</td>
-      <td>0</td>
-      <td>-0.691752</td>
-      <td>-0.197120</td>
-      <td>1.080598</td>
-      <td>0.329710</td>
-      <td>-0.489959</td>
-      <td>-0.151432</td>
-      <td>0.610699</td>
-      <td>-1.754289</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.257026</td>
-      <td>0.005047</td>
-      <td>-0.333462</td>
-      <td>-0.386979</td>
-      <td>-0.126490</td>
-      <td>1</td>
-      <td>-0.391908</td>
-      <td>-0.302902</td>
-      <td>0.220642</td>
-      <td>0.201999</td>
-      <td>-0.343136</td>
-      <td>0.883784</td>
-      <td>-0.312573</td>
-      <td>-0.012875</td>
-      <td>NaN</td>
-    </tr>
-  </tbody>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">X0</th>
+<th data-quarto-table-cell-role="th">X1</th>
+<th data-quarto-table-cell-role="th">X2</th>
+<th data-quarto-table-cell-role="th">X3</th>
+<th data-quarto-table-cell-role="th">X4</th>
+<th data-quarto-table-cell-role="th">T</th>
+<th data-quarto-table-cell-role="th">S0</th>
+<th data-quarto-table-cell-role="th">S1</th>
+<th data-quarto-table-cell-role="th">S2</th>
+<th data-quarto-table-cell-role="th">S3</th>
+<th data-quarto-table-cell-role="th">S4</th>
+<th data-quarto-table-cell-role="th">S5</th>
+<th data-quarto-table-cell-role="th">S6</th>
+<th data-quarto-table-cell-role="th">S7</th>
+<th data-quarto-table-cell-role="th">Y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>-1.033267</td>
+<td>-0.528259</td>
+<td>0.949423</td>
+<td>-0.520125</td>
+<td>1.792063</td>
+<td>0</td>
+<td>-1.290094</td>
+<td>-0.221351</td>
+<td>0.208036</td>
+<td>0.030492</td>
+<td>-0.753614</td>
+<td>0.056142</td>
+<td>0.606793</td>
+<td>-0.881064</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>0.749901</td>
+<td>2.010609</td>
+<td>0.256891</td>
+<td>1.920605</td>
+<td>0.452995</td>
+<td>0</td>
+<td>0.620659</td>
+<td>0.168459</td>
+<td>-1.590445</td>
+<td>-0.281972</td>
+<td>0.622488</td>
+<td>0.138089</td>
+<td>-0.643408</td>
+<td>1.699240</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>0.254711</td>
+<td>0.889539</td>
+<td>-0.281117</td>
+<td>-0.801415</td>
+<td>0.040578</td>
+<td>1</td>
+<td>-0.251532</td>
+<td>-0.586810</td>
+<td>-0.323471</td>
+<td>0.467541</td>
+<td>-0.193884</td>
+<td>0.831666</td>
+<td>-0.666616</td>
+<td>0.350538</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>-0.896266</td>
+<td>2.284030</td>
+<td>1.068579</td>
+<td>-0.217892</td>
+<td>1.577269</td>
+<td>1</td>
+<td>-0.612860</td>
+<td>-0.258097</td>
+<td>-1.505164</td>
+<td>0.477945</td>
+<td>-0.003999</td>
+<td>1.061724</td>
+<td>-0.442552</td>
+<td>0.320724</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0.279639</td>
+<td>-0.980695</td>
+<td>0.898379</td>
+<td>-0.106953</td>
+<td>-0.246317</td>
+<td>1</td>
+<td>-0.682758</td>
+<td>-0.480952</td>
+<td>0.510291</td>
+<td>-0.676125</td>
+<td>-0.451777</td>
+<td>0.547531</td>
+<td>0.156820</td>
+<td>-1.091956</td>
+<td>NaN</td>
+</tr>
+</tbody>
 </table>
+
 </div>
 </div>
 </div>
 <p>First, we’ll do some visulation of the experiment data.</p>
-<div class="cell" data-execution_count="5">
-<details>
+<div id="8b2b7adf" class="cell" data-execution_count="5">
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Xdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>),sharey<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(Xdims), axes.ravel()):</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>][<span class="ss">f"X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Control'</span> )</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>][<span class="ss">f"X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Treatment'</span> )</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Histogram of Pre-Treatment Covariates</span><span class="ch">\n</span><span class="st">for the Treatment and Control groups"</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Xdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>),sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(Xdims), axes.ravel()):</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>][<span class="ss">f"X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Control'</span> )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>][<span class="ss">f"X</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Treatment'</span> )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Histogram of Pre-Treatment Covariates</span><span class="ch">\n</span><span class="st">for the Treatment and Control groups"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-6-output-1.png" width="758" height="475"></p>
+<div>
+<figure class="figure">
+<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-6-output-1.png" width="662" height="475" class="figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
 <p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
-<div class="cell" data-execution_count="6">
-<details>
+<div id="d8ca211f" class="cell" data-execution_count="6">
+<details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Sdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(Sdims), axes.ravel()):</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>][<span class="ss">f"S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Control'</span> )</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>][<span class="ss">f"S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Treatment'</span> )</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Histogram of Surrogate Outcomes</span><span class="ch">\n</span><span class="st">for the Treatment and Control groups"</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Sdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(Sdims), axes.ravel()):</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>][<span class="ss">f"S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Control'</span> )</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    sns.histplot( experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>][<span class="ss">f"S</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>],ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">'Treatment'</span> )</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Histogram of Surrogate Outcomes</span><span class="ch">\n</span><span class="st">for the Treatment and Control groups"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
-<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="758" height="475"></p>
+<div>
+<figure class="figure">
+<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-7-output-1.png" width="661" height="475" class="figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>If our surrogate index estimator is correct, these observed surrogate outcomes should directly map to the Long Term Outcome deterministically, via <span class="math inline">\(\hat{Y} = f(S)\)</span>, where <span class="math inline">\(f()\)</span> is the surrogate index model.</p>
 <p>We can show that the surrogate index estimator recovers the true average treatment effect on the long term outcome</p>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns the ATE estimate and its uncertainty</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    Y_T1 <span class="op">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>])</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    Y_T0 <span class="op">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>])</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the ATE</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    ATE <span class="op">=</span>  Y_T1.mean() <span class="op">-</span> Y_T0.mean()</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the variance </span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    var_surrogate <span class="op">=</span> np.var(Y_T1,ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="bu">len</span>(Y_T1) <span class="op">+</span> np.var(Y_T0,ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="bu">len</span>(Y_T0)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adjust the variance by the surrogate model error</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    var_surrogate_adj <span class="op">=</span> var_surrogate <span class="op">+</span> <span class="dv">2</span><span class="op">*</span>predicted_sigma2<span class="op">/</span><span class="bu">len</span>(Y_T1)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    ATE_sd <span class="op">=</span> np.sqrt(var_surrogate_adj)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ATE, ATE_sd</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>ATE, ATE_sd <span class="op">=</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>sns.histplot(np.random.normal(ATE, ATE_sd,size<span class="op">=</span><span class="dv">10000</span>), stat<span class="op">=</span><span class="st">'probability'</span>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>plt.axvline( GROUND_TRUTH[<span class="st">'ATE'</span>], color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'True ATE'</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"ATE"</span>)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Estimated Treatment Effect vs. True Treatment Effect"</span>)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="f27fdd21" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns the ATE estimate and its uncertainty</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    Y_T1 <span class="op">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>])</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    Y_T0 <span class="op">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">0</span>])</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the ATE</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    ATE <span class="op">=</span>  Y_T1.mean() <span class="op">-</span> Y_T0.mean()</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the variance </span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    var_surrogate <span class="op">=</span> np.var(Y_T1,ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="bu">len</span>(Y_T1) <span class="op">+</span> np.var(Y_T0,ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="bu">len</span>(Y_T0)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adjust the variance by the surrogate model error</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    var_surrogate_adj <span class="op">=</span> var_surrogate <span class="op">+</span> <span class="dv">2</span><span class="op">*</span>predicted_sigma2<span class="op">/</span><span class="bu">len</span>(Y_T1)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    ATE_sd <span class="op">=</span> np.sqrt(var_surrogate_adj)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ATE, ATE_sd</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>ATE, ATE_sd <span class="op">=</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>sns.histplot(np.random.normal(ATE, ATE_sd, size<span class="op">=</span><span class="dv">10000</span>), stat<span class="op">=</span><span class="st">'probability'</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>plt.axvline( GROUND_TRUTH[<span class="st">'ATE'</span>], color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'True ATE'</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"ATE"</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Estimated Treatment Effect vs. True Treatment Effect"</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-8-output-1.png" width="618" height="442"></p>
+<div>
+<figure class="figure">
+<p><img src="2023-07-09-surrogate_index_intro_files/figure-html/cell-8-output-1.png" width="597" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="8cc3f970" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>np.isinf(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    surrogate_model.predict(experiment_data.loc[<span class="kw">lambda</span> d: d[<span class="st">'T'</span>]<span class="op">==</span><span class="dv">1</span>])</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>0</code></pre>
 </div>
 </div>
 <p>There we are. The surrogate estimator recovers the true average treatment effect! We didn’t even have to wait and observe the true long term outcome.</p>
@@ -931,9 +1116,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -945,17 +1144,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -965,8 +1180,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -981,28 +1205,279 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
