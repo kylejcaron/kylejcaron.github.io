@@ -41,7 +41,7 @@ class RentalInventory:
 		)
 		return ys
 
-	def model_single_day(self, state: Dict, time: int) -> Tuple[Dict, jnp.array]:
+	def model_single_day(self, prev_state: Dict, time: int) -> Tuple[Dict, jnp.array]:
 		"""Models a single day of inventory activity, including returns, rentals, and stock changes
 
 		Args:
@@ -51,21 +51,22 @@ class RentalInventory:
 		Returns:
 			Tuple[Dict, jnp.array]: Returns the following inventory state and rentals that occurred in the current state
 		"""
-		state_next = dict()
+		curr_state = dict()
 
 		# Simulate Returns
-		returns = self.returns_model(state['existing_rentals'], time)
-		state_next['starting_stock'] = numpyro.deterministic("starting_stock", state['ending_stock'] + returns.sum(1) + self.apply_policy(time))
+		returns = self.returns_model(prev_state['existing_rentals'], time)
+		curr_state['starting_stock'] = numpyro.deterministic("starting_stock", prev_state['ending_stock'] + returns.sum(1) + self.apply_policy(time))
 
 		# Simulate Rentals, incorporate them into the next state
-		rentals = self.demand_model(available_stock=state_next['starting_stock'], time=time)
-		state_next['ending_stock'] = numpyro.deterministic("ending_stock", state_next['starting_stock'] - rentals.sum(1))
-		state_next['existing_rentals'] = numpyro.deterministic("existing_rentals", state['existing_rentals'] - returns + rentals)
-		return state_next, rentals
+		rentals = self.demand_model(available_stock=curr_state['starting_stock'], time=time)
+		curr_state['ending_stock'] = numpyro.deterministic("ending_stock", curr_state['starting_stock'] - rentals.sum(1))
+		curr_state['existing_rentals'] = numpyro.deterministic("existing_rentals", prev_state['existing_rentals'] - returns + rentals)
+		return curr_state, rentals
 
 	def returns_model(self, existing_rentals: jnp.array, time: int) -> jnp.array:
 		"""Models the number of returns each date
 		"""
+		# Distribution of possible rental durations
 		theta = numpyro.sample("theta", dist.Normal(2.9, 0.01))
 		sigma = numpyro.sample("sigma", dist.TruncatedNormal(0.7, 0.01, low=0))
 		return_dist = dist.LogNormal(theta, sigma)
@@ -75,11 +76,11 @@ class RentalInventory:
 
 		# Simulate returns from hazards
 		returns = numpyro.sample("returns", dist.Binomial(existing_rentals.astype("int32"), probs=discrete_hazards))
-		total_returns = numpyro.deterministic("total_returns", returns.sum(1))
+		_ = numpyro.deterministic("total_returns", returns.sum(1))
 		return returns
 
 	def survival_convolution(self, dist, time: int) -> jnp.array:
-		"""Calculates the hazard rate of a return from all past time periods, returning an array where each index is a previous time period,
+		"""Calculates the probability of a return happening (discrete hazard rate) from all past time periods, returning an array where each index is a previous time period,
 		and the value is the probability of a rental from that time being returned at the current date.
 		"""
 		rental_durations = (time-jnp.arange(self.max_periods))
@@ -151,7 +152,9 @@ class PoissonDemandInventory(RentalInventory):
 		super().__init__(n_products, policies)
 		rng = np.random.default_rng(seed=99)
 
-		# Heterogeneity in demand is lambd ~ Exp(5) distributed
+		# Heterogeneity in demand is lambd ~ Exp(5) distributed when using this class to simulate data from scratch
+		# When simulating demand based on an existinc dataset, this can be overwritten
+		# i.e. `numpyro.do(inventory.demand_model, {"lambd": U_hat})`
 		self.U = jnp.log( 5 * rng.exponential( size=n_products) )
 
 	def demand_model(self, available_stock, time):

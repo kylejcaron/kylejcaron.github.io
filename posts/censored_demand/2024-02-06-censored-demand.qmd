@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Modeling Anything With First Principles: Inventory Demand under extreme stockouts"
+title:  "Modeling Anything With First Principles: Demand under extreme stockouts"
 date: "2023-07-09"
 categories:
  - Time Series
@@ -11,10 +11,28 @@ categories:
  - Survival Analysis
 ---
 
-```{python}
-%load_ext autoreload
-%autoreload 2
+# Introduction
 
+__The Problem:__ You work at a rental service that is suffering from high periods of churn. You've found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. __How can we determine how much stock to reorder?__
+
+The idea of this project is to borrow ideas from first principles modeling - think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
+
+Products with extreme stockouts have misleading demand estimates under classic demand models. 
+
+> __The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that the observed demand would've been atleast 5 rentals if stock levels didn't constrain it.__
+
+ Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information. 
+
+The idea is to start simple(-ish) and add complexity. We'll first model a single product and test different ordering policies, and then begin modeling multiple products. 
+
+The original code including the full simulation of the dataset can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
+
+# Part 1: Looking at the data
+
+---
+
+```{python}
+#| code-fold: true
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -29,28 +47,35 @@ import numpyro
 import numpyro.distributions as dist
 
 from plotting import plot_rentals
-
-az.style.use("arviz-darkgrid")
-SEED = 99
-BASE_URL = 'https://raw.githubusercontent.com/kylejcaron/case_studies/main/censored_demand'
-
 import warnings
 warnings.filterwarnings("ignore")
+
+# Plot styling
+plt.style.use("arviz-darkgrid")
+plt.rcParams.update({
+    'axes.labelsize': 14,
+    'axes.titlesize':22, 
+    'font.size': 14, 
+    'legend.fontsize': 14, 
+    'xtick.labelsize': 14, 
+    'ytick.labelsize': 14
+})
+# Global vars
+SEED = 100
+BASE_URL = 'https://raw.githubusercontent.com/kylejcaron/case_studies/main/censored_demand'
+
+# Load in csv data
+rentals = (pd.read_csv(f"{BASE_URL}/data/rentals.csv")
+           .assign(date=lambda d: pd.to_datetime(d.date))
+          )
+stock = (pd.read_csv(f"{BASE_URL}/data/stock_levels.csv")
+         .assign(date=lambda d: pd.to_datetime(d.date))
+        )
+purchases = (pd.read_csv(f"{BASE_URL}/data/product_purchases.csv")
+           .assign(date=lambda d: pd.to_datetime(d.date))
+          )
+J_PRODUCTS, MAX_PERIODS = 1000, 10000
 ```
-
-# Introduction
-
-__The Problem:__ You work at a clothing rental service that is suffering from high periods of churn. You've found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. __How can we determine how much stock to reorder?__
-
-The idea of this project is to borrow ideas from first principles modeling - think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
-
-Products with extreme stockouts have misleading demand estimates under classic demand models. The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that demand is atleast 5 rentals. Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information. 
-
-The idea is to start simple(-ish) and add complexity. We'll first model a single product and test different ordering policies, and then begin modeling multiple products. 
-
-# Part 1: Looking at the data
-
----
 
 We have three datasets:
  
@@ -59,29 +84,19 @@ We have three datasets:
  * `product_purchases` showing how much was bought for each product and when
 
 ```{python}
-rentals = (pd.read_csv(f"{BASE_URL}/data/rentals.csv")
-           .assign(date=lambda d: pd.to_datetime(d.date))
-          )
-           
 rentals.head()
 ```
 
 ```{python}
-stock = (pd.read_csv(f"{BASE_URL}/data/stock_levels.csv")
-         .assign(date=lambda d: pd.to_datetime(d.date))
-        )
 stock.head()
 ```
 
 ```{python}
-purchases = (pd.read_csv(f"{BASE_URL}/data/product_purchases.csv")
-           .assign(date=lambda d: pd.to_datetime(d.date))
-          )    
 purchases.head()
 ```
 
+## Plotting Product Rentals
 Lets convert the rental data to time series data and see what it looks like
-
 
 ```{python}
 #| code-fold: true
@@ -101,28 +116,28 @@ ax[0].set(ylabel='Total Daily Rentals', xlabel='Date', title='Total Daily Rental
 daily_rentals.groupby("date").sum().rentals.plot(ax=ax[0])
 
 ax[1].set(ylabel='Daily Rentals', xlabel='Date', title='Daily Rentals Across Products')
-sample_idxs = np.random.choice(1000, size=25, replace=False)
+sample_idxs = np.random.choice(J_PRODUCTS, size=25, replace=False)
 daily_rentals.unstack(0).iloc[:,sample_idxs].plot(ax=ax[1], alpha=0.5,legend=None)
 
 plt.show()
 ```
 
-It looks like theres typically 0-15 rentals per day for a given product, and there are typically 5000 rentals each day.
+It looks like there are typically 0-15 rentals per day for a given product, and there are typically 5000 rentals total each day.
 
-Looking at the distribution of total rentals across products, we see that its mildly long-tailed
+Looking at the distribution of total rentals across products, we see that it is mildly long-tailed.
 
 
-```{python}
+```{python, fig.width=5, fig.height=3}
 #| code-fold: true
-
-fig, ax = plt.subplots(1,1,figsize=(8,5),sharex=True)
-
-ax.set(title='Distribution of total rentals per product in observation period', xlabel='Rentals')
+fig, ax = plt.subplots(1,1,figsize=(5,3),sharex=True)
+ax.set_xlabel("Rentals",fontsize=10)
+ax.set_ylabel("Count",fontsize=10)
+ax.set_title('Distribution of total rentals\nper product in observation period', fontsize=10)
 sns.histplot( daily_rentals.groupby("product_id").sum(),ax=ax )
 plt.show()
 ```
 
-We cam also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?
+We can also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?
 
 ```{python}
 #| code-fold: true
@@ -136,8 +151,8 @@ fig, ax = plt.subplots(1,1,figsize=(12,5))
 plt.show()
 ```
 
-# Looking at a single product
-We're going to start with a single product and see if we can come up with a system that informs us how many units we should reorder
+## Looking at a single product
+We're going to start with a single product and see if we can come up with a system that informs us how many units we should reorder.
 
 
 ```{python}
@@ -174,11 +189,11 @@ ax['C'].set_ylim(0,1)
 plt.show()
 ```
 
-As shown above, just looking at a time series of rentals each day is a bit confusing - soon after the product is published there's a lot of rentals, which then drop off quickly. Then around June, theres a giant spike in rentals that drops off quickly again. When looking at a covariate, the total number of rentals that occur every day, there's no obvious relationship - aka it seems like the spike in demand was moreso just for this product, not for all products.
+As shown above, just looking at a time series of rentals each day is a bit confusing - there are seemingly random spikes in demand for just this product that dont seem to line up with spikes in total demand across products.
 
-When we look at the overall stockout rate over time, it looks like the stockout rate drops at the same time demand increases for Product ID 493.
+When we look at the stockout rate across all products over time, it looks like the stockout rate drops at the same time demand increases for Product ID 165.
 
-Lets join stock data to rental data and see whats happening for this product
+Let's join stock data to rental data and see whats happening for this product.
 
 
 ```{python}
@@ -192,10 +207,10 @@ daily_rentals = (rentals.pipe(rental_events_to_ts, freq='D')
                  .set_index(['product_id', "date"])
                 )
 
-daily_rentals.head()
+daily_rentals.loc[[f'product_{j}']].head()
 ```
 
-Now that we have this data joined, we can plot the rental data with corresponding stock data
+Now that we have this data joined, we can plot the rental data with corresponding stock data.
 
 ```{python}
 #| code-fold: true
@@ -210,33 +225,36 @@ ax.legend()
 plt.show()
 ```
 
-For most of the days in the product's lifetime, there are as many rentals as there are units available. This indicates we're probably understocked - if we had more stock available, we'd likely observe more rental demand. 
+For most of the days in the product's lifetime, there are as many rentals as there are units available. This indicates we're probably understocked - __if we had more stock available, we'd likely observe more rentals.__ 
 
-This is also apparent in the overstocked periods - at the start of the products lifetime there tends to be more rentals. There's also a __reorder__ that happens at t=60, where the business procured new units of that product to rent out to customers. We can see that there's a jump in observed rentals 
+This is also apparent in the overstocked periods - at the start of the product's lifetime there tends to be more rentals. There's also a __reorder__ that happens in June, where the business procured new units of that product to rent out to customers. We can see that there's a jump in observed rentals 
 
-It's time to introduce a key concept - the difference between rental demand and observed rentals. 
+It's time to introduce a key concept - the difference between rental demand and observed rentals: 
+
  * __Rental demand__ is the true demand to rent the product each day.
- * __Observed rentals__ are the number of rentals we actually observe in the data, after random noise is added to demand and it gets constrained by stock levels
+ * __Observed rentals__ are the number of rentals we actually observe in the data, after random noise is added to demand and it gets constrained by stock levels.
 
 # Part 2: Modeling the problem 
 ---
 
-First, lets reiterate our goal. We want to know how many more units to purchase for this rental product so we dont end up with any more stockouts. To do so, we need to know what stock levels will be if we have more units in stock
+First, lets reiterate our goal. We want to know how many more units to purchase for this rental product so we don't end up with any more stockouts. To do so, we need to know what stock levels will be if we have more units in stock.
 
 $$
 \small{
-E[\text{stock}_t | \text{do(stock}_{t=0}=X), \text{demand}_{t-1},\text{stock}_{t-1}, \text{active rentals}_{0:t}]
+E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-1},\text{stock}_{t-1}, \text{active rentals}_{0:t}]
 }
 $$
 
-When we think of the __data generating process__ for rental demand and stock levels its the following: 
+When we think of the __data generating process__ for rental demand and stock levels it is the following: 
+
  1. Customers come in and rent $y \sim \text{min}(\text{Poisson}(\lambda), \text{stock})$ units each day
  2. Those units tend to have some learnable distribution of rental duration, $t \sim \text{LogNormal}(\theta, \sigma)$
- 3. The stock levels vary as those rentals occur and get returned
+ 3. The stock levels vary as those rentals occur and get returned from steps (1) and (2)
 
-This narrows the problem down - we need to identify unconstrained rental demand (how many rentals would we get if we had perfect stock), and rental duration. We can use models for both (1) and (2) and then simulate different potential outcomes
+This narrows the problem down - we need to identify unconstrained rental demand (how many rentals would we get if we had perfect stock), and rental duration. We can use models for both (1) and (2) and then simulate different potential outcomes.
 
-__Here's a glimpse at the overall plan__
+__Here's a look at the overall plan__
+
  1. Fit a rental duration model
  2. Fit a censored demand model
  3. Combine both of those into a stock level simulation
@@ -249,21 +267,20 @@ __Here's a glimpse at the overall plan__
 
 ---
 
-The plan for now is to model the unconstrained demand for this single product - whats the actual rental demand for the product? How many rentals would it get if there werent stockouts? Lets start off by looking at our data
+The plan for now is to model the unconstrained demand for this single product - whats the actual rental demand for the product? How many rentals would it get if there weren't stockouts? Lets start off by looking at our data.
 
-### Prepating the data
+### Preparing the data
 
-Its easy to see that there are plenty of rentals that are still out with customers and havent been returned yet. For these unreturned rentals, we cant calculate an accurate rental duration.
+It's easy to see that there are plenty of rentals that are still out with customers and haven't been returned yet. For these unreturned rentals, we can't calculate an accurate rental duration.
 
 ```{python}
 #| code-fold: true
-
 rentals.sample(10, random_state=SEED)
 ```
 
-Its important to remember that even those these items arent returned, some have been rented out for 30, 40, 50 days, and its important information to know that some items have been out for atleast that long. A good example is that if its possible for some items to be rented out for 200 days, but we've only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used simple averaging.
+It's important to remember that even though these items aren't returned, some have been rented out for 30, 40, 50 days, and it is important information to know that some items have been out for at least that long. A good example is that if it is possible for some items to be rented out for 200 days, but we've only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.
 
-What we can instead do is calculate the rental duration to-date and then use a survival model to properly incorporate those unreturned items.
+What we can instead do is calculate the rental duration to date and then use a survival model to properly incorporate those unreturned items.
 
 
 ```{python}
@@ -279,12 +296,19 @@ rentals.sample(5)
 
 ### Defining and fitting the model
 
-We can write up a basic survival model in numpyro. The idea of survival analysis is that 
+We can write up a survival model in numpyro. The idea of survival analysis is that:
+
  * __if a return has already occurred__, we fit the model as usual with the observed rental duration.
- * __If a return hasnt occurred yet__, we tell the model that the rental duration is atleast as long as has been observed so far. This is done with stats via a survival function, or the complementary CDF (ccdf)
+ * __If a return hasn't occurred yet__, we tell the model that the rental duration is at least as long as has been observed so far. This is done with stats via a survival function, or the complementary CDF (ccdf)
 
-For simplicity, we're assuming the data is lognormally distributed (and we simulated the data that way). In reality, its best to plot distributions of your data and decide for yourself
+For simplicity, we're assuming the data is lognormally distributed (and we simulated the data that way). In reality, it is best to plot distributions of your data and decide for yourself.
 
+$$
+\small{
+\displaylines{
+\text{rental duration} \sim \text{Lognormal}(\theta, \sigma)
+}}
+$$
 
 ```{python}
 def censored_lognormal(theta, sigma, cens, y=None):
@@ -296,7 +320,6 @@ def censored_lognormal(theta, sigma, cens, y=None):
     numpyro.sample("censored_label", dist.Bernoulli(ccdf).mask(cens == 1), obs=cens)
 
 def survival_model(E, T=None):
-
     theta = numpyro.sample("theta", dist.Normal(2.9, 1))
     sigma = numpyro.sample("sigma", dist.Exponential(0.7))
     with numpyro.plate("data", len(E)):
@@ -304,7 +327,6 @@ def survival_model(E, T=None):
 ```
 
 We can now use numpyro to fit a model and estimate the typical rental duration.
-
 
 ```{python}
 E = rentals.query(f"product_id=='product_{j}'").query("time_since>0").event.values
@@ -316,14 +338,13 @@ mcmc = numpyro.infer.MCMC(
     num_warmup=1000,
     num_samples=1000,
     num_chains=4,
-    progress_bar=True,
+    progress_bar=False,
 )
 mcmc.run(random.PRNGKey(SEED),E=E,T=T)
 idata = mcmc.get_samples()
 ```
 
-Remember, this is simulated data so we know the truth. The true parameter values are covered by the model estimates, although they may be a little biased. Its possible my simulation code has a slight bug and should be double checked. However the estimated distribution is still pretty close to reality in this case and shouldnt impact too much for this demonstration
-
+Remember, this is simulated data so we know the truth and can use that as a way to test this is working - a correctly specified model should recover the  the true parameter values.
 
 ```{python}
 #| code-fold: true
@@ -352,18 +373,18 @@ bins = np.arange(0,200,4)
 sns.histplot(T, stat='density', label='Observed Distribution', bins=bins,ax=ax)
 
 sns.histplot(
-    dist.LogNormal(idata['theta'], idata['sigma']).sample(jax.random.PRNGKey(1)),
+    dist.LogNormal(idata['theta'], idata['sigma']).sample(random.PRNGKey(SEED)),
     stat='density',
     label='Estimated Distribution',
     bins=bins,
     ax=ax
 )
-ax.set_title("Estimated Rental Duration")
+ax.set(title="Estimated Rental Duration", xlabel='Rental Duration')
 ax.legend()
 plt.show()
 ```
 
-Great, now we have a rental duration model fit, we just need to estimate demand
+Great, now we have a rental duration model fit, we just need to estimate demand.
 
 ## Rental Demand Model
 
@@ -373,7 +394,7 @@ Great, now we have a rental duration model fit, we just need to estimate demand
 
 The rental demand model is going to start simple for this single-product case - we'll just estimate a poisson distribuion. 
 
-Taking a look at the data again, its clear that demand is constrained, or censored, by stockouts here
+Taking a look at the data again, it is clear that demand is constrained, or censored, by stockouts here.
 
 
 ```{python}
@@ -389,7 +410,7 @@ plt.legend()
 plt.show()
 ```
 
-To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs. when there isnt - demand is much less on days when there are stockouts - the sample size of stocked out periods is also very small
+To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs. when there isn't - observed rentals are lower on days when there are stockouts - the sample size of stocked out periods is also smaller.
 
 
 ```{python}
@@ -405,8 +426,16 @@ To confirm this is the case, we can take a look at the typical number of rentals
 
 ### Defining and fitting the model
 
-We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if theres a stockout, the model thinks that demand is atleast as high as the rentals that day, otherwise if there's no stockout it thinks that demand is the number of rentals that day (plus some noise of course)
+We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if there's a stockout, the model thinks that rentals might've been higher than observed if there was more stock, otherwise if there's no stockout it thinks that demand is the number of rentals that day (plus some noise of course)
 
+
+$$
+\small{
+\displaylines{
+\text{log}(\lambda) \sim \alpha + \beta X \\
+\text{rentals} = \text{min}(\text{stock}, \text{Poisson}(\lambda))
+}}
+$$
 
 ```{python}
 def censored_poisson(lambd, cens, y=None):
@@ -443,7 +472,7 @@ def demand_model(stockout, X, y=None):
         censored_poisson(lambd, cens=stockout, y=y)
 ```
 
-We can then fit this model with numpyro below
+We can then fit this model with numpyro below:
 
 ```{python}
 y = daily_rentals.loc[f'product_{j}'].rentals.values
@@ -456,16 +485,16 @@ mcmc = numpyro.infer.MCMC(
     num_warmup=1000,
     num_samples=1000,
     num_chains=4,
-    progress_bar=True,
+    progress_bar=False,
 )
 mcmc.run(random.PRNGKey(SEED),stockout=stockout, X=X, y=y)
 idata_demand = mcmc.get_samples()
 ```
 
-we can check the estimated rental rate parameter, $\lambda$, against the actual value that we simulated and find that our model does have coverage over the ground truth
+We can check the estimated rental rate parameter, $\lambda$, against the actual value that we simulated and find that our model does have coverage over the ground truth.
 
 
-```{python}
+```{python, fig.width=5, fig.height=3}
 #| code-fold: true
 
 params = (
@@ -476,17 +505,38 @@ params = (
 demand_param = params.loc[j,'demand']
 
 # Plot
-fig, ax = plt.subplots(figsize=(5,4))
+fig, ax = plt.subplots(figsize=(5,3))
 sns.histplot( np.exp(idata_demand['alpha']),ax=ax )
 ax.axvline(demand_param, ls='--', color='k', label='Ground Truth')
 ax.legend()
-ax.set(xlabel="Value", title="Lambda estimate")
+ax.set_xlabel("Value",fontsize=10)
+ax.set_ylabel("Count",fontsize=10)
+ax.set_title("Lambda estimate", fontsize=10)
 plt.show()
 ```
 
-Ok cool, now that we have a rental duration model and a rental demand model, lets build a simulation
+Note that this is the base level of demand for the product - as competing products stock out, we expect $\lambda$ to increase. Currently, that is represented by $\beta$ in the model above, which is the relationship of the products demand to global stockout rate. As global stockout rate climbs, $\lambda$ increases. We can roughly estimate lambda at differen't stockout levels.
+
+```{python, fig.width=5, fig.height=3}
+#| code-fold: true
+
+# Plot
+fig, ax = plt.subplots(figsize=(5,3))
+global_stockout_rate=0.6
+bX = idata_demand['beta']*global_stockout_rate
+sns.histplot( np.exp(idata_demand['alpha'] + bX),ax=ax )
+ax.set_xlabel("Value",fontsize=10)
+ax.set_ylabel("Count",fontsize=10)
+ax.set_title("Lambda estimate\nwhen 60% of products are stocked out", fontsize=10)
+ax.set_xlim(0,20)
+plt.show()
+```
+
+
+Now that we have a rental duration model and a rental demand model, lets build a simulation.
 
 # Part 3: Simulation
+
 ---
 
 ## The simulation code
@@ -522,20 +572,20 @@ class RentalInventory:
 		)
 		return ys
 
-	def model_single_day(self, state: Dict, time: int) -> Tuple[Dict, jnp.array]:
+	def model_single_day(self, prev_state: Dict, time: int) -> Tuple[Dict, jnp.array]:
 		"""Models a single day of inventory activity, including returns, rentals, and stock changes
 		"""
-		state_next = dict()
+		curr_state = dict()
 
 		# Simulate Returns
-		returns = self.returns_model(state['existing_rentals'], time)
-		state_next['starting_stock'] = numpyro.deterministic("starting_stock", state['ending_stock'] + returns.sum(1) + self.apply_policy(time))
+		returns = self.returns_model(prev_state['existing_rentals'], time)
+		curr_state['starting_stock'] = numpyro.deterministic("starting_stock", prev_state['ending_stock'] + returns.sum(1) + self.apply_policy(time))
 
 		# Simulate Rentals, incorporate them into the next state
-		rentals = self.demand_model(available_stock=state_next['starting_stock'], time=time)
-		state_next['ending_stock'] = numpyro.deterministic("ending_stock", state_next['starting_stock'] - rentals.sum(1))
-		state_next['existing_rentals'] = numpyro.deterministic("existing_rentals", state['existing_rentals'] - returns + rentals)
-		return state_next, rentals
+		rentals = self.demand_model(available_stock=curr_state['starting_stock'], time=time)
+		curr_state['ending_stock'] = numpyro.deterministic("ending_stock", curr_state['starting_stock'] - rentals.sum(1))
+		curr_state['existing_rentals'] = numpyro.deterministic("existing_rentals", prev_state['existing_rentals'] - returns + rentals)
+		return curr_state, rentals
 
     ...
     
@@ -556,6 +606,9 @@ class RentalInventory
 		raise NotImplementedError()
     
 	def returns_model(self, existing_rentals: jnp.array, time: int) -> jnp.array:
+		"""Models the number of returns each date
+		"""
+        # Distribution of possible rental durations
 		theta = numpyro.sample("theta", dist.Normal(2.9, 0.01))
 		sigma = numpyro.sample("sigma", dist.TruncatedNormal(0.7, 0.01, low=0))
 		return_dist = dist.LogNormal(theta, sigma)
@@ -569,7 +622,7 @@ class RentalInventory
 		return returns
         
 	def survival_convolution(self, dist, time: int) -> jnp.array:
-		"""Calculates the hazard rate of a return from all past time periods, returning an array where each index is a previous time period,
+		"""Calculates the probability of a return happening (discrete hazard rate) from all past time periods, returning an array where each index is a previous time period,
 		and the value is the probability of a rental from that time being returned at the current date.
 		"""
 		rental_durations = (time-jnp.arange(self.max_periods))
@@ -590,15 +643,12 @@ class RentalInventory
 		return (dist.cdf(t+1)-dist.cdf(t))/(1-dist.cdf(t))
 
 	def apply_policy(self, time):
-        """Adds in some number of units for the product at time $T=t$
+        """Adds in some number of units for the product at time T=t
         """
 		return self.policies[time]
 ```
 
-
-
-One key thing to note is the `demand_model` method raises a `NotImplementedError` the idea is that this base class can be inherited by other classes that may have different demand models. Even the returns model could be overwritten. Here's an example of a poisson demand model
-
+One key thing to note is the `demand_model` method raises a `NotImplementedError` the idea is that this base class can be inherited by other classes that may have different demand models. Even the returns model could be overwritten. Here's an example of a poisson demand model:
 
 ```python
 class PoissonDemandInventory(RentalInventory):
@@ -609,7 +659,9 @@ class PoissonDemandInventory(RentalInventory):
 		super().__init__(n_products, policies)
 		rng = np.random.default_rng(seed=99)
 
-		# Heterogeneity in true demand is lambd ~ Exp(5) distributed
+		# Heterogeneity in true demand is lambd ~ Exp(5) distributed when using this class to simulate data from scratch
+        # When simulating demand based on an existing dataset, this can be overwritten
+		# i.e. `numpyro.do(inventory.demand_model, {"lambd": jnp.exp(U_hat)})`
 		self.U = jnp.log( 5 * rng.exponential( size=n_products) )
 
 	def demand_model(self, available_stock, time):
@@ -624,23 +676,22 @@ class PoissonDemandInventory(RentalInventory):
 		return rentals_as_arr
 ```
 
-Rentals are simulated according to a poisson distribution for each product, and if there isnt enough stock, then rentals are constrained. For example
+Rentals are simulated according to a poisson distribution for each product, and if there isn't enough stock, then rentals are constrained. For example:
 
 $$
 \small{
 \displaylines{
 \text{demand}_{\text{[j,t]}} \sim \text{Poisson}(\lambda_{\text{[j]}}) \\
-\text{rentals}_{\text{[j,t]}} = \text{min}(\text{demand}_{\text{[j,t]}},\ \text{stock}_{\text{[j,t]}})
+\text{rentals}_{\text{[j,t]}} = \text{min}(\text{demand}_{\text{[j,t]}},\ \text{stock}_{\text{[j,t]}}) \\
+\text{for }j \in J \text{ products}
 }}
 $$
-
-for $j \in J$ products
 
 
 ## Simulating the impact of reordering more units
 
-Lets dive in and simulate what would happen if we re-stocked different amounts
-
+There are some helper functions in the code block below that we'll use. Feel free to skip past these. They're used to transform data from long form into a wide form where time periods are the column axis and
+each product is an row. 
 
 ```{python}
 #| code-fold: true
@@ -648,30 +699,182 @@ Lets dive in and simulate what would happen if we re-stocked different amounts
 from rental_model import RentalInventory, PoissonDemandInventory, MultinomialDemandInventory
 
 # Helper functions
-def get_active_rentals_as_array(rentals):
-    """Each array element corresponds to a single day, and the value is the amount of active rentals that are still
+def sort_products(df):
+    idx = list(df.index.names)
+    if idx[0] is not None:
+        return (
+            df.reset_index()
+            .assign(idx=lambda d: d.product_id.str.split("_",expand=True)[1].astype(float))
+            .sort_values(by="idx").drop('idx',axis='columns')
+            .set_index(idx)
+        )
+    else:
+        return (
+            df
+            .assign(idx=lambda d: d.product_id.str.split("_",expand=True)[1].astype(float))
+            .sort_values(by="idx").drop('idx',axis='columns')
+        )
+
+def get_active_rentals_as_array(rentals: pd.DataFrame, max_periods: int = 10000) -> np.array:
+    """Take a dataframe of rental data and convert it to an array of currently active rentals and the days they were initially rented.
+    Each array element corresponds to a single day, and the value is the amount of active rentals that are still
     out with customers that started on that date
     """
-    active_rentals = np.zeros(10000)
-    dates = pd.date_range(rentals.date.min(), end=rentals.date.max(), freq='D').values
-    active_rentals[:len(dates)] = (rentals.loc[lambda d: d.return_date.isnull()].date.values == dates[:,None]).sum(1)
-    return active_rentals
+    def _get_active_rentals_as_array(rentals, dates, max_periods=10000):
+        """Gets currently active rentals for a single product
+        """
+        active_rentals = np.zeros(max_periods)
+        active_rentals[:len(dates)] = (rentals.loc[lambda d: d.return_date.isnull()].date.values == dates[:,None]).sum(1)
+        return active_rentals
+    
+    start_date, end_date = rentals.date.agg(['min', 'max'])
+    dates = pd.date_range(start_date, end=end_date, freq='D').values
+    products = rentals.pipe(sort_products).product_id.unique()
+    active_rentals = np.zeros((len(products), max_periods))  # Create an empty matrix to store results
+
+    # Iterate through each product
+    for j, product_j in enumerate(products):
+        # Store their currently active rentals 
+        active_rentals[j] = _get_active_rentals_as_array(rentals.query(f"product_id==@product_j"), dates=dates, max_periods=max_periods)
+   
+    return  active_rentals
 
 def reorder_as_array(reorder_amount, reorder_time, max_periods=10000):
     return (jnp.arange(max_periods) == reorder_time)*reorder_amount
 ```
+
+The convenience function below combines all of the helper functions above to transform rental and stock data into a usable form for the model. 
+
 ```{python}
 # set initial state to last observed state in dataset
-latest_stock_level = daily_rentals.query(f"product_id=='product_{j}'")['ending_units'].tail(1).values[0]
-active_rentals = get_active_rentals_as_array(rentals.query(f"product_id=='product_{j}'"))
-init_state = {
-    "starting_stock": jnp.array([latest_stock_level]),
-    "ending_stock": jnp.array([latest_stock_level]),
-    "existing_rentals":active_rentals[:,None].T
-}
+def get_current_state(rentals, stock):
+    active_rentals = get_active_rentals_as_array(rentals)
+    latest_starting_stock = stock.query("date==date.max()").pipe(sort_products).starting_units.values
+    latest_ending_stock = stock.query("date==date.max()").pipe(sort_products).ending_units.values
+    return dict(
+        starting_stock=latest_starting_stock,
+        ending_stock = latest_ending_stock,
+        existing_rentals=active_rentals
+    )
 
-# Try adding 125 new units at time T=100
-reorder_amount = 125
+init_state = get_current_state(
+    rentals=rentals.query(f"product_id=='product_{j}'"), 
+    stock=stock.query(f"product_id=='product_{j}'"))
+```
+
+We can now simulate what might happen if we re-stocked different amounts.
+
+```{python}
+# Try adding new units at time T=100
+reorder_amount = 150
+reorder_policy = reorder_as_array(reorder_amount, reorder_time=100)[None,:]
+
+# Define Simulation
+nsamples =250
+rental_inventory = PoissonDemandInventory(n_products = 1, policies=reorder_policy)
+simulation = numpyro.infer.Predictive(
+    rental_inventory.model, 
+    num_samples = nsamples,
+    # Input our learned parameters from the previous models
+    posterior_samples={
+        "lambd":idata_demand['lambd'][:nsamples,[-1]], 
+        "theta":idata['theta'][:nsamples,None],
+        "sigma":idata['sigma'][:nsamples,None]
+    }
+
+)
+# Run Simulation
+results = simulation(random.PRNGKey(SEED), init_state, start_time=100, end_time=200)
+```
+
+The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest rental rate, but that's a problem for later.
+
+Let's look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out.
+
+```{python}
+#| code-fold: true
+
+sample_idx = np.random.choice(250)
+dates = pd.date_range(rentals.date.min(), periods=200, freq='D')
+
+historical_data = daily_rentals.loc[f'product_{j}']
+sim_data = pd.Series(results['rentals'][sample_idx,:].ravel(),  index = dates[100:] )
+ 
+daily_rentals_j = pd.concat((historical_data.rentals, sim_data))
+daily_stock_j = np.concatenate((historical_data.starting_units.values, results['starting_stock'][sample_idx,:].squeeze(-1)))
+
+ax = plot_rentals(daily_rentals_j, daily_stock_j)
+ax.set(title=f'Simulated Stock Levels after Reordering {reorder_amount} units')
+ax.axvline(daily_rentals_j.index.values[100], color='k', ls='--', label='Reorder')
+ax.legend()
+plt.show()
+```
+
+We can summarize all of these simulations with uncertainty intervals.
+
+```{python}
+#| code-fold: true
+fig, axes = plt.subplots(2,1,
+        gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
+        sharex=True, 
+        figsize=(12,6))
+
+# Plot simulations
+daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
+az.plot_hdi(dates[100:], daily_ending_stock_sim, smooth=False,ax=axes[0], color='r', fill_kwargs=dict(alpha=0.25),)
+axes[0].plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', label='Simulated Stock Levels')
+# axes[0].axvline(dates[60], color='C0',ls='--', label='Reorder (40 units)')
+axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
+axes[0].set(
+    title=f'Simulated Stock Levels: what would happen after reordering {reorder_amount} units?',
+    ylabel='Stock Levels',
+    xlabel=''
+)
+
+# Plot actuals
+historical_data.ending_units.plot(color='k',ax=axes[0], label='Historical Stock Levels')
+
+# Overlay some simulations to confirm its lining up with the plot
+axes[0].plot(dates[100:], daily_ending_stock_sim[:20,:].T, alpha=0.1, color='k');
+axes[0].plot(dates[100:], daily_ending_stock_sim[0,:].T, alpha=0.1, color='k',label='Individual Simulations');
+axes[0].legend()
+
+# plot stockouts
+historical_stockouts = dates[:100][(historical_data.ending_units==0).values]
+sim_stockouts = np.unique(dates[100:][np.where((daily_ending_stock_sim.T==0))[0]])
+axes[-1].vlines(historical_stockouts,0,1, color='r', lw=5)
+axes[-1].vlines(sim_stockouts,0,1, color='r', lw=5)
+axes[-1].set_yticks([])
+axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize=14)
+
+plt.show()
+```
+
+This view makes it a little more obvious that there are probably stockouts happening, but it doesn't tell us for sure. 
+We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.
+
+We could also go back and update the simulator to log things like *"missed rentals due to stockouts"* or other quantities that might be helpful.
+
+```{python}
+#| code-fold: true
+
+fig, ax = plt.subplots(1,1,figsize=(12,5))
+p_stockout = (daily_ending_stock_sim==0).mean(0)
+ax.plot(dates[100:200], p_stockout)
+ax.axvline(dates[100], color='k', ls='--', label='Reorder Time')
+ax.set(title=f'Estimated Stockout Probability after reordering {reorder_amount} units', ylabel='Stockout Rate')
+ax.legend()
+ax.yaxis.set_major_formatter(mtick.PercentFormatter(1,0))
+plt.show()
+```
+
+It appears that the current reorder guidance isn't enough - so what should reorder? Lets try and estimate what would happen if we reordered more.
+
+```{python}
+#| code-fold: true
+
+# Try estimating the impact of 500 new units at time T=100
+reorder_amount = 500
 reorder_policy = reorder_as_array(reorder_amount, reorder_time=100)[None,:]
 
 # Define Simulation
@@ -692,44 +895,17 @@ simulation = numpyro.infer.Predictive(
 
 # Run Simulation
 results = simulation(random.PRNGKey(SEED), init_state, start_time=100, end_time=200)
-```
 
-The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest value, but thats a problem for later.
-
-Lets look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of possible different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out
-
-```{python}
-#| code-fold: true
-
-sample_idx = np.random.choice(250)
-dates = pd.date_range(rentals.date.min(), periods=200, freq='D')
-
-historical_data = daily_rentals.loc[f'product_{j}']
-sim_data = pd.Series(results['rentals'][sample_idx,:].ravel(),  index=dates[100:] )
- 
-daily_rentals_j = pd.concat((historical_data.rentals, sim_data))
-daily_stock_j = np.concatenate((historical_data.starting_units.values, results['starting_stock'][sample_idx,:].squeeze(-1)))
-
-ax = plot_rentals(daily_rentals_j, daily_stock_j)
-ax.set(title=f'Simulated Stock Levels after Reordering {reorder_amount} units')
-ax.axvline(daily_rentals_j.index.values[100], color='k', ls='--', label='Reorder')
-ax.legend()
-plt.show()
-```
-
-We can summarize all of these simulations with uncertainty intervals
-
-```{python}
-#| code-fold: true
+# Plot
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
         sharex=True, 
         figsize=(12,6))
 
 # Plot simulations
+daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
 az.plot_hdi(dates[100:], daily_ending_stock_sim, smooth=False,ax=axes[0], color='r', fill_kwargs=dict(alpha=0.25),)
 axes[0].plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', label='Simulated Stock Levels')
-# axes[0].axvline(dates[60], color='C0',ls='--', label='Reorder (40 units)')
 axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
 axes[0].set(
     title=f'Simulated Stock Levels: what would happen after reordering {reorder_amount} units?',
@@ -738,18 +914,15 @@ axes[0].set(
 )
 
 # Plot actuals
-daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
 historical_data.ending_units.plot(color='k',ax=axes[0], label='Historical Stock Levels')
 
-# Overlay some simulations to confirm its lining up with the plot
-axes[0].plot(dates[100:], daily_ending_stock_sim[:20,:].T, alpha=0.1, color='k');
+# Overlay some simulations to confirm it is lining up with the plot
+axes[0].plot(dates[100:], daily_ending_stock_sim[:50,:].T, alpha=0.1, color='k');
 axes[0].plot(dates[100:], daily_ending_stock_sim[0,:].T, alpha=0.1, color='k',label='Individual Simulations');
 axes[0].legend()
 
 # plot stockouts
 axes[-1].vlines(dates[:100][(historical_data.ending_units==0).values],0,1, color='r', lw=5)
-
-print(daily_ending_stock_sim.shape)
 axes[-1].vlines(np.unique(dates[100:][np.where((daily_ending_stock_sim.T==0))[0]]),0,1, color='r', lw=5)
 axes[-1].set_yticks([])
 axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize=14)
@@ -757,41 +930,18 @@ axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize
 plt.show()
 ```
 
-This view makes it a little more obvious that there are probably stockouts happening, but it doesnt tell us for sure. 
-We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.
+Clearly this is now way too much stock and we'd be over-ordering. So how can we identify the right amount to stock so that we don't have stockouts but we don't over-order?
 
-We could also go back and update the simulator to log things like *"missed rentals due to stockouts"* or other quantities that might be helpful
-
-
-```{python}
-#| code-fold: true
-
-fig, ax = plt.subplots(1,1,figsize=(12,5))
-p_stockout = (daily_ending_stock_sim==0).mean(0)
-ax.plot(dates[100:200], p_stockout)
-ax.axvline(dates[100], color='k', ls='--', label='Reorder Time')
-ax.set(title='Estimated Stockout Probability after reordering 125 units', ylabel='Stockout Rate')
-ax.legend()
-ax.yaxis.set_major_formatter(mtick.PercentFormatter(1,0))
-plt.show()
-```
-
-It appears that the current reorder guidance isnt enough - so what should reorder? 
-
-We could just simulate repeatedly with different stock reorder inputs like below
-
+We could just simulate repeatedly with different stock reorder inputs like below.
 
 ```{python}
 
-def sim_stockout_rate(stock_reorder, samples_per_iter=50):    
+def sim_stockout_rate(stock_reorder, lambd, samples_per_iter=100):    
     
-    latest_stock_level = daily_rentals.query(f"product_id=='product_{j}'").tail(1)['ending_units'].values[0]
-    active_rentals = get_active_rentals_as_array(rentals.query(f"product_id=='product_{j}'"))
-    init_state = {
-        "starting_stock": jnp.array([latest_stock_level]),
-        "ending_stock": jnp.array([latest_stock_level]),
-        "existing_rentals":active_rentals[None,:]
-    }
+    init_state = get_current_state(
+        rentals=rentals.query(f"product_id=='product_{j}'"),
+        stock=stock.query(f"product_id=='product_{j}'")
+    )
 
     # Try adding x new units at time T=100
     reorder_policy = reorder_as_array(stock_reorder, reorder_time=100)[None,:]
@@ -802,8 +952,8 @@ def sim_stockout_rate(stock_reorder, samples_per_iter=50):
         num_samples = samples_per_iter,
         # Input our learned parameters from the previous models
         posterior_samples={
-            # Use the latest demand sample from the last date as a simple approach for ow
-            "lambd": idata_demand['lambd'][:samples_per_iter,[-1]], 
+            # Use the latest demand sample from the last date as a simple approach for now
+            "lambd": lambd[:samples_per_iter], 
             # Use rental duration parameter estimates
              "theta": idata['theta'][:samples_per_iter,None],
              "sigma": idata['sigma'][:samples_per_iter,None]
@@ -813,13 +963,12 @@ def sim_stockout_rate(stock_reorder, samples_per_iter=50):
     # Only going to care about instock rate for the second half of the simulation to be safe
     burn_in = 50
     stockout_rate = (results['ending_stock']==0).mean(0)[burn_in:].mean()
-    
     return stockout_rate
 
 # Run simulations
-stockout_results = np.empty((10,2))
-for i, units in enumerate(range(0,500, 50)):
-    stockout_rate = sim_stockout_rate(units)
+stockout_results = np.empty((9,2))
+for i, units in enumerate(range(0,450, 50)):
+    stockout_rate = sim_stockout_rate(units, lambd=idata_demand['lambd'][...,[-1]])
     stockout_results[i,:] = [units, stockout_rate]
 
 fig, ax = plt.subplots()
@@ -828,29 +977,17 @@ ax.set(ylabel='Est. Stockout Rate', xlabel='Units Reordered', title='Estimated S
 plt.show()
 ```
 
-Its clear that right around 350 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.
+It's clear that right around 300 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.
 
-Thats an exercise for another time. Lets reorder 350 units like we're recommending and see what happens
+That's an exercise for another time. Let's reorder the recommended 300 units and see what happens.
 
 ```{python}
-n_products, max_periods = 1000, 10000
-
-# Pull latest state from dataset
-active_rentals = np.zeros((n_products, max_periods))
-for i in range(1000):
-    active_rentals[i] = get_active_rentals_as_array(rentals.query(f"product_id=='product_{i}'"))
-
-init_state = {
-    "starting_stock": jnp.array(stock.loc[lambda d: d.date==d.date.max()].ending_units.values),
-    "ending_stock": jnp.array(stock.loc[lambda d: d.date==d.date.max()].ending_units.values),
-    "existing_rentals": jnp.array(active_rentals)
-}
-
+init_state = get_current_state(rentals=rentals, stock=stock)
 
 # Try adding x new units at time T=100
-reorder_amount = 350
-reorder_policy = jnp.zeros((n_products, max_periods)).at[j,100].set(reorder_amount)
-rental_inventory = MultinomialDemandInventory(n_products=n_products, policies=reorder_policy)
+reorder_amount = 300
+reorder_policy = jnp.zeros((J_PRODUCTS, MAX_PERIODS)).at[j,100].set(reorder_amount)
+rental_inventory = MultinomialDemandInventory(n_products=J_PRODUCTS, policies=reorder_policy)
 
 # only simulate 1 sample - we're going to use the true data generating process 
 # to pretend we actually reordered this amount of units and watched what happened afterward
@@ -858,14 +995,14 @@ observe_future = numpyro.infer.Predictive( rental_inventory.model, num_samples =
 results = observe_future(random.PRNGKey(SEED), init_state, start_time=100, end_time=200)
 ```
 
-Notice that this time we're not loading in any parameters into the `Predictive` call. Thats because we're using the true data-generating process to simulate what happens this time. We're basically observing one possible future in the original fake world we created
+Notice that this time we're not loading in any parameters into the `Predictive` call. That's because we're using the true data-generating process to simulate what happens this time. We're basically observing one possible future in the original fake world we created.
 
 ```{python}
+#| code-fold: true
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
         sharex=True, 
         figsize=(12,6))
-
 
 daily_ending_stock = pd.concat((
     daily_rentals.loc[f'product_{j}'].ending_units,
@@ -882,6 +1019,87 @@ axes[0].set(
 axes[0].axhline(0, color='r', lw=2, ls='--')
 axes[0].legend()
 
+# plot stockouts
+axes[-1].vlines(dates[(daily_ending_stock==0).values],0,1, color='r', lw=5)
+axes[-1].set_yticks([])
+axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize=14)
+
+fig.subplots_adjust(hspace=0.025)
+```
+
+Amazing, by reordering 300 units, we no longer ran into any stockouts! This is exactly what we were hoping for. 
+
+We now have a system we can use to figure out the optimal stock to reorder for a single product. How can we now scale this to our entire inventory, or even inform the purchasing of new products?
+
+## Can we do something more simple?
+Was all of this really necessary? Let's see for ourselves by taking a naive approach. We'll fit a basic regression where we control for the global stockout rate and dummy-encode stockouts - meant to represent a basic tabular data science approach.
+
+```{python}
+import statsmodels.api as sm
+model = sm.OLS.from_formula(
+    "rentals ~ total_stockout_rate + stockout", 
+    data=daily_rentals.query(f"product_id=='product_{j}'")
+).fit()
+
+# Predict the latest demand rate as if it didnt have a stockout
+X = daily_rentals.query(f"product_id=='product_{j}'").tail(1).assign(stockout=0)
+fcast = model.predict(X)
+```
+
+
+```{python, fig.width=5, fig.height=3}
+#| code-fold: true
+naive_rental_rate_fcast = np.vstack([fcast for _ in range(100)]) # broadcast the forecast
+
+# Simulate what would happen under different reorder amounts based on naive demand estimate
+stockout_results = np.empty((9,2))
+for i, units in enumerate(range(0,450, 50)):
+    stockout_rate = sim_stockout_rate(units, lambd=naive_rental_rate_fcast)
+    stockout_results[i,:] = [units, stockout_rate]
+
+fig, ax = plt.subplots(figsize=(5,3))
+ax.plot(stockout_results[:,0], stockout_results[:,1])
+ax.set_ylabel('Est. Stockout Rate', fontsize=10)
+ax.set_xlabel('Units Reordered', fontsize=10)
+ax.set_title('Naive Approach:\nEstimated Stockout Rate as we reorder more units', fontsize=10)
+plt.show()
+```
+
+
+We can see that this approach leads to a recommendation of 200 units reordered. Is that reasonable? Let's see what happens. 
+
+```{python}
+#| code-fold: true
+init_state = get_current_state(rentals=rentals, stock=stock)
+
+# Try adding x new units at time T=100
+reorder_amount = 200
+reorder_policy = jnp.zeros((J_PRODUCTS, MAX_PERIODS)).at[j,100].set(reorder_amount)
+rental_inventory = MultinomialDemandInventory(n_products=J_PRODUCTS, policies=reorder_policy)
+
+# only simulate 1 sample - we're going to use the true data generating process 
+# to pretend we actually reordered this amount of units and watched what happened afterward
+observe_future = numpyro.infer.Predictive( rental_inventory.model, num_samples = 1)
+results = observe_future(random.PRNGKey(SEED), init_state, start_time=100, end_time=200)
+
+fig, axes = plt.subplots(2,1,
+        gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
+        sharex=True, 
+        figsize=(12,6))
+
+daily_ending_stock = pd.concat((
+    daily_rentals.loc[f'product_{j}'].ending_units,
+    pd.Series(results['ending_stock'][..., j].squeeze(), index=dates[100:])
+))
+
+daily_ending_stock.plot(color='k',ax=axes[0], label='Stock Levels')
+axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
+axes[0].set(
+    ylabel='Stock Levels', 
+    xlabel='Date', 
+    title=f'Naive Approach: Observed Stock Levels after reordering {reorder_amount} units')
+axes[0].axhline(0, color='r', lw=2, ls='--')
+axes[0].legend()
 
 # plot stockouts
 axes[-1].vlines(dates[(daily_ending_stock==0).values],0,1, color='r', lw=5)
@@ -891,28 +1109,48 @@ axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize
 fig.subplots_adjust(hspace=0.025)
 ```
 
-Amazing, by reordering 350 units, we no longer ran into any stockouts! This is exactly what we were hoping for. 
+As we can see above, using more traditional tabular machine learning methods just don't cut it. This problem needs the more advanced model structure that we had implemented above.
 
-We now have a system we can use to figure out the optimal stock to reorder for a single product. How can we now scale this to our entire inventory, or even inform the purchasing of new products?
 
 
 # Conclusion
 
 ---
 
-This was a difficult problem that didn't fall under the lens of a classic tabular data science problem. By using first principles, it's possible to break down the problem into more explainable pieces. The data generating process was the following
+This was a difficult problem that didn't fall under the lens of a classic tabular data science problem. By using first principles, it's possible to break down the problem into more explainable pieces. The data generating process was the following:
+
  1. Customers come in and rent $y \sim \text{min}(\text{Poisson}(\lambda), \text{stock})$ units each day
  2. Those units tend to have some learnable distribution of rental duration, $t \sim \text{LogNormal}(\theta, \sigma)$
  3. The stock levels vary as those rentals occur and get returned
 
 We found that modeling each individual component of the data generating process and combining them into a simulation was sufficient to inform a reorder for a product and is also very explainable. 
 
+This can also be extended further to answer different sorts of questions - what happens to total daily rentals as customer count grows? Which levers increase customer count the most? How much more inventory do we need to support more subscribers?
+
+```{dot}
+digraph {
+	p [label=Price]
+    c [label=Competitors]
+    d [label=Promos]
+	x [label=Customers]
+	Y [label="Total Rentals"]
+	y_j [label=Stockouts]
+    c -> x
+    d -> x
+    p -> x
+    x -> Y
+    Y -> y_j
+}
+```
+
 
 # Next Steps: Modeling a full product assortment
 
 ---
 
-We're going to borrow ideas from discrete choice literature (see [Kenneth Train's Discrete Choice Methods with Simulation](https://eml.berkeley.edu/books/choice2.html)) - each product has some inherent utility, $U$, which determines how often its chosen. 
+Here's a quick glimpse of whats next.
+
+We're going to borrow ideas from discrete choice literature (see [Kenneth Train's Discrete Choice Methods with Simulation](https://eml.berkeley.edu/books/choice2.html)) - each product has some inherent utility, $U$, which determines how often it is chosen. 
 
 A decision maker, $n$, has $J$ products they can choose from. The utility of a given product, $j$ for a given user $n$ is 
 
@@ -920,13 +1158,17 @@ $$
 U_{nj} \sim \beta \: x_{nj} + \epsilon_{nj}
 $$
 
-where $\epsilon_{nj}$ is an error term that follows a Gumbel distribution. Date effects can also be added, for instance sweaters may have higher utility in the winter. We'll keep it more simple for now and avoid date effects
+where $\epsilon_{nj}$ is an error term that follows a Gumbel distribution. Date effects can also be added, for instance sweaters may have higher utility in the winter. We'll keep it more basic for now and avoid date effects.
 
 Why are we using this seemingly complicated representation? It has some really nice properties - namely that utilities are easy to convert to choice probabilities, even when the choice set (in this case the available product catalog) changes. All you have to do is take your utilities and feed them into a softmax equation to get choice probabilities for each product.
 
+$$
+p_{nj} = \text{softmax}(U_{nj})
+$$
+
 This is particularly helpful for this sort of problem, because the choice set is frequently changing for customers as products go in and out of stock.
 
-We're going to make one key simplification here - we're going to measure utility for the population as a whole, and not condition on individual user features - since our goal right now is just to know how much stock to reorder, we dont really need to know heterogeneity in demand across users unless we expect a big shift in our customer mix in the near term. 
+We're going to make one key simplification here - we're going to measure utility for the population as a whole, and not condition on individual user features - since our goal right now is just to know how much stock to reorder, we don't really need to know heterogeneity in demand across users unless we expect a big shift in our customer mix in the near term. 
 
 We can define a Multinomial Logit based inventory process as follows
 
@@ -963,4 +1205,4 @@ class MultinomialDemandInventory(RentalInventory):
         return rentals_as_arr.astype(int)
 ```
 
-This work will be continued in a follow up blog post. The code this is based off of can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand)
+This work will be continued in a follow up blog post. The code this is based off of can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
