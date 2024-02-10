@@ -28,7 +28,7 @@ import matplotlib.ticker as mtick
 import seaborn as sns
 from weibull import Weibull
 import scipy
-plt.style.use("seaborn")
+plt.style.use("fivethirtyeight")
 
 k = 1.5
 lambd = 30
