@@ -14,10 +14,10 @@ website:
         href: https://twitter.com
 theme: default 
 highlight-style: atom-one-light
-
 format:
   html:
     css: theme.scss
+    highlight-style: atom-one-light
 
 
 
