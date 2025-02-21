@@ -2,54 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://kylejcaron.github.io/blog.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.973Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/archive.html</loc>
-    <lastmod>2024-02-07T01:23:53.563Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.968Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/2022-04-03-explainable-ai-is-not-causal.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.975Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/2022-04-11-uncertainty_intervals_over_pvals.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.975Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools.html</loc>
-    <lastmod>2024-02-10T21:07:59.013Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.977Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/experiment_design.html</loc>
-    <lastmod>2024-02-07T01:23:53.572Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.976Z</lastmod>
   </url>
   <url>
-    <loc>https://kylejcaron.github.io/posts/surrogates/Untitled.html</loc>
-    <lastmod>2024-02-07T03:05:44.806Z</lastmod>
+    <loc>https://kylejcaron.github.io/posts/pandera_schemas/2025-02-21-pandera-schemas.html</loc>
+    <lastmod>2025-02-21T22:20:47.760Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro.html</loc>
-    <lastmod>2024-02-10T21:07:59.012Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.976Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/2022-04-17-out-of-sample-pymc.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.975Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</loc>
-    <lastmod>2024-02-07T01:23:53.572Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.976Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand.html</loc>
-    <lastmod>2024-02-10T21:07:59.011Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.976Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/2022-04-05-ab-test-duration.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T21:58:15.525Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/index.html</loc>
-    <lastmod>2024-02-07T01:23:53.571Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.974Z</lastmod>
   </url>
 </urlset>

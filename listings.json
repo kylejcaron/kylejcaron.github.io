@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
       "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
@@ -16,6 +17,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
       "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",
@@ -30,6 +32,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
       "/posts/surrogates/2023-07-09-surrogate_index_intro.html",
       "/posts/experiment_strategy/2023-06-09-experiment-strategy.html",

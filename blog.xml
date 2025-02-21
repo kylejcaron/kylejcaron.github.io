@@ -9,8 +9,575 @@
 <link>https://kylejcaron.github.io/blog.html</link>
 <atom:link href="https://kylejcaron.github.io/blog.xml" rel="self" type="application/rss+xml"/>
 <description>Welcome to my blog! I&#39;m a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to formalize what I learn, but hopefully others find it helpful as well.</description>
-<generator>quarto-1.4.549</generator>
-<lastBuildDate>Sun, 09 Jul 2023 04:00:00 GMT</lastBuildDate>
+<generator>quarto-1.6.41</generator>
+<lastBuildDate>Fri, 21 Feb 2025 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Introduction to Surrogate Indexes</title>
+  <link>https://kylejcaron.github.io/posts/pandera_schemas/2025-02-21-pandera-schemas.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div id="8df31668" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span></code></pre></div>
+</details>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Pandera schema’s are a useful tool to make sure input data is as expected. If you’ve ever used dbt before, theyre just like schema tests or great-expectations.</p>
+<p>Data validation is extremely important for just about everyone in the data science space. For instance, your model may not be expecting null values, or maybe it needs data to be iid. This is where Pandera can come in and excel, especially when you don’t have control over the input data.</p>
+</section>
+<section id="inheritance-for-reusing-schema" class="level1">
+<h1>Inheritance for reusing schema</h1>
+<p>I recently had a project where I wasn’t responsible for and had no control over the input data. For a particularly model, many different datasets would be sent to different models for inference, and I couldn’t always rely on the data being properly structured.</p>
+<p>I was also working with a range of different models including time-varying survival and time series models. I wanted to be able to reuse as much code across models, which is where Pandera comes in.</p>
+<p>Lets start with looking at some panel data:</p>
+<div id="87a5fc74" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">panel <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.DataFrame({</span>
+<span id="cb2-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"entity_id"</span>:[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,],</span>
+<span id="cb2-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date"</span>:[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2023-01-01'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2023-02-01'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2023-01-01'</span>],</span>
+<span id="cb2-4">})</span>
+<span id="cb2-5">panel.assign(metric<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">entity_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">metric</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-02-01</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2023-01-01</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>It turns out Time Series data is typically going to be panel data (although not always true). Time-varying survival data is also a special case of panel data, where each entity (for instance a customer’s subscription id) starts at some point at there are consistently spaced observations.</p>
+<p>Class inheritance is a perfect pattern to reflect this. We can do something like the following to reuse schema checks and save a lot of lines of code.</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> PanelSchema:</span>
+<span id="cb3-2">    ...</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> TimeSeriesSchema(PanelSchema):</span>
+<span id="cb3-5">    ...</span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> TimevaryingSurvivalSchema(PanelSchema):</span>
+<span id="cb3-8">    ...</span></code></pre></div>
+<p>For example, we can make a panel schema with some obvious checks:</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> BasePanelSchema(pa.DataFrameModel):</span>
+<span id="cb4-2">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@classmethod</span></span>
+<span id="cb4-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> infer_frequency(cls, df: pd.DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>:</span>
+<span id="cb4-4">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""Identifies the frequency of dates in the panel dataset"""</span></span>
+<span id="cb4-5">        ...</span>
+<span id="cb4-6"></span>
+<span id="cb4-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@classmethod</span></span>
+<span id="cb4-8">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> validate(cls, df: pd.DataFrame, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>args, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>kwargs):</span>
+<span id="cb4-9">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run and save dataset frequency before other validations</span></span>
+<span id="cb4-10">        cls.Config.metadata[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"freq"</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> cls.infer_frequency(df)</span>
+<span id="cb4-11">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">super</span>().validate(df, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>args, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>kwargs)</span>
+<span id="cb4-12"></span>
+<span id="cb4-13"></span>
+<span id="cb4-14"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> PanelSchema(BasePanelSchema):</span>
+<span id="cb4-15">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""Panel Data schema. This assumes that Panel Data has 1 entry per entity per date, and that all</span></span>
+<span id="cb4-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    dates between the min and the max date for an entity should exist as records, evenly spaced.</span></span>
+<span id="cb4-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    """</span></span>
+<span id="cb4-18">    entity_id: Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb4-19">    date: Series[DateTime] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb4-20"></span>
+<span id="cb4-21">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> Config:</span>
+<span id="cb4-22">        unique <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"entity_id"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"date"</span>]</span>
+<span id="cb4-23">        strict <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span></span>
+<span id="cb4-24">        metadata: <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {}</span>
+<span id="cb4-25"></span>
+<span id="cb4-26">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@pa.dataframe_check</span></span>
+<span id="cb4-27">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> validate_frequency(cls, df: pd.DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">bool</span>:</span>
+<span id="cb4-28">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""Ensures that every entity has the same frequency between dates of consecutive records"""</span></span>
+<span id="cb4-29">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Use the inferred frequency for some validation</span></span>
+<span id="cb4-30">        ...</span>
+<span id="cb4-31"></span>
+<span id="cb4-32">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@pa.dataframe_check</span></span>
+<span id="cb4-33">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> check_complete_date_index_per_entity(cls, df: DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">bool</span>]:</span>
+<span id="cb4-34">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""Ensures that all dates (at the applicable frequency) between the min and the max date for</span></span>
+<span id="cb4-35"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">        an entity should exist as records.</span></span>
+<span id="cb4-36"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">        """</span></span>
+<span id="cb4-37">        ...</span></code></pre></div>
+<p>As a starting point, this makes it really easy to extend to time series models.</p>
+<div id="a07262ec" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">panel.query(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"entity_id==1"</span>).assign(y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">105</span>])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">entity_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-02-01</td>
+<td>105</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>I can take my PanelSchema and inherit it for different data models. A simple example is lets say I need a non-null outcome:</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> UnivariateTimeSeriesSchema(PanelSchema):</span>
+<span id="cb6-2">    y: Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">float</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span></code></pre></div>
+<p>and just like that, I have all of those previous data checks extended to my time series model.</p>
+<p>There are some downsides though. First, you cant parameterize field names, for instance your outcome needs to be named <code>y</code>. I’d also need an <code>entity_id</code> column for this to work because the PanelSchema requires it - but that’s simple enough, you could just add say a product_id field with the product name you’re forecasting.</p>
+<p>For time-varying survival schema, they can be defined as</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">class</span> TimeVaryingSurvivalSchema(PanelSchema):</span>
+<span id="cb7-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""A schema for Time Varying Survival Analysis, should be a unique and complete panel dataset</span></span>
+<span id="cb7-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    on the `entity_id` and `time` columns.</span></span>
+<span id="cb7-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">    """</span></span>
+<span id="cb7-5">    tenure: Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(ge<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb7-6">    event: Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(isin<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>], <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb7-7">    exposure: Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">float</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pa.Field(le<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, ge<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">coerce</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, nullable<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb7-8"></span>
+<span id="cb7-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@pa.dataframe_check</span></span>
+<span id="cb7-10">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> check_tenure_is_consecutive(cls, df: DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">bool</span>]:</span>
+<span id="cb7-11">        ...</span>
+<span id="cb7-12"></span>
+<span id="cb7-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@pa.dataframe_check</span></span>
+<span id="cb7-14">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> check_max_one_event_per_entity(cls, df: DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Series[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">bool</span>]:</span>
+<span id="cb7-15">        ...</span>
+<span id="cb7-16"></span>
+<span id="cb7-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">@pa.dataframe_check</span></span>
+<span id="cb7-18">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> check_event_is_last_obs_per_entity(cls, df: DataFrame) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-&gt;</span> Seris[<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">bool</span>]:</span>
+<span id="cb7-19">        ...</span></code></pre></div>
+<p>In this case, it inherits all of the previous schema checks from PanelSchema. We extend it further to add some survival analysis schema specific checks - for instance, for each entity_id, we expect there to be a tenure column indicating each consecutive time period. A common example for tenure is the months since a customer started a subscription.</p>
+<div id="9555c00e" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">panel.assign(</span>
+<span id="cb8-2">    tenure<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], </span>
+<span id="cb8-3">    exposure<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>],</span>
+<span id="cb8-4">    event <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb8-5">)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">entity_id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">tenure</th>
+<th data-quarto-table-cell-role="th">exposure</th>
+<th data-quarto-table-cell-role="th">event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>0</td>
+<td>1.00</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-02-01</td>
+<td>1</td>
+<td>0.50</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2023-01-01</td>
+<td>0</td>
+<td>0.25</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Whats great about this is that its all so easy to read and mimics how we think about it conceptually. Time Series and Time-varying survival are just sub-categories of panel data. And our code mimics that perfectly.</p>
+</section>
+<section id="concluding-thoughts" class="level1">
+<h1>Concluding Thoughts</h1>
+<p>Pandera has some nice use cases, particularly when you’re not sure what data you’re going to get thrown at you. The read-ability is fantastic, and it can save a ton of code.</p>
+<p>That said there were some caveats I’ve run into (some of which I mentioned above):</p>
+<ol type="1">
+<li>Field names can’t be parameterized. For instance, maybe for Survival analysis I want the outcome to be named <code>churn</code> instead of <code>event</code>.</li>
+<li>Will this scale for massive datasets? I’m not sure if the code will be able to stay this clean at larger scales, especially for consecutive row based operations like validating frequencies. Not sure how that one will play out when the data needs to be batched.</li>
+<li>Pandera isn’t the most flexible since you’re typically working with uninstantiated classes and class methods. There can be some growing pains for less experienced programmers</li>
+<li>There is a really cool yaml output feature that lets you take a schema and get a yaml list of all of the checks it will run, but it doesn’t support custom checks and that basically makes it unusable.</li>
+<li>I found that the project maintainers weren’t that responsive on github</li>
+</ol>
+<p>Overall, its definitely a useful tool to keep in your back pocket, but I have two pieces of advice:</p>
+<ol type="1">
+<li>If you have the luxury of predictable data inputs or you’re modeling a single dataset over time, you probably don’t need this and can stick to dbt validation or something simple.</li>
+<li>If you’re working on large datasets, maybe do a POC and make sure your schema approach will work for data thats loaded in batches</li>
+</ol>
+<p>Note: I may update this later to have actual working code to demo, but for now it’s pseudocode.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>object oriented programming</category>
+  <category>data processing</category>
+  <guid>https://kylejcaron.github.io/posts/pandera_schemas/2025-02-21-pandera-schemas.html</guid>
+  <pubDate>Fri, 21 Feb 2025 05:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Modeling Anything With First Principles: Demand under extreme stockouts</title>
   <link>https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand.html</link>
@@ -35,7 +602,7 @@
 <section id="part-1-looking-at-the-data" class="level1">
 <h1>Part 1: Looking at the data</h1>
 <hr>
-<div id="803a9672" class="cell" data-execution_count="1">
+<div id="06b46acf" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -173,6 +740,7 @@ font-style: inherit;">/data/rentals.csv"</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 <span id="cb1-35">          )</span>
 <span id="cb1-36">stock <span class="op" style="color: #5E5E5E;
@@ -190,6 +758,7 @@ font-style: inherit;">/data/stock_levels.csv"</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 <span id="cb1-38">        )</span>
 <span id="cb1-39">purchases <span class="op" style="color: #5E5E5E;
@@ -207,6 +776,7 @@ font-style: inherit;">/data/product_purchases.csv"</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: pd.to_datetime(d.date))</span>
 <span id="cb1-41">          )</span>
 <span id="cb1-42">J_PRODUCTS, MAX_PERIODS <span class="op" style="color: #5E5E5E;
@@ -224,13 +794,13 @@ font-style: inherit;">10000</span></span></code></pre></div>
 <li><code>stock</code> showing available stock levels for that product over time</li>
 <li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
-<div id="c0be6242" class="cell" data-execution_count="2">
+<div id="2e83dd18" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">rentals.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -282,13 +852,13 @@ font-style: inherit;">10000</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="cdc93231" class="cell" data-execution_count="3">
+<div id="25406d50" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">stock.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -340,13 +910,13 @@ font-style: inherit;">10000</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="37af4676" class="cell" data-execution_count="4">
+<div id="34a8fe59" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">purchases.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -401,11 +971,12 @@ font-style: inherit;">10000</span></span></code></pre></div>
 <section id="plotting-product-rentals" class="level2">
 <h2 class="anchored" data-anchor-id="plotting-product-rentals">Plotting Product Rentals</h2>
 <p>Lets convert the rental data to time series data and see what it looks like</p>
-<div id="5dc61724" class="cell" data-execution_count="5">
+<div id="244a2d88" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> rental_events_to_ts(rentals, freq<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
@@ -413,6 +984,7 @@ background-color: null;
 font-style: inherit;">'D'</span>):</span>
 <span id="cb5-2">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> (rentals</span>
 <span id="cb5-3">            .groupby(<span class="st" style="color: #20794D;
 background-color: null;
@@ -535,14 +1107,14 @@ font-style: inherit;">None</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-6-output-1.png" width="1211" height="711" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It looks like there are typically 0-15 rentals per day for a given product, and there are typically 5000 rentals total each day.</p>
 <p>Looking at the distribution of total rentals across products, we see that it is mildly long-tailed.</p>
-<div id="d8b8aacf" class="cell" data-execution_count="6">
+<div id="4d12c693" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -599,13 +1171,13 @@ font-style: inherit;">=</span>ax )</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-7-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?</p>
-<div id="81187d41" class="cell" data-execution_count="7">
+<div id="33975977" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -626,6 +1198,7 @@ font-style: inherit;">5</span>))</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.ending_units<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span><span class="dv" style="color: #AD0000;
@@ -649,7 +1222,7 @@ font-style: inherit;">'Percent of products with a Stockout each day'</span>))</s
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-8-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -658,7 +1231,7 @@ font-style: inherit;">'Percent of products with a Stockout each day'</span>))</s
 <section id="looking-at-a-single-product" class="level2">
 <h2 class="anchored" data-anchor-id="looking-at-a-single-product">Looking at a single product</h2>
 <p>We’re going to start with a single product and see if we can come up with a system that informs us how many units we should reorder.</p>
-<div id="c86fa4a0" class="cell" data-execution_count="8">
+<div id="2ba2ebea" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">j<span class="op" style="color: #5E5E5E;
@@ -781,6 +1354,7 @@ font-style: inherit;">12</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.ending_units<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span><span class="dv" style="color: #AD0000;
@@ -816,7 +1390,7 @@ font-style: inherit;">1</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-9-output-1.png" width="1211" height="811" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -824,7 +1398,7 @@ font-style: inherit;">1</span>)</span>
 <p>As shown above, just looking at a time series of rentals each day is a bit confusing - there are seemingly random spikes in demand for just this product that dont seem to line up with spikes in total demand across products.</p>
 <p>When we look at the stockout rate across all products over time, it looks like the stockout rate drops at the same time demand increases for Product ID 165.</p>
 <p>Let’s join stock data to rental data and see whats happening for this product.</p>
-<div id="e05bf562" class="cell" data-execution_count="9">
+<div id="2ce4ec54" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">daily_rentals <span class="op" style="color: #5E5E5E;
@@ -845,6 +1419,7 @@ font-style: inherit;">'date'</span>])</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span><span class="op" style="color: #5E5E5E;
@@ -858,6 +1433,7 @@ font-style: inherit;">0</span>))</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.groupby(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"date"</span>).stockout.transform(<span class="st" style="color: #20794D;
@@ -867,6 +1443,7 @@ font-style: inherit;">"mean"</span>)) </span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.groupby(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"date"</span>).rentals.transform(<span class="st" style="color: #20794D;
@@ -893,7 +1470,7 @@ font-style: inherit;">'</span>]].head()</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -905,7 +1482,7 @@ font-style: inherit;">'</span>]].head()</span></code></pre></div>
 <th data-quarto-table-cell-role="th">total_stockout_rate</th>
 <th data-quarto-table-cell-role="th">total_rentals</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">product_id</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th"></th>
@@ -970,7 +1547,7 @@ font-style: inherit;">'</span>]].head()</span></code></pre></div>
 </div>
 </div>
 <p>Now that we have this data joined, we can plot the rental data with corresponding stock data.</p>
-<div id="af25b430" class="cell" data-execution_count="10">
+<div id="827a0e2c" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">ax <span class="op" style="color: #5E5E5E;
@@ -1019,7 +1596,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-11-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1062,7 +1639,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 <section id="preparing-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-the-data">Preparing the data</h3>
 <p>It’s easy to see that there are plenty of rentals that are still out with customers and haven’t been returned yet. For these unreturned rentals, we can’t calculate an accurate rental duration.</p>
-<div id="a50c613f" class="cell" data-execution_count="11">
+<div id="7e3d1a35" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">rentals.sample(<span class="dv" style="color: #AD0000;
@@ -1075,7 +1652,7 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1164,7 +1741,7 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 </div>
 <p>It’s important to remember that even though these items aren’t returned, some have been rented out for 30, 40, 50 days, and it is important information to know that some items have been out for at least that long. A good example is that if it is possible for some items to be rented out for 200 days, but we’ve only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.</p>
 <p>What we can instead do is calculate the rental duration to date and then use a survival model to properly incorporate those unreturned items.</p>
-<div id="2c12550a" class="cell" data-execution_count="12">
+<div id="9f6590dc" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">curr_date <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.date.<span class="bu" style="color: null;
@@ -1178,11 +1755,13 @@ font-style: inherit;">=</span> (</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: pd.to_datetime(d.return_date))</span>
 <span id="cb12-5">    .assign(time_since<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: (d.return_date.fillna(curr_date)<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span>d.date).dt.days)</span>
@@ -1190,6 +1769,7 @@ font-style: inherit;">-</span>d.date).dt.days)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.return_date.notnull()<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
@@ -1203,7 +1783,7 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1217,48 +1797,48 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">138902</td>
-<td>32c211f3-475c-48d4-8a25-f52b58316178</td>
-<td>2022-06-09</td>
-<td>2022-06-18</td>
-<td>product_267</td>
-<td>9</td>
+<td data-quarto-table-cell-role="th">403576</td>
+<td>a773931e-b2e6-4bd9-bdd7-ce1476803335</td>
+<td>2022-04-08</td>
+<td>2022-04-23</td>
+<td>product_802</td>
+<td>15</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">334894</td>
-<td>3a3e3d63-171a-48d7-bb3c-c021651ce5a0</td>
-<td>2022-05-02</td>
-<td>2022-05-26</td>
-<td>product_658</td>
+<td data-quarto-table-cell-role="th">364360</td>
+<td>bfe212c4-c67d-4743-9e9d-41056a33443c</td>
+<td>2022-06-18</td>
+<td>2022-06-30</td>
+<td>product_721</td>
+<td>12</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">292113</td>
+<td>67c05e04-779f-4d41-b17b-8a855766caa0</td>
+<td>2022-06-17</td>
+<td>2022-06-29</td>
+<td>product_574</td>
+<td>12</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">482470</td>
+<td>9ced121a-fc4e-44dd-9732-e17285c46114</td>
+<td>2022-04-03</td>
+<td>2022-04-27</td>
+<td>product_965</td>
 <td>24</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">315119</td>
-<td>dc40f891-bbe5-44cd-a94f-b40f31040eac</td>
-<td>2022-06-30</td>
-<td>2022-07-09</td>
-<td>product_620</td>
-<td>9</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">239024</td>
-<td>d0e8b6ca-9b05-42bd-8d59-64fdc2d504ae</td>
-<td>2022-04-13</td>
-<td>2022-05-30</td>
-<td>product_467</td>
-<td>47</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">234012</td>
-<td>c5f634f2-a87a-4add-b6cb-5861f46a7926</td>
-<td>2022-05-16</td>
-<td>2022-05-23</td>
-<td>product_457</td>
-<td>7</td>
+<td data-quarto-table-cell-role="th">267993</td>
+<td>492f43aa-08de-479b-a297-a39b0f239fc9</td>
+<td>2022-05-06</td>
+<td>2022-05-18</td>
+<td>product_527</td>
+<td>12</td>
 <td>1</td>
 </tr>
 </tbody>
@@ -1277,9 +1857,10 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 </ul>
 <p>For simplicity, we’re assuming the data is lognormally distributed (and we simulated the data that way). In reality, it is best to plot distributions of your data and decide for yourself.</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Csmall%7B%0A%5Cdisplaylines%7B%0A%5Ctext%7Brental%20duration%7D%20%5Csim%20%5Ctext%7BLognormal%7D(%5Ctheta,%20%5Csigma)%0A%7D%7D%0A"></p>
-<div id="426760b6" class="cell" data-execution_count="13">
+<div id="b5ec2fd2" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> censored_lognormal(theta, sigma, cens, y<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -1322,6 +1903,7 @@ font-style: inherit;">=</span>cens)</span>
 <span id="cb13-8"></span>
 <span id="cb13-9"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> survival_model(E, T<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -1345,6 +1927,7 @@ background-color: null;
 font-style: inherit;">0.7</span>))</span>
 <span id="cb13-12">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"data"</span>, <span class="bu" style="color: null;
@@ -1361,7 +1944,7 @@ background-color: null;
 font-style: inherit;">=</span>T)</span></code></pre></div>
 </div>
 <p>We can now use numpyro to fit a model and estimate the typical rental duration.</p>
-<div id="6dacb675" class="cell" data-execution_count="14">
+<div id="0278f960" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">E <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.query(<span class="ss" style="color: #20794D;
@@ -1427,7 +2010,7 @@ background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 </div>
 <p>Remember, this is simulated data so we know the truth and can use that as a way to test this is working - a correctly specified model should recover the the true parameter values.</p>
-<div id="4a8ae829" class="cell" data-execution_count="15">
+<div id="1177eca8" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -1529,12 +2112,12 @@ font-style: inherit;">1</span>].legend()</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-16-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="d418cc5a" class="cell" data-execution_count="16">
+<div id="a1ede923" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -1614,7 +2197,7 @@ font-style: inherit;">'Rental Duration'</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-17-output-1.png" width="711" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1629,7 +2212,7 @@ font-style: inherit;">'Rental Duration'</span>)</span>
 <h3 class="anchored" data-anchor-id="looking-at-the-demand-data">Looking at the demand data</h3>
 <p>The rental demand model is going to start simple for this single-product case - we’ll just estimate a poisson distribuion.</p>
 <p>Taking a look at the data again, it is clear that demand is constrained, or censored, by stockouts here.</p>
-<div id="cd97c94a" class="cell" data-execution_count="17">
+<div id="6f32a043" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">ax <span class="op" style="color: #5E5E5E;
@@ -1678,13 +2261,13 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-18-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs.&nbsp;when there isn’t - observed rentals are lower on days when there are stockouts - the sample size of stocked out periods is also smaller.</p>
-<div id="67be6c2c" class="cell" data-execution_count="18">
+<div id="798c734a" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">(</span>
@@ -1717,14 +2300,14 @@ font-style: inherit;">2</span>)</span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">mean</th>
 <th data-quarto-table-cell-role="th">count</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">stockout</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1752,9 +2335,10 @@ font-style: inherit;">2</span>)</span>
 <h3 class="anchored" data-anchor-id="defining-and-fitting-the-model-1">Defining and fitting the model</h3>
 <p>We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if there’s a stockout, the model thinks that rentals might’ve been higher than observed if there was more stock, otherwise if there’s no stockout it thinks that demand is the number of rentals that day (plus some noise of course)</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Csmall%7B%0A%5Cdisplaylines%7B%0A%5Ctext%7Blog%7D(%5Clambda)%20%5Csim%20%5Calpha%20+%20%5Cbeta%20X%20%5C%5C%0A%5Ctext%7Brentals%7D%20=%20%5Ctext%7Bmin%7D(%5Ctext%7Bstock%7D,%20%5Ctext%7BPoisson%7D(%5Clambda))%0A%7D%7D%0A"></p>
-<div id="0a8dd88d" class="cell" data-execution_count="19">
+<div id="70c1df64" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> censored_poisson(lambd, cens, y<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -1802,6 +2386,7 @@ font-style: inherit;">=</span>cens)</span>
 <span id="cb19-9"></span>
 <span id="cb19-10"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> demand_model(stockout, X, y<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -1832,6 +2417,7 @@ font-style: inherit;">1</span>))</span>
 <span id="cb19-15"></span>
 <span id="cb19-16">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"data"</span>, <span class="bu" style="color: null;
@@ -1881,7 +2467,7 @@ background-color: null;
 font-style: inherit;">=</span>y)</span></code></pre></div>
 </div>
 <p>We can then fit this model with numpyro below:</p>
-<div id="accdb933" class="cell" data-execution_count="20">
+<div id="8406f019" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> daily_rentals.loc[<span class="ss" style="color: #20794D;
@@ -1956,7 +2542,7 @@ background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 </div>
 <p>We can check the estimated rental rate parameter, <img src="https://latex.codecogs.com/png.latex?%5Clambda">, against the actual value that we simulated and find that our model does have coverage over the ground truth.</p>
-<div id="c76ebcde" class="cell" data-execution_count="21">
+<div id="29d631ee" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">params <span class="op" style="color: #5E5E5E;
@@ -1975,6 +2561,7 @@ font-style: inherit;">/data/true_params.csv"</span>)</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: jax.nn.softmax(d.utility.values)<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
@@ -2053,13 +2640,13 @@ font-style: inherit;">10</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-22-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Note that this is the base level of demand for the product - as competing products stock out, we expect <img src="https://latex.codecogs.com/png.latex?%5Clambda"> to increase. Currently, that is represented by <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> in the model above, which is the relationship of the products demand to global stockout rate. As global stockout rate climbs, <img src="https://latex.codecogs.com/png.latex?%5Clambda"> increases. We can roughly estimate lambda at differen’t stockout levels.</p>
-<div id="781f964d" class="cell" data-execution_count="22">
+<div id="3cf2b546" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="co" style="color: #5E5E5E;
@@ -2132,7 +2719,7 @@ font-style: inherit;">20</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-23-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2151,6 +2738,7 @@ font-style: inherit;">20</span>)</span>
 <p>The <code>model_single_day</code> method simulates returns and rentals each day, and logs them.</p>
 <div class="sourceCode" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> RentalInventory:</span>
 <span id="cb23-2">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -2163,6 +2751,7 @@ background-color: null;
 font-style: inherit;">    """</span></span>
 <span id="cb23-5">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -2189,14 +2778,18 @@ font-style: inherit;">self</span>.policies <span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">=</span> policies <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> policies <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">not</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> jnp.zeros((n_products, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10000</span>))</span>
@@ -2219,6 +2812,7 @@ font-style: inherit;">10000</span></span>
 <span id="cb23-12"></span>
 <span id="cb23-13">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> model(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, init_state: Dict, start_time: <span class="bu" style="color: null;
@@ -2252,10 +2846,12 @@ font-style: inherit;">=</span>jnp.arange(start_time, end_time)</span>
 <span id="cb23-21">        )</span>
 <span id="cb23-22">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> ys</span>
 <span id="cb23-23"></span>
 <span id="cb23-24">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> model_single_day(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, prev_state: Dict, time: <span class="bu" style="color: null;
@@ -2349,6 +2945,7 @@ background-color: null;
 font-style: inherit;">+</span> rentals)</span>
 <span id="cb23-37">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> curr_state, rentals</span>
 <span id="cb23-38"></span>
 <span id="cb23-39">    ...</span>
@@ -2356,6 +2953,7 @@ font-style: inherit;">return</span> curr_state, rentals</span>
 <p>The sub-models and methods referenced but not shown above are a little complicated and overwhelming with the array operations and logic however, so feel free to skim over this for now.</p>
 <div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> RentalInventory</span>
 <span id="cb24-2">    </span>
 <span id="cb24-3">    ...</span>
@@ -2364,6 +2962,7 @@ font-style: inherit;">class</span> RentalInventory</span>
 <span id="cb24-6"></span>
 <span id="cb24-7">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> demand_model(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, available_stock, time):</span>
@@ -2375,12 +2974,14 @@ background-color: null;
 font-style: inherit;">        """</span></span>
 <span id="cb24-10">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">NotImplementedError</span>()</span>
 <span id="cb24-11">    </span>
 <span id="cb24-12">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> returns_model(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, existing_rentals: jnp.array, time: <span class="bu" style="color: null;
@@ -2457,10 +3058,12 @@ background-color: null;
 font-style: inherit;">sum</span>())</span>
 <span id="cb24-26">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> returns</span>
 <span id="cb24-27">        </span>
 <span id="cb24-28">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> survival_convolution(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, dist, time: <span class="bu" style="color: null;
@@ -2514,6 +3117,7 @@ font-style: inherit;">0</span></span>
 <span id="cb24-40">        )</span>
 <span id="cb24-41">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> discrete_hazards</span>
 <span id="cb24-42"></span>
 <span id="cb24-43">    <span class="at" style="color: #657422;
@@ -2521,6 +3125,7 @@ background-color: null;
 font-style: inherit;">@staticmethod</span></span>
 <span id="cb24-44">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> hazard_func(t, dist):</span>
 <span id="cb24-45">        <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -2530,6 +3135,7 @@ background-color: null;
 font-style: inherit;">        """</span></span>
 <span id="cb24-47">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> (dist.cdf(t<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
@@ -2546,6 +3152,7 @@ font-style: inherit;">-</span>dist.cdf(t))</span>
 <span id="cb24-48"></span>
 <span id="cb24-49">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> apply_policy(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, time):</span>
@@ -2557,12 +3164,14 @@ background-color: null;
 font-style: inherit;">        """</span></span>
 <span id="cb24-52">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.policies[time]</span></code></pre></div>
 <p>One key thing to note is the <code>demand_model</code> method raises a <code>NotImplementedError</code> the idea is that this base class can be inherited by other classes that may have different demand models. Even the returns model could be overwritten. Here’s an example of a poisson demand model:</p>
 <div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> PoissonDemandInventory(RentalInventory):</span>
 <span id="cb25-2">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -2575,6 +3184,7 @@ background-color: null;
 font-style: inherit;">    """</span></span>
 <span id="cb25-5">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -2626,6 +3236,7 @@ font-style: inherit;">=</span>n_products) )</span>
 <span id="cb25-13"></span>
 <span id="cb25-14">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> demand_model(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, available_stock, time):</span>
@@ -2637,6 +3248,7 @@ background-color: null;
 font-style: inherit;">        """</span></span>
 <span id="cb25-17">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"n_products"</span>, <span class="va" style="color: #111111;
@@ -2683,6 +3295,7 @@ background-color: null;
 font-style: inherit;">None</span>]</span>
 <span id="cb25-23">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> rentals_as_arr</span></code></pre></div>
 <p>Rentals are simulated according to a poisson distribution for each product, and if there isn’t enough stock, then rentals are constrained. For example:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Csmall%7B%0A%5Cdisplaylines%7B%0A%5Ctext%7Bdemand%7D_%7B%5Ctext%7B%5Bj,t%5D%7D%7D%20%5Csim%20%5Ctext%7BPoisson%7D(%5Clambda_%7B%5Ctext%7B%5Bj%5D%7D%7D)%20%5C%5C%0A%5Ctext%7Brentals%7D_%7B%5Ctext%7B%5Bj,t%5D%7D%7D%20=%20%5Ctext%7Bmin%7D(%5Ctext%7Bdemand%7D_%7B%5Ctext%7B%5Bj,t%5D%7D%7D,%5C%20%5Ctext%7Bstock%7D_%7B%5Ctext%7B%5Bj,t%5D%7D%7D)%20%5C%5C%0A%5Ctext%7Bfor%20%7Dj%20%5Cin%20J%20%5Ctext%7B%20products%7D%0A%7D%7D%0A"></p>
@@ -2690,7 +3303,7 @@ font-style: inherit;">return</span> rentals_as_arr</span></code></pre></div>
 <section id="simulating-the-impact-of-reordering-more-units" class="level2">
 <h2 class="anchored" data-anchor-id="simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</h2>
 <p>There are some helper functions in the code block below that we’ll use. Feel free to skip past these. They’re used to transform data from long form into a wide form where time periods are the column axis and each product is an row.</p>
-<div id="d0b66e10" class="cell" data-execution_count="23">
+<div id="5b0ef83c" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><span class="im" style="color: #00769E;
@@ -2704,6 +3317,7 @@ background-color: null;
 font-style: inherit;"># Helper functions</span></span>
 <span id="cb26-4"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> sort_products(df):</span>
 <span id="cb26-5">    idx <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2712,23 +3326,28 @@ background-color: null;
 font-style: inherit;">list</span>(df.index.names)</span>
 <span id="cb26-6">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> idx[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>] <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">not</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>:</span>
 <span id="cb26-7">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> (</span>
 <span id="cb26-8">            df.reset_index()</span>
 <span id="cb26-9">            .assign(idx<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.product_id.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">str</span>.split(<span class="st" style="color: #20794D;
@@ -2757,15 +3376,18 @@ font-style: inherit;">'columns'</span>)</span>
 <span id="cb26-12">        )</span>
 <span id="cb26-13">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span>:</span>
 <span id="cb26-14">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> (</span>
 <span id="cb26-15">            df</span>
 <span id="cb26-16">            .assign(idx<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.product_id.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">str</span>.split(<span class="st" style="color: #20794D;
@@ -2794,6 +3416,7 @@ font-style: inherit;">'columns'</span>)</span>
 <span id="cb26-19"></span>
 <span id="cb26-20"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> get_active_rentals_as_array(rentals: pd.DataFrame, max_periods: <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">int</span> <span class="op" style="color: #5E5E5E;
@@ -2817,6 +3440,7 @@ background-color: null;
 font-style: inherit;">    """</span></span>
 <span id="cb26-25">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> _get_active_rentals_as_array(rentals, dates, max_periods<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
@@ -2837,6 +3461,7 @@ font-style: inherit;">len</span>(dates)] <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (rentals.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.return_date.isnull()].date.values <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> dates[:,<span class="va" style="color: #111111;
@@ -2848,6 +3473,7 @@ background-color: null;
 font-style: inherit;">1</span>)</span>
 <span id="cb26-30">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> active_rentals</span>
 <span id="cb26-31">    </span>
 <span id="cb26-32">    start_date, end_date <span class="op" style="color: #5E5E5E;
@@ -2882,8 +3508,10 @@ background-color: null;
 font-style: inherit;"># Iterate through each product</span></span>
 <span id="cb26-38">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> j, product_j <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">enumerate</span>(products):</span>
@@ -2902,10 +3530,12 @@ font-style: inherit;">=</span>max_periods)</span>
 <span id="cb26-41">   </span>
 <span id="cb26-42">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span>  active_rentals</span>
 <span id="cb26-43"></span>
 <span id="cb26-44"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> reorder_as_array(reorder_amount, reorder_time, max_periods<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
@@ -2913,6 +3543,7 @@ background-color: null;
 font-style: inherit;">10000</span>):</span>
 <span id="cb26-45">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> (jnp.arange(max_periods) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> reorder_time)<span class="op" style="color: #5E5E5E;
@@ -2921,12 +3552,13 @@ font-style: inherit;">*</span>reorder_amount</span></code></pre></div>
 </details>
 </div>
 <p>The convenience function below combines all of the helper functions above to transform rental and stock data into a usable form for the model.</p>
-<div id="9977c39d" class="cell" data-execution_count="24">
+<div id="c9f35624" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># set initial state to last observed state in dataset</span></span>
 <span id="cb27-2"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> get_current_state(rentals, stock):</span>
 <span id="cb27-3">    active_rentals <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2943,6 +3575,7 @@ background-color: null;
 font-style: inherit;">"date==date.max()"</span>).pipe(sort_products).ending_units.values</span>
 <span id="cb27-6">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">dict</span>(</span>
@@ -2984,7 +3617,7 @@ background-color: null;
 font-style: inherit;">'"</span>))</span></code></pre></div>
 </div>
 <p>We can now simulate what might happen if we re-stocked different amounts.</p>
-<div id="8dc0d798" class="cell" data-execution_count="25">
+<div id="a813f922" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Try adding new units at time T=100</span></span>
@@ -3076,7 +3709,7 @@ font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest rental rate, but that’s a problem for later.</p>
 <p>Let’s look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out.</p>
-<div id="88abbe31" class="cell" data-execution_count="26">
+<div id="2b0445d6" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">sample_idx <span class="op" style="color: #5E5E5E;
@@ -3169,13 +3802,13 @@ font-style: inherit;">'Reorder'</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can summarize all of these simulations with uncertainty intervals.</p>
-<div id="93951ca9" class="cell" data-execution_count="27">
+<div id="307a9eaf" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -3466,14 +4099,14 @@ font-style: inherit;">14</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-28-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-28-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>This view makes it a little more obvious that there are probably stockouts happening, but it doesn’t tell us for sure. We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.</p>
 <p>We could also go back and update the simulator to log things like <em>“missed rentals due to stockouts”</em> or other quantities that might be helpful.</p>
-<div id="0e2050c9" class="cell" data-execution_count="28">
+<div id="8735898b" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -3546,13 +4179,13 @@ font-style: inherit;">0</span>))</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It appears that the current reorder guidance isn’t enough - so what should reorder? Lets try and estimate what would happen if we reordered more.</p>
-<div id="e7476c36" class="cell" data-execution_count="29">
+<div id="23d2ba56" class="cell" data-execution_count="29">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="co" style="color: #5E5E5E;
@@ -3928,16 +4561,17 @@ font-style: inherit;">14</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Clearly this is now way too much stock and we’d be over-ordering. So how can we identify the right amount to stock so that we don’t have stockouts but we don’t over-order?</p>
 <p>We could just simulate repeatedly with different stock reorder inputs like below.</p>
-<div id="8c328555" class="cell" data-execution_count="30">
+<div id="1b45f92e" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> sim_stockout_rate(stock_reorder, lambd, samples_per_iter<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
@@ -4063,6 +4697,7 @@ background-color: null;
 font-style: inherit;">0</span>)[burn_in:].mean()</span>
 <span id="cb33-28">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> stockout_rate</span>
 <span id="cb33-29"></span>
 <span id="cb33-30"><span class="co" style="color: #5E5E5E;
@@ -4077,8 +4712,10 @@ background-color: null;
 font-style: inherit;">2</span>))</span>
 <span id="cb33-32"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i, units <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">enumerate</span>(<span class="bu" style="color: null;
@@ -4132,14 +4769,14 @@ font-style: inherit;">'Estimated Stockout Rate as we reorder more units'</span>)
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-31-output-1.png" width="791" height="491" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It’s clear that right around 300 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.</p>
 <p>That’s an exercise for another time. Let’s reorder the recommended 300 units and see what happens.</p>
-<div id="5bcf134d" class="cell" data-execution_count="31">
+<div id="6244c075" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">init_state <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> get_current_state(rentals<span class="op" style="color: #5E5E5E;
@@ -4197,7 +4834,7 @@ background-color: null;
 font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>Notice that this time we’re not loading in any parameters into the <code>Predictive</code> call. That’s because we’re using the true data-generating process to simulate what happens this time. We’re basically observing one possible future in the original fake world we created.</p>
-<div id="c87a4358" class="cell" data-execution_count="32">
+<div id="8915e8f1" class="cell" data-execution_count="32">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -4394,7 +5031,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-33-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-33-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -4405,7 +5042,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <section id="can-we-do-something-more-simple" class="level2">
 <h2 class="anchored" data-anchor-id="can-we-do-something-more-simple">Can we do something more simple?</h2>
 <p>Was all of this really necessary? Let’s see for ourselves by taking a naive approach. We’ll fit a basic regression where we control for the global stockout rate and dummy-encode stockouts - meant to represent a basic tabular data science approach.</p>
-<div id="6a17af51" class="cell" data-execution_count="33">
+<div id="b63ad330" class="cell" data-execution_count="33">
 <div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> statsmodels.api <span class="im" style="color: #00769E;
@@ -4454,15 +5091,17 @@ font-style: inherit;">0</span>)</span>
 background-color: null;
 font-style: inherit;">=</span> model.predict(X)</span></code></pre></div>
 </div>
-<div id="326269a1" class="cell" data-execution_count="34">
+<div id="a2e34f02" class="cell" data-execution_count="34">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">naive_rental_rate_fcast <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> np.vstack([fcast <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> _ <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
@@ -4483,8 +5122,10 @@ background-color: null;
 font-style: inherit;">2</span>))</span>
 <span id="cb37-5"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i, units <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">enumerate</span>(<span class="bu" style="color: null;
@@ -4549,13 +5190,13 @@ font-style: inherit;">10</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-35-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-35-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can see that this approach leads to a recommendation of 200 units reordered. Is that reasonable? Let’s see what happens.</p>
-<div id="88699518" class="cell" data-execution_count="35">
+<div id="7420ea33" class="cell" data-execution_count="35">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">init_state <span class="op" style="color: #5E5E5E;
@@ -4807,7 +5448,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-36-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand_files/figure-html/cell-36-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -4923,6 +5564,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <p>We can define a Multinomial Logit based inventory process as follows</p>
 <div class="sourceCode" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> MultinomialDemandInventory(RentalInventory):</span>
 <span id="cb39-2">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -4935,6 +5577,7 @@ background-color: null;
 font-style: inherit;">    """</span></span>
 <span id="cb39-5">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -4958,6 +5601,7 @@ font-style: inherit;">__init__</span>(n_products, policies)</span>
 <span id="cb39-7">    </span>
 <span id="cb39-8">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> demand_model(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, available_stock, time):</span>
@@ -4981,6 +5625,7 @@ background-color: null;
 font-style: inherit;">0.01</span>))</span>
 <span id="cb39-13">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"n_products"</span>, <span class="va" style="color: #111111;
@@ -5074,6 +5719,7 @@ background-color: null;
 font-style: inherit;">None</span>]</span>
 <span id="cb39-30">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> rentals_as_arr.astype(<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">int</span>)</span></code></pre></div>
@@ -5293,7 +5939,7 @@ font-style: inherit;">int</span>)</span></code></pre></div>
 <section id="step-1-simulating-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-simulating-the-data">Step 1: Simulating the data</h2>
 <p>We’ll start by simulating two datasets: A historical dataset and an experiment dataset. The advantage to simulating data is that we know the exact effects, so when we try and estimate them we can confirm our methods are recovering the true effect.</p>
-<div id="349ece71" class="cell" data-execution_count="1">
+<div id="e7a2aa64" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
@@ -5439,7 +6085,7 @@ font-style: inherit;">5</span>))</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -5558,7 +6204,7 @@ font-style: inherit;">5</span>))</span></code></pre></div>
 </div>
 </div>
 <p>The underlying simulation code is below if you’re interested</p>
-<div id="b387b53a" class="cell" data-execution_count="2">
+<div id="27228ce6" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="im" style="color: #00769E;
@@ -5569,6 +6215,7 @@ font-style: inherit;">import</span> Dict</span>
 <span id="cb3-2"></span>
 <span id="cb3-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> transmitter(</span>
 <span id="cb3-4">    params: Dict,</span>
 <span id="cb3-5">    add_treatment: <span class="bu" style="color: null;
@@ -5643,8 +6290,10 @@ background-color: null;
 font-style: inherit;">    '''</span></span>
 <span id="cb3-25">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> rng <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>:</span>
@@ -5763,8 +6412,10 @@ font-style: inherit;">0.5</span>,size<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>n_users) <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> add_treatment <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> np.zeros(n_users)        </span>
 <span id="cb3-46">    avg_tx_term <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5804,6 +6455,7 @@ background-color: null;
 font-style: inherit;"># Long term outcome</span></span>
 <span id="cb3-54">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> logit_link:</span>
 <span id="cb3-55">        Y <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5812,6 +6464,7 @@ background-color: null;
 font-style: inherit;">1</span>, sp.expit(eta) )</span>
 <span id="cb3-56">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span>:</span>
 <span id="cb3-57">        Y <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5836,8 +6489,10 @@ font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(Xdims)]).assign(T<span class="op" style="color: #5E5E5E;
@@ -5857,8 +6512,10 @@ font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(Sdims)])</span>
@@ -5871,6 +6528,7 @@ background-color: null;
 font-style: inherit;">'Y'</span>])</span>
 <span id="cb3-63">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> pd.concat((Xdf, Sdf, Ydf),axis<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
@@ -5882,7 +6540,7 @@ font-style: inherit;">1</span>)</span></code></pre></div>
 <section id="step-2-fitting-a-surrogate-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-fitting-a-surrogate-model">Step 2: Fitting a surrogate model</h2>
 <p>We’ll use the historical dataset to fit the surrogate index model, mapping <img src="https://latex.codecogs.com/png.latex?S%20%5Crightarrow%20Y"></p>
-<div id="c58b647e" class="cell" data-execution_count="3">
+<div id="d69d0c77" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">S_vars <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
@@ -5941,7 +6599,7 @@ background-color: null;
 font-style: inherit;"># Show the model summary</span></span>
 <span id="cb4-11">surrogate_model.summary()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
+<table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <caption>OLS Regression Results</caption>
 <tbody>
 <tr class="odd">
@@ -5964,13 +6622,13 @@ font-style: inherit;"># Show the model summary</span></span>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Date:</td>
-<td>Tue, 06 Feb 2024</td>
+<td>Fri, 21 Feb 2025</td>
 <td data-quarto-table-cell-role="th">Prob (F-statistic):</td>
 <td>0.00</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Time:</td>
-<td>22:42:07</td>
+<td>16:58:55</td>
 <td data-quarto-table-cell-role="th">Log-Likelihood:</td>
 <td>-33320.</td>
 </tr>
@@ -6000,7 +6658,9 @@ font-style: inherit;"># Show the model summary</span></span>
 </tr>
 </tbody>
 </table>
-<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
+
+
+<table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd">
 <td></td>
@@ -6094,7 +6754,9 @@ font-style: inherit;"># Show the model summary</span></span>
 </tr>
 </tbody>
 </table>
-<table class="simpletable table table-sm table-striped small" data-quarto-postprocess="true">
+
+
+<table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Omnibus:</td>
@@ -6136,7 +6798,7 @@ font-style: inherit;"># Show the model summary</span></span>
 <h2 class="anchored" data-anchor-id="step-3-estimate-long-term-treatment-effect">Step 3: Estimate Long Term Treatment Effect</h2>
 <p>We’ll now use the surrogate index to estimate a long term treatment effect</p>
 <p>Let’s take our experiment dataset and estimate <img src="https://latex.codecogs.com/png.latex?E%5B%5Cdelta_%7B%5Ctext%7BLTO%7D%7D%5D">, the average treatment effect on the long term outcome. Notice, the long term outcome, <img src="https://latex.codecogs.com/png.latex?Y">, hasn’t been observed yet.</p>
-<div id="40152db1" class="cell" data-execution_count="4">
+<div id="beaa62ee" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">display(experiment_data.head())</span></code></pre></div>
@@ -6145,7 +6807,7 @@ font-style: inherit;"># Show the model summary</span></span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -6264,7 +6926,7 @@ font-style: inherit;"># Show the model summary</span></span>
 </div>
 </div>
 <p>First, we’ll do some visulation of the experiment data.</p>
-<div id="216ead84" class="cell" data-execution_count="5">
+<div id="93982675" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -6291,8 +6953,10 @@ font-style: inherit;">True</span>)</span>
 <span id="cb6-2"></span>
 <span id="cb6-3"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i, ax <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">zip</span>(<span class="bu" style="color: null;
@@ -6300,6 +6964,7 @@ background-color: null;
 font-style: inherit;">range</span>(Xdims), axes.ravel()):</span>
 <span id="cb6-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6323,6 +6988,7 @@ background-color: null;
 font-style: inherit;">'Control'</span> )</span>
 <span id="cb6-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6364,7 +7030,7 @@ font-style: inherit;">for the Treatment and Control groups"</span>)</span>
 </div>
 <p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
 <p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
-<div id="6b2afd96" class="cell" data-execution_count="6">
+<div id="4c18de25" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -6391,8 +7057,10 @@ font-style: inherit;">True</span>)</span>
 <span id="cb7-2"></span>
 <span id="cb7-3"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i, ax <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">zip</span>(<span class="bu" style="color: null;
@@ -6400,6 +7068,7 @@ background-color: null;
 font-style: inherit;">range</span>(Sdims), axes.ravel()):</span>
 <span id="cb7-4">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6423,6 +7092,7 @@ background-color: null;
 font-style: inherit;">'Control'</span> )</span>
 <span id="cb7-5">    sns.histplot( experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6464,9 +7134,10 @@ font-style: inherit;">for the Treatment and Control groups"</span>)</span>
 </div>
 <p>If our surrogate index estimator is correct, these observed surrogate outcomes should directly map to the Long Term Outcome deterministically, via <img src="https://latex.codecogs.com/png.latex?%5Chat%7BY%7D%20=%20f(S)">, where <img src="https://latex.codecogs.com/png.latex?f()"> is the surrogate index model.</p>
 <p>We can show that the surrogate index estimator recovers the true average treatment effect on the long term outcome</p>
-<div id="b0a6e48e" class="cell" data-execution_count="7">
+<div id="7d3b4cc8" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
 <span id="cb8-2">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -6484,6 +7155,7 @@ font-style: inherit;">    '''</span></span>
 background-color: null;
 font-style: inherit;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6495,6 +7167,7 @@ font-style: inherit;">1</span>])</span>
 background-color: null;
 font-style: inherit;">=</span> surrogate_model.predict(experiment_data.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'T'</span>]<span class="op" style="color: #5E5E5E;
@@ -6557,6 +7230,7 @@ font-style: inherit;">=</span> np.sqrt(var_surrogate_adj)</span>
 <span id="cb8-16">    </span>
 <span id="cb8-17">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> ATE, ATE_sd</span>
 <span id="cb8-18"></span>
 <span id="cb8-19">ATE, ATE_sd <span class="op" style="color: #5E5E5E;
@@ -6692,7 +7366,7 @@ font-style: inherit;">"Estimated Treatment Effect vs. True Treatment Effect"</sp
 <h3 class="anchored" data-anchor-id="problem-5-were-we-optimizing-the-wrong-thing">Problem 5: Were we optimizing the wrong thing?</h3>
 <p>My second quarter with the life-insurance team we smashed through our OKRs that were targeted at improving mid-funnel outcomes (we were scoped to work on the top half of the funnel). The problem was that 3 months later we weren’t seeing those results trickle down to the bottom half of the funnel in the way that we thought it would.</p>
 <p>In fact, in one of the most successful experiments we ran, we found that the customers who were exposed to the treatment fared worse in the long-term, despite seeming fine for the mid-funnel outcome and guardrail we were using.</p>
-<div id="50b19ff2" class="cell" data-execution_count="1">
+<div id="c7055826" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -6727,6 +7401,7 @@ background-color: null;
 font-style: inherit;"># Simulate out time to convert and conversion rate </span></span>
 <span id="cb1-9"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> sim_conversion(k, lambd, p, N<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
@@ -6744,6 +7419,7 @@ background-color: null;
 font-style: inherit;">=</span>N)</span>
 <span id="cb1-12">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> pd.DataFrame({<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"time"</span>:ttc, <span class="st" style="color: #20794D;
@@ -6752,9 +7428,11 @@ font-style: inherit;">'convert'</span>:convert})</span>
 <span id="cb1-13"></span>
 <span id="cb1-14"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> cohort_table(df):</span>
 <span id="cb1-15">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span>     (</span>
 <span id="cb1-16">        df</span>
 <span id="cb1-17">        .groupby(<span class="st" style="color: #20794D;
@@ -6769,6 +7447,7 @@ font-style: inherit;">'count'</span>])</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'sum'</span>].cumsum())</span>
@@ -6781,6 +7460,7 @@ font-style: inherit;">len</span>(df))</span>
 background-color: null;
 font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.conversions<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">/</span>d.N)</span>
@@ -6788,17 +7468,21 @@ font-style: inherit;">/</span>d.N)</span>
 <span id="cb1-23"></span>
 <span id="cb1-24"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> censor(df, time):</span>
 <span id="cb1-25">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> df.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.time<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span>time]</span>
 <span id="cb1-26"></span>
 <span id="cb1-27"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> simple_cohort_plot(df, ax<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -6809,8 +7493,10 @@ font-style: inherit;">**</span>plot_kwargs):</span>
 <span id="cb1-28">    </span>
 <span id="cb1-29">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> ax <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>:</span>
@@ -6973,7 +7659,7 @@ font-style: inherit;">1</span>,))</span>
 <p>The set of intermediate outcomes is known as a surrogate index; they’re a surrogate for the long term outcome. If you have a correct model for the DAG above, than all you need to do is observe outcomes 1-3. You could then just run an experiment as you normally would, but instead of using some game-able mid-funnel metric as the primary outcome, you could measure outcomes 1-3 for both the treatment and control group, and predict what the long-term outcome would be for each group. The difference in the prediction for the treatment group and the control group ends up being identical to the true long-term treatment effect (assuming that the model and dag are specified correctly).</p>
 <p>As always, it’s easier said than done. You need to make sure that the entire intermediate effect between the treatment and the long-term outcome is captured by the DAG and the model. Or in english, you need to understand the exact effect that the intermediate outcomes have on the long term outcome, and you need to be right about it; you can’t be missing anything.</p>
 <p>But there are ways to validate you’re on the right track. First, knowing something about DAGs and causal inference, you can call on the <strong>local markov property</strong>; the treatment should be conditionally independent of the long term outcome after conditioning on the surrogate index. That’s easy to test. One can alse make predictions on the long term outcome with their surrogate index and see if it ended up being correct when the long-term outcome gets observed (hopefully for repeated experiments). Also do-able. Even better, if you have many historical experiments, you could do this validation on that dataset across all of the experiments.</p>
-<div id="f511a6af" class="cell" data-execution_count="2">
+<div id="58f7fae6" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
@@ -7147,7 +7833,7 @@ font-style: inherit;">'Surrogate Index vs. Long Term Outcome over many experimen
 <section id="a-quick-recap-on-survival-curves" class="level2">
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-survival-curves">A (quick) Recap on Survival Curves</h2>
 <p>Survival Curves model time to some event (such as a failure) - they can tell you the probability of a binary event occurring at each future time point in somethings lifetime. An example survival curve is shown below:</p>
-<div id="ce07b17b" class="cell" data-execution_count="1">
+<div id="e51a942b" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -7445,7 +8131,7 @@ font-style: inherit;">2</span>)</span>
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-hazard-curves">A (quick) Recap on Hazard Curves</h2>
 <p>Hazard Curves are another way to think about survival analysis problems. A hazard curve tells you the instantaneous risk of an event occurring at each time point.</p>
 <p>Hazard Curves tend to be very informative as they allow you to see how risk changes over time - sometimes it might decelerate, or sometimes it might even accelerate exponentially. Here’s an example of a hazard curve below.</p>
-<div id="798dad63" class="cell" data-execution_count="2">
+<div id="fe5bc351" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">k <span class="op" style="color: #5E5E5E;
@@ -7532,7 +8218,7 @@ font-style: inherit;">16</span>)</span>
 <section id="the-k-parameter" class="level2">
 <h2 class="anchored" data-anchor-id="the-k-parameter">The <img src="https://latex.codecogs.com/png.latex?k"> Parameter</h2>
 <p>Sometimes also called <img src="https://latex.codecogs.com/png.latex?%5Crho">, this parameter controls the degree of acceleration of the hazard curve.</p>
-<div id="9a080a66" class="cell" data-execution_count="3">
+<div id="64081d26" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">ks <span class="op" style="color: #5E5E5E;
@@ -7573,8 +8259,10 @@ font-style: inherit;">5</span>))</span>
 <span id="cb4-6"></span>
 <span id="cb4-7"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(<span class="bu" style="color: null;
@@ -7651,7 +8339,7 @@ font-style: inherit;">16</span>)</span>
 <section id="the-lambda-parameter" class="level2">
 <h2 class="anchored" data-anchor-id="the-lambda-parameter">The <img src="https://latex.codecogs.com/png.latex?%5Clambda"> Parameter</h2>
 <p>Sometimes also referred to as a <em>scale parameter</em>, this parameter represents the time point where there’s a 63.2% probability of an event having occurred. Weird, I know, its just an arbitrary thing quality</p>
-<div id="c3411901" class="cell" data-execution_count="4">
+<div id="bc1ed251" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">k <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
@@ -7702,7 +8390,7 @@ font-style: inherit;">4</span>)</span></code></pre></div>
 </div>
 </div>
 <p>Let’s see this visually as well - if you look at the plot below, each survival curve indicates that there’s a 63.2% probability of an event having occurred at the exact time that <img src="https://latex.codecogs.com/png.latex?t=%5Clambda"></p>
-<div id="069dd60c" class="cell" data-execution_count="5">
+<div id="8b4a381a" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">ks <span class="op" style="color: #5E5E5E;
@@ -7741,8 +8429,10 @@ font-style: inherit;">5</span>))</span>
 <span id="cb7-6"></span>
 <span id="cb7-7"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(<span class="bu" style="color: null;
@@ -7872,10 +8562,12 @@ font-style: inherit;">"upper right"</span>)</span>
 <p>Average lifetime, Survival Curves, and Hazard Curves are the basic types of predictions for working with survival analysis. Most distributions have formulas that make these things easier to calculate. Below is the underlying code for these functions.</p>
 <div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> Weibull:</span>
 <span id="cb8-2"></span>
 <span id="cb8-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -7896,6 +8588,7 @@ font-style: inherit;">=</span> lambd</span>
 <span id="cb8-8"></span>
 <span id="cb8-9">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> expectation(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>) <span class="op" style="color: #5E5E5E;
@@ -7909,6 +8602,7 @@ background-color: null;
 font-style: inherit;">        '''</span></span>
 <span id="cb8-12">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.lambd <span class="op" style="color: #5E5E5E;
@@ -7927,6 +8621,7 @@ font-style: inherit;">self</span>.k)</span>
 <span id="cb8-13"></span>
 <span id="cb8-14">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> survival(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;
@@ -7984,10 +8679,12 @@ background-color: null;
 font-style: inherit;">-</span> CDF</span>
 <span id="cb8-29">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> St</span>
 <span id="cb8-30"></span>
 <span id="cb8-31">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> hazard(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;
@@ -8049,11 +8746,12 @@ background-color: null;
 font-style: inherit;">1</span>)</span>
 <span id="cb8-44">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> ht</span>
 <span id="cb8-45">    </span>
 <span id="cb8-46">    ...</span></code></pre></div>
 <p>We already looked into hazard and survival curves - let’s take a look at estimating the average lifetime.</p>
-<div id="818145bd" class="cell" data-execution_count="6">
+<div id="b90fee09" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">k <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
@@ -8091,7 +8789,7 @@ font-style: inherit;">"</span>)</span></code></pre></div>
 </div>
 </div>
 <p>Does this align with reality? Lets simulate event times from the weibull distribution to find out</p>
-<div id="10790c12" class="cell" data-execution_count="7">
+<div id="200abc99" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">event_times <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;
@@ -8115,7 +8813,7 @@ font-style: inherit;">}</span><span class="ss" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simulated Average Lifetime = 27.1</code></pre>
+<pre><code>Simulated Average Lifetime = 27.0</code></pre>
 </div>
 </div>
 </section>
@@ -8127,10 +8825,12 @@ font-style: inherit;">"</span>)</span></code></pre></div>
 <p>And we can see it implemented in python below:</p>
 <div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> Weibull:</span>
 <span id="cb14-2"></span>
 <span id="cb14-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -8151,6 +8851,7 @@ font-style: inherit;">=</span> lambd</span>
 <span id="cb14-8"></span>
 <span id="cb14-9">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> mean_residual_life(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, t: np.array) <span class="op" style="color: #5E5E5E;
@@ -8233,11 +8934,12 @@ background-color: null;
 font-style: inherit;"># The code above returns negative values when St=0. This clipping corrects those cases</span></span>
 <span id="cb14-25">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> np.clip(result, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>, np.inf)</span></code></pre></div>
 <p>And we can call that function like so:</p>
-<div id="f4e4223d" class="cell" data-execution_count="8">
+<div id="df2ddce6" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">curr_time <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
@@ -8258,7 +8960,7 @@ background-color: null;
 font-style: inherit;">=</span> dist.mean_residual_life(curr_time)</span></code></pre></div>
 </div>
 <pre><code>2. Simulate</code></pre>
-<div id="2673f8e9" class="cell" data-execution_count="9">
+<div id="cad7d320" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">T <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;
@@ -8278,7 +8980,7 @@ background-color: null;
 font-style: inherit;">=</span> units_reached_curr_time.mean()</span></code></pre></div>
 </div>
 <p>With truncated sampling, this can also be more efficient</p>
-<div id="22a7aa3c" class="cell" data-execution_count="10">
+<div id="e0df9e5c" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">T_cond <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> dist.sample(n<span class="op" style="color: #5E5E5E;
@@ -8300,7 +9002,7 @@ font-style: inherit;">=</span> T_cond.mean()</span></code></pre></div>
 <p>where <img src="https://latex.codecogs.com/png.latex?Ht"> is the cumulative hazard function. Additionally, the expectation is just the integral of the survival function</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AE%5BT%5D%20=%20%5Cint_%7Bt=0%7D%5E%5Cinfty%20S(t)%20%5C,%20dt%0A"></p>
 <p>Using these relationships, we can 1. take the hazard curve from time 40 onwards 2. turn it into the cumulative hazard 3. transform that into a survival curve 4. integrate the survival curve into an expectation</p>
-<div id="deb7aa11" class="cell" data-execution_count="11">
+<div id="69278133" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">ht <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> dist.hazard(np.arange(curr_time, curr_time<span class="op" style="color: #5E5E5E;
@@ -8320,12 +9022,12 @@ font-style: inherit;">-</span>Ht)</span>
 background-color: null;
 font-style: inherit;">=</span> scipy.integrate.simps(St)</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/vr/0jhy9tx52_s6tvbfbyppgn580000gn/T/ipykernel_65105/124568412.py:4: DeprecationWarning: 'scipy.integrate.simps' is deprecated in favour of 'scipy.integrate.simpson' and will be removed in SciPy 1.14.0
+<pre><code>/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_19389/124568412.py:4: DeprecationWarning: 'scipy.integrate.simps' is deprecated in favour of 'scipy.integrate.simpson' and will be removed in SciPy 1.14.0
   remaining_life_from_hazard = scipy.integrate.simps(St)</code></pre>
 </div>
 </div>
 <p>Comparing all of these methods we end up with the following:</p>
-<div id="50a00048" class="cell" data-execution_count="12">
+<div id="1c767eae" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="bu" style="color: null;
@@ -8381,8 +9083,8 @@ font-style: inherit;">format</span>(remaining_life_from_hazard)</span>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Remaining Life (from formula) = 15.05
- Remaining Life (from simulation) = 15.07
- Remaining Life (from truncated simulation) = 15.04
+ Remaining Life (from simulation) = 15.04
+ Remaining Life (from truncated simulation) = 15.05
  Remaining Life (manually calculated from hazard) = 14.14
 </code></pre>
 </div>
@@ -8397,10 +9099,12 @@ font-style: inherit;">format</span>(remaining_life_from_hazard)</span>
 <p>It was pretty easy to add that to the <code>Weibull.survival()</code> function from earlier:</p>
 <div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> Weibull:</span>
 <span id="cb24-2"></span>
 <span id="cb24-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -8421,6 +9125,7 @@ font-style: inherit;">=</span> lambd</span>
 <span id="cb24-8"></span>
 <span id="cb24-9">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> survival(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, t: np.array, curr_time: Optional[<span class="bu" style="color: null;
@@ -8485,12 +9190,15 @@ font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> curr_time <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span> <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.survival(curr_time)</span>
@@ -8505,14 +9213,18 @@ background-color: null;
 font-style: inherit;">self</span>._normalize_to_array(t)</span>
 <span id="cb24-31">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> curr_time <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">is</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">not</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">and</span> (t <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span> curr_time).<span class="bu" style="color: null;
@@ -8524,6 +9236,7 @@ background-color: null;
 font-style: inherit;">1</span>:</span>
 <span id="cb24-32">            <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">ValueError</span>(<span class="st" style="color: #20794D;
@@ -8543,9 +9256,10 @@ background-color: null;
 font-style: inherit;">/</span>norm</span>
 <span id="cb24-35">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> St</span></code></pre></div>
 <p>And as we can see below, it lines up perfectly with an empirically calculated kaplan meier curve</p>
-<div id="e7cc28f9" class="cell" data-execution_count="13">
+<div id="6ced9edf" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> lifelines <span class="im" style="color: #00769E;
@@ -8653,7 +9367,7 @@ font-style: inherit;">"</span>)</span>
 <section id="a-hypothetical-world" class="level2">
 <h2 class="anchored" data-anchor-id="a-hypothetical-world">A Hypothetical world</h2>
 <p>What if we envision some hypothetical world we can observe the outcome for each customer who reached out to customer support, with and without having the treatment of receiving a promo?</p>
-<div id="c5109729" class="cell" data-execution_count="1">
+<div id="281d57e1" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -8708,6 +9422,7 @@ font-style: inherit;">1</span>, N)</span>
 <span id="cb1-12"></span>
 <span id="cb1-13"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> sim_treatment(upset, rng, return_prob<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
@@ -8731,18 +9446,22 @@ background-color: null;
 font-style: inherit;">*</span> beta)</span>
 <span id="cb1-16">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> return_prob:</span>
 <span id="cb1-17">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> p_treatment</span>
 <span id="cb1-18">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> rng.binomial(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>, p_treatment)</span>
 <span id="cb1-19"></span>
 <span id="cb1-20"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> sim_outcome(upset, treatment, rng):</span>
 <span id="cb1-21">    eps <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -8778,6 +9497,7 @@ background-color: null;
 font-style: inherit;">+</span> eps </span>
 <span id="cb1-23">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> ltv.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">round</span>(<span class="dv" style="color: #AD0000;
@@ -8811,6 +9531,7 @@ font-style: inherit;">\</span></span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Y(1)"</span>] <span class="op" style="color: #5E5E5E;
@@ -8824,6 +9545,7 @@ font-style: inherit;">\</span></span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: np.where(d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"T"</span>] <span class="op" style="color: #5E5E5E;
@@ -8850,7 +9572,7 @@ font-style: inherit;">"ITE"</span>]]</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -8859,7 +9581,7 @@ font-style: inherit;">"ITE"</span>]]</span></code></pre></div>
 <th data-quarto-table-cell-role="th">Y(1)</th>
 <th data-quarto-table-cell-role="th">ITE</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">Person</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -8914,7 +9636,7 @@ font-style: inherit;">"ITE"</span>]]</span></code></pre></div>
 - Person 2 would have spend $203.02 more over their lifetime if they received the promo</code></pre>
 <p>If we want to know the <strong>Average Treatment Effect (ATE, often denoted <img src="https://latex.codecogs.com/png.latex?%5Ctau">)</strong>, all we have to do is take the mean of all of the individual treatment effects. As we can see, the ATE is about $500</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctau%20=%20%5Cfrac%7B1%7D%7BN%7D%20%5Csum%5E%7BN%7D_%7Bi=0%7D%20Y_i(1)%20-%20Y_i(0)%0A"></p>
-<div id="12ea8d56" class="cell" data-execution_count="2">
+<div id="309cf80d" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">data.ITE.mean()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>500.09949529999994</code></pre>
@@ -8923,7 +9645,7 @@ font-style: inherit;">"ITE"</span>]]</span></code></pre></div>
 <p>We can also represent this in hypothetical terms that will be useful later - the <strong>average treatment effect of the treated (ATT)</strong>, and the <strong>average treatment effect of the untreated (ATU)</strong>. The true ATE ends up being the weighted average of these terms, weighted by the proportion of individuals seeing the treatment, <img src="https://latex.codecogs.com/png.latex?%5Cpi"></p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%7D%0A%5Ctau%20&amp;%20=%20%5Cpi%20%5Ccdot%20E%5B%5Ctau%20%7C%20T=1%5D%20+%20(1-%5Cpi)%20%5Ccdot%20E%5B%5Ctau%20%7C%20T=%200%5D%20%5C%5C%0A%20%20%20%20%20&amp;%20=%20%5Cpi%20%5Ccdot%20%5Ctext%7BATT%7D%20+%20(1-%5Cpi)%20%5Ccdot%20%5Ctext%7BATU%7D%0A%5Cend%7Balign%7D%0A"></p>
 <p>We can confirm that this is equivalent to the ATE from above with code</p>
-<div id="598e98b3" class="cell" data-execution_count="3">
+<div id="b560a5ab" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">pi <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> data[<span class="st" style="color: #20794D;
@@ -8950,7 +9672,7 @@ font-style: inherit;">sum</span>()</span></code></pre></div>
 <section id="getting-hit-with-the-real-world" class="level2">
 <h2 class="anchored" data-anchor-id="getting-hit-with-the-real-world">Getting hit with the real world</h2>
 <p>So how can we create a scenario where we can observe each person with and without having received the promo? Sadly, we can’t. But is there a way to make use of data we already have? Here’s the actual data we might have access to. Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).</p>
-<div id="78efb855" class="cell" data-execution_count="4">
+<div id="be46c2cb" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
@@ -8979,6 +9701,7 @@ font-style: inherit;">**</span>{</span>
 background-color: null;
 font-style: inherit;">"Y(0)"</span>:<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: np.where(d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"T"</span>]<span class="op" style="color: #5E5E5E;
@@ -8992,6 +9715,7 @@ font-style: inherit;">"Y(0)"</span>]),</span>
 background-color: null;
 font-style: inherit;">"Y(1)"</span>:<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: np.where(d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"T"</span>]<span class="op" style="color: #5E5E5E;
@@ -9015,7 +9739,7 @@ font-style: inherit;">1</span>:].head()</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -9025,7 +9749,7 @@ font-style: inherit;">1</span>:].head()</span></code></pre></div>
 <th data-quarto-table-cell-role="th">ITE</th>
 <th data-quarto-table-cell-role="th">Y</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">Person</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -9086,7 +9810,7 @@ font-style: inherit;">1</span>:].head()</span></code></pre></div>
 <blockquote class="blockquote">
 <p>Notice that I use the terms <img src="https://latex.codecogs.com/png.latex?E%5B%20Y(0)%20%7C%20T%20=%200%20%5D"> and <img src="https://latex.codecogs.com/png.latex?E%5B%20Y(1)%20%7C%20T%20=%201%20%5D">. Reading these as plain english “the expected value (aka mean) of Y(0) given no treatment” and “the expected value (aka mean) of Y(1) given a treatment”</p>
 </blockquote>
-<div id="f7d46dcd" class="cell" data-execution_count="5">
+<div id="1a872836" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">(</span>
 <span id="cb8-2">    df.groupby(<span class="st" style="color: #20794D;
 background-color: null;
@@ -9098,6 +9822,7 @@ font-style: inherit;">"Y"</span>]].T</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
@@ -9138,7 +9863,7 @@ font-style: inherit;">True</span>)</span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -9165,7 +9890,7 @@ font-style: inherit;">True</span>)</span>
 <section id="selection-bias" class="level2">
 <h2 class="anchored" data-anchor-id="selection-bias">Selection Bias</h2>
 <p>We can illustrate the problem by bringing another variable into the mix - customer unhappiness (we’re pretending we can measure it directly for examples sake).</p>
-<div id="24c1d334" class="cell" data-execution_count="6">
+<div id="a3948dd3" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">fig, ax <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
@@ -9230,7 +9955,7 @@ font-style: inherit;">1</span>])</span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -9241,7 +9966,7 @@ font-style: inherit;">1</span>])</span>
 <th data-quarto-table-cell-role="th">ITE</th>
 <th data-quarto-table-cell-role="th">Y</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">Person</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -9377,7 +10102,7 @@ font-style: inherit;">1</span>])</span>
 <p>Note that selection bias was <img src="https://latex.codecogs.com/png.latex?%0AE%5Cbig%5BY(0)%5Cmid%20T=1%5Cbig%5D%20-%20E%5Cbig%5BY(0)%5Cmid%20T=0%5Cbig%5D%0A"></p>
 <p>This is just saying selection bias is the fundamental difference between users who get picked for treatment vs.&nbsp;those who dont.</p>
 <p>In our case, the fundamental difference between whether users are selected for treatment is based upon their unhappiness. So if we can subtract out the effect of unhappiness, we can subtract out the selection bias</p>
-<div id="d28c754f" class="cell" data-execution_count="7">
+<div id="3028c054" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">df.groupby(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"T"</span>).mean()[[<span class="st" style="color: #20794D;
@@ -9387,7 +10112,7 @@ font-style: inherit;">"upset"</span>]].T</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">T</th>
@@ -9408,7 +10133,7 @@ font-style: inherit;">"upset"</span>]].T</span></code></pre></div>
 </div>
 </div>
 <p>We can do this with OLS. The most obvious way is to fit a model relating unhappiness to LTV, and then subtract out that effect.</p>
-<div id="9cf1c611" class="cell" data-execution_count="8">
+<div id="08b58c8f" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">model1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> sm.OLS.from_formula(<span class="st" style="color: #20794D;
@@ -9417,6 +10142,7 @@ font-style: inherit;">"Y ~ upset"</span>, data<span class="op" style="color: #5E
 background-color: null;
 font-style: inherit;">=</span>df.loc[<span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"T"</span>]<span class="op" style="color: #5E5E5E;
@@ -9450,7 +10176,7 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">T</th>
@@ -9471,7 +10197,7 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 </div>
 </div>
 <p>And finally we can subtract out the effect, ending up with an estimate very close to the true ATE of 500</p>
-<div id="82d19912" class="cell" data-execution_count="9">
+<div id="4b9060d2" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">(</span>
 <span id="cb12-2">    df.assign(selection_bias <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -9487,6 +10213,7 @@ font-style: inherit;">"selection_bias"</span>]].T</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
@@ -9513,6 +10240,7 @@ font-style: inherit;">"SDO"</span>})</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">lambda</span> d: d.SDO <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span> d.selection_bias)</span>
@@ -9526,7 +10254,7 @@ font-style: inherit;">2</span>)</span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -9549,9 +10277,10 @@ font-style: inherit;">2</span>)</span>
 </div>
 </div>
 <p>There’s actually an even more simple way to control for selection bias - it can just be included as a term in an OLS regression model.</p>
-<div id="653ffdd8" class="cell" data-execution_count="10">
+<div id="c70ea55d" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> statsmodels_to_df(model):</span>
 <span id="cb13-2">    table <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -9560,6 +10289,7 @@ background-color: null;
 font-style: inherit;">1</span>].data)</span>
 <span id="cb13-3">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> pd.DataFrame(table[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>:, <span class="dv" style="color: #AD0000;
@@ -9590,7 +10320,7 @@ font-style: inherit;">=</span>df).fit()</span>
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -9642,7 +10372,7 @@ font-style: inherit;">=</span>df).fit()</span>
 <h2 class="anchored" data-anchor-id="a-quick-note-on-heterogeneous-treatment-effects">A quick note on Heterogeneous Treatment Effects</h2>
 <p>We’ve controlled for selection bias, what about Heterogeneous Treatment Effect bias? We actually don’t need to control for these once we’ve controlled for selection bias. These average treatment effect ends up being the average of all of the HTEs of individuals, which is fine because as long as we’ve accounted for selection bias, the HTEs tend to cancel out. They’re essentially captured by the error term, <img src="https://latex.codecogs.com/png.latex?%5Cepsilon"> in OLS <img src="https://latex.codecogs.com/png.latex?%0Ay%20=%20%5Calpha%20+%20%5Cbeta%20X%20+%20%5Cepsilon%0A"></p>
 <p>We can also see that in our code, where the distribution of true HTE bias from our hypothetical dataset is centered at zero. Any time we’ve accounted for all selection bias, the HTE should be zero centered and cancel itself out as N increases.</p>
-<div id="1718d5be" class="cell" data-execution_count="11">
+<div id="990b19a4" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">ATE <span class="op" style="color: #5E5E5E;
@@ -9765,6 +10495,7 @@ font-style: inherit;">"zipcode"</span>:df.zipcode.cat.categories</span>
 <span id="cb2-5"></span>
 <span id="cb2-6"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> hierarchical_normal(name, μ, dims):</span>
 <span id="cb2-7">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -9801,6 +10532,7 @@ background-color: null;
 font-style: inherit;">2.5</span>)</span>
 <span id="cb2-10">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> pm.Deterministic(name, μ <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> Δ <span class="op" style="color: #5E5E5E;
@@ -9812,6 +10544,7 @@ font-style: inherit;">=</span>dims)</span>
 <span id="cb2-12"></span>
 <span id="cb2-13"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> pm.Model(coords<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>coords) <span class="im" style="color: #00769E;
@@ -10104,6 +10837,7 @@ font-style: inherit;">len</span>(df.state.cat.categories))))</span>
 <span id="cb5-5"></span>
 <span id="cb5-6"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> labels_to_index(series, lookup):</span>
 <span id="cb5-7">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -10123,6 +10857,7 @@ background-color: null;
 font-style: inherit;">"out_of_sample"</span></span>
 <span id="cb5-11">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> series.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">map</span>(lookup).values.astype(<span class="st" style="color: #20794D;
@@ -10132,6 +10867,7 @@ font-style: inherit;">"int8"</span>)</span></code></pre></div>
 <p><br></p>
 <div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> model_nc:</span>
 <span id="cb6-2">    <span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -10361,6 +11097,7 @@ background-color: null;
 font-style: inherit;"># Simulation</span></span>
 <span id="cb2-8"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> simulate_experiment(pA, pB, N_per_group):</span>
 <span id="cb2-9">    </span>
 <span id="cb2-10">    df <span class="op" style="color: #5E5E5E;
@@ -10401,6 +11138,7 @@ font-style: inherit;">=</span>N)</span>
 <span id="cb2-17">    </span>
 <span id="cb2-18">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> df</span>
 <span id="cb2-19"></span>
 <span id="cb2-20">df <span class="op" style="color: #5E5E5E;
@@ -10416,6 +11154,7 @@ font-style: inherit;">=</span> simulate_experiment(pA, pB, N)</span></code></pre
 <p>Looking at the data above, we’re seeing a better conversion rate in group B. We run a two-proportions z-test and we find that there’s a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.</p>
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> pval_from_summary(tab):</span>
 <span id="cb3-2">    </span>
 <span id="cb3-3">    _, pval <span class="op" style="color: #5E5E5E;
@@ -10447,6 +11186,7 @@ font-style: inherit;">"smaller"</span></span>
 <span id="cb3-7">    )</span>
 <span id="cb3-8">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> pval</span>
 <span id="cb3-9"></span>
 <span id="cb3-10">(df.pipe(summarize_experiment)</span>

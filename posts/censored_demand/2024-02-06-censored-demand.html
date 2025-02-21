@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.549">
+<meta name="generator" content="quarto-1.6.41">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2023-07-09">
 
-<title>Kyle Caron - Modeling Anything With First Principles: Demand under extreme stockouts</title>
+<title>Modeling Anything With First Principles: Demand under extreme stockouts – Kyle Caron</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -34,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -70,10 +70,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7631f81a166a2979f555f02f21929a0e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-960e14589782da96e8191e666003f35f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -114,7 +114,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
@@ -159,7 +159,7 @@ window.Quarto = {
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -180,7 +180,7 @@ window.Quarto = {
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -276,7 +276,7 @@ window.Quarto = {
 <section id="part-1-looking-at-the-data" class="level1">
 <h1>Part 1: Looking at the data</h1>
 <hr>
-<div id="803a9672" class="cell" data-execution_count="1">
+<div id="06b46acf" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -329,13 +329,13 @@ window.Quarto = {
 <li><code>stock</code> showing available stock levels for that product over time</li>
 <li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
-<div id="c0be6242" class="cell" data-execution_count="2">
+<div id="2e83dd18" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rentals.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -387,13 +387,13 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="cdc93231" class="cell" data-execution_count="3">
+<div id="25406d50" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stock.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -445,13 +445,13 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="37af4676" class="cell" data-execution_count="4">
+<div id="34a8fe59" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>purchases.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -506,7 +506,7 @@ window.Quarto = {
 <section id="plotting-product-rentals" class="level2">
 <h2 class="anchored" data-anchor-id="plotting-product-rentals">Plotting Product Rentals</h2>
 <p>Lets convert the rental data to time series data and see what it looks like</p>
-<div id="5dc61724" class="cell" data-execution_count="5">
+<div id="244a2d88" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rental_events_to_ts(rentals, freq<span class="op">=</span><span class="st">'D'</span>):</span>
@@ -532,14 +532,14 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-6-output-1.png" width="1211" height="711" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It looks like there are typically 0-15 rentals per day for a given product, and there are typically 5000 rentals total each day.</p>
 <p>Looking at the distribution of total rentals across products, we see that it is mildly long-tailed.</p>
-<div id="d8b8aacf" class="cell" data-execution_count="6">
+<div id="4d12c693" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">5</span>,<span class="dv">3</span>),sharex<span class="op">=</span><span class="va">True</span>)</span>
@@ -552,13 +552,13 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-7-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?</p>
-<div id="81187d41" class="cell" data-execution_count="7">
+<div id="33975977" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
@@ -572,7 +572,7 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-8-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -581,7 +581,7 @@ window.Quarto = {
 <section id="looking-at-a-single-product" class="level2">
 <h2 class="anchored" data-anchor-id="looking-at-a-single-product">Looking at a single product</h2>
 <p>We’re going to start with a single product and see if we can come up with a system that informs us how many units we should reorder.</p>
-<div id="c86fa4a0" class="cell" data-execution_count="8">
+<div id="2ba2ebea" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>j<span class="op">=</span><span class="dv">165</span></span>
@@ -617,7 +617,7 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-9-output-1.png" width="1211" height="811" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -625,7 +625,7 @@ window.Quarto = {
 <p>As shown above, just looking at a time series of rentals each day is a bit confusing - there are seemingly random spikes in demand for just this product that dont seem to line up with spikes in total demand across products.</p>
 <p>When we look at the stockout rate across all products over time, it looks like the stockout rate drops at the same time demand increases for Product ID 165.</p>
 <p>Let’s join stock data to rental data and see whats happening for this product.</p>
-<div id="e05bf562" class="cell" data-execution_count="9">
+<div id="2ce4ec54" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>daily_rentals <span class="op">=</span> (rentals.pipe(rental_events_to_ts, freq<span class="op">=</span><span class="st">'D'</span>)</span>
@@ -642,7 +642,7 @@ window.Quarto = {
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -654,7 +654,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">total_stockout_rate</th>
 <th data-quarto-table-cell-role="th">total_rentals</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">product_id</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th"></th>
@@ -719,7 +719,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Now that we have this data joined, we can plot the rental data with corresponding stock data.</p>
-<div id="af25b430" class="cell" data-execution_count="10">
+<div id="827a0e2c" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plot_rentals(</span>
@@ -734,7 +734,7 @@ window.Quarto = {
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-11-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -781,7 +781,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <section id="preparing-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-the-data">Preparing the data</h3>
 <p>It’s easy to see that there are plenty of rentals that are still out with customers and haven’t been returned yet. For these unreturned rentals, we can’t calculate an accurate rental duration.</p>
-<div id="a50c613f" class="cell" data-execution_count="11">
+<div id="7e3d1a35" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rentals.sample(<span class="dv">10</span>, random_state<span class="op">=</span>SEED)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -790,7 +790,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -879,7 +879,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 </div>
 <p>It’s important to remember that even though these items aren’t returned, some have been rented out for 30, 40, 50 days, and it is important information to know that some items have been out for at least that long. A good example is that if it is possible for some items to be rented out for 200 days, but we’ve only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.</p>
 <p>What we can instead do is calculate the rental duration to date and then use a survival model to properly incorporate those unreturned items.</p>
-<div id="2c12550a" class="cell" data-execution_count="12">
+<div id="9f6590dc" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>curr_date <span class="op">=</span> rentals.date.<span class="bu">max</span>()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rentals <span class="op">=</span> (</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    rentals</span>
@@ -892,7 +892,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -906,48 +906,48 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">138902</td>
-<td>32c211f3-475c-48d4-8a25-f52b58316178</td>
-<td>2022-06-09</td>
-<td>2022-06-18</td>
-<td>product_267</td>
-<td>9</td>
+<td data-quarto-table-cell-role="th">403576</td>
+<td>a773931e-b2e6-4bd9-bdd7-ce1476803335</td>
+<td>2022-04-08</td>
+<td>2022-04-23</td>
+<td>product_802</td>
+<td>15</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">334894</td>
-<td>3a3e3d63-171a-48d7-bb3c-c021651ce5a0</td>
-<td>2022-05-02</td>
-<td>2022-05-26</td>
-<td>product_658</td>
+<td data-quarto-table-cell-role="th">364360</td>
+<td>bfe212c4-c67d-4743-9e9d-41056a33443c</td>
+<td>2022-06-18</td>
+<td>2022-06-30</td>
+<td>product_721</td>
+<td>12</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">292113</td>
+<td>67c05e04-779f-4d41-b17b-8a855766caa0</td>
+<td>2022-06-17</td>
+<td>2022-06-29</td>
+<td>product_574</td>
+<td>12</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">482470</td>
+<td>9ced121a-fc4e-44dd-9732-e17285c46114</td>
+<td>2022-04-03</td>
+<td>2022-04-27</td>
+<td>product_965</td>
 <td>24</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">315119</td>
-<td>dc40f891-bbe5-44cd-a94f-b40f31040eac</td>
-<td>2022-06-30</td>
-<td>2022-07-09</td>
-<td>product_620</td>
-<td>9</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">239024</td>
-<td>d0e8b6ca-9b05-42bd-8d59-64fdc2d504ae</td>
-<td>2022-04-13</td>
-<td>2022-05-30</td>
-<td>product_467</td>
-<td>47</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">234012</td>
-<td>c5f634f2-a87a-4add-b6cb-5861f46a7926</td>
-<td>2022-05-16</td>
-<td>2022-05-23</td>
-<td>product_457</td>
-<td>7</td>
+<td data-quarto-table-cell-role="th">267993</td>
+<td>492f43aa-08de-479b-a297-a39b0f239fc9</td>
+<td>2022-05-06</td>
+<td>2022-05-18</td>
+<td>product_527</td>
+<td>12</td>
 <td>1</td>
 </tr>
 </tbody>
@@ -971,7 +971,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 \text{rental duration} \sim \text{Lognormal}(\theta, \sigma)
 }}
 \]</span></p>
-<div id="426760b6" class="cell" data-execution_count="13">
+<div id="b5ec2fd2" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> censored_lognormal(theta, sigma, cens, y<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If observed, this is the likelihood contribution</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"obs"</span>, dist.LogNormal(theta, sigma).mask(cens <span class="op">!=</span> <span class="dv">1</span>), obs<span class="op">=</span>y)</span>
@@ -987,7 +987,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        censored_lognormal(theta, sigma, cens<span class="op">=</span>(<span class="dv">1</span><span class="op">-</span>E), y<span class="op">=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now use numpyro to fit a model and estimate the typical rental duration.</p>
-<div id="6dacb675" class="cell" data-execution_count="14">
+<div id="0278f960" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>E <span class="op">=</span> rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).query(<span class="st">"time_since&gt;0"</span>).event.values</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).query(<span class="st">"time_since&gt;0"</span>).time_since.values</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1003,7 +1003,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>idata <span class="op">=</span> mcmc.get_samples()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Remember, this is simulated data so we know the truth and can use that as a way to test this is working - a correctly specified model should recover the the true parameter values.</p>
-<div id="4a8ae829" class="cell" data-execution_count="15">
+<div id="1177eca8" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
@@ -1021,12 +1021,12 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-16-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="d418cc5a" class="cell" data-execution_count="16">
+<div id="a1ede923" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">4</span>))</span>
@@ -1048,7 +1048,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-17-output-1.png" width="711" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1063,7 +1063,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <h3 class="anchored" data-anchor-id="looking-at-the-demand-data">Looking at the demand data</h3>
 <p>The rental demand model is going to start simple for this single-product case - we’ll just estimate a poisson distribuion.</p>
 <p>Taking a look at the data again, it is clear that demand is constrained, or censored, by stockouts here.</p>
-<div id="cd97c94a" class="cell" data-execution_count="17">
+<div id="6f32a043" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> plot_rentals(</span>
@@ -1078,13 +1078,13 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-18-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs.&nbsp;when there isn’t - observed rentals are lower on days when there are stockouts - the sample size of stocked out periods is also smaller.</p>
-<div id="67be6c2c" class="cell" data-execution_count="18">
+<div id="798c734a" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(</span>
@@ -1099,14 +1099,14 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">mean</th>
 <th data-quarto-table-cell-role="th">count</th>
 </tr>
-<tr class="odd">
+<tr class="even">
 <th data-quarto-table-cell-role="th">stockout</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1140,7 +1140,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 \text{rentals} = \text{min}(\text{stock}, \text{Poisson}(\lambda))
 }}
 \]</span></p>
-<div id="0a8dd88d" class="cell" data-execution_count="19">
+<div id="70c1df64" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> censored_poisson(lambd, cens, y<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If observed, this is the likelihood contribution</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    numpyro.sample(<span class="st">"obs"</span>, dist.Poisson(lambd).mask(cens <span class="op">!=</span> <span class="dv">1</span>), obs<span class="op">=</span>y)</span>
@@ -1175,7 +1175,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>        censored_poisson(lambd, cens<span class="op">=</span>stockout, y<span class="op">=</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then fit this model with numpyro below:</p>
-<div id="accdb933" class="cell" data-execution_count="20">
+<div id="8406f019" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].rentals.values</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>stockout <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].stockout.values</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> daily_rentals.loc[<span class="ss">f'product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>].total_stockout_rate.values</span>
@@ -1192,7 +1192,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>idata_demand <span class="op">=</span> mcmc.get_samples()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can check the estimated rental rate parameter, <span class="math inline">\(\lambda\)</span>, against the actual value that we simulated and find that our model does have coverage over the ground truth.</p>
-<div id="c76ebcde" class="cell" data-execution_count="21">
+<div id="29d631ee" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> (</span>
@@ -1215,13 +1215,13 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-22-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Note that this is the base level of demand for the product - as competing products stock out, we expect <span class="math inline">\(\lambda\)</span> to increase. Currently, that is represented by <span class="math inline">\(\beta\)</span> in the model above, which is the relationship of the products demand to global stockout rate. As global stockout rate climbs, <span class="math inline">\(\lambda\)</span> increases. We can roughly estimate lambda at differen’t stockout levels.</p>
-<div id="781f964d" class="cell" data-execution_count="22">
+<div id="3cf2b546" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
@@ -1238,7 +1238,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-23-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1385,7 +1385,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <section id="simulating-the-impact-of-reordering-more-units" class="level2">
 <h2 class="anchored" data-anchor-id="simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</h2>
 <p>There are some helper functions in the code block below that we’ll use. Feel free to skip past these. They’re used to transform data from long form into a wide form where time periods are the column axis and each product is an row.</p>
-<div id="d0b66e10" class="cell" data-execution_count="23">
+<div id="5b0ef83c" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rental_model <span class="im">import</span> RentalInventory, PoissonDemandInventory, MultinomialDemandInventory</span>
@@ -1436,7 +1436,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 </details>
 </div>
 <p>The convenience function below combines all of the helper functions above to transform rental and stock data into a usable form for the model.</p>
-<div id="9977c39d" class="cell" data-execution_count="24">
+<div id="c9f35624" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set initial state to last observed state in dataset</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_current_state(rentals, stock):</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    active_rentals <span class="op">=</span> get_active_rentals_as_array(rentals)</span>
@@ -1453,7 +1453,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    stock<span class="op">=</span>stock.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now simulate what might happen if we re-stocked different amounts.</p>
-<div id="8dc0d798" class="cell" data-execution_count="25">
+<div id="a813f922" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Try adding new units at time T=100</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>reorder_amount <span class="op">=</span> <span class="dv">150</span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>reorder_policy <span class="op">=</span> reorder_as_array(reorder_amount, reorder_time<span class="op">=</span><span class="dv">100</span>)[<span class="va">None</span>,:]</span>
@@ -1477,7 +1477,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 </div>
 <p>The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest rental rate, but that’s a problem for later.</p>
 <p>Let’s look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out.</p>
-<div id="88abbe31" class="cell" data-execution_count="26">
+<div id="2b0445d6" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> np.random.choice(<span class="dv">250</span>)</span>
@@ -1498,13 +1498,13 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-27-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can summarize all of these simulations with uncertainty intervals.</p>
-<div id="93951ca9" class="cell" data-execution_count="27">
+<div id="307a9eaf" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">1</span>,</span>
@@ -1545,14 +1545,14 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-28-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-28-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>This view makes it a little more obvious that there are probably stockouts happening, but it doesn’t tell us for sure. We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.</p>
 <p>We could also go back and update the simulator to log things like <em>“missed rentals due to stockouts”</em> or other quantities that might be helpful.</p>
-<div id="0e2050c9" class="cell" data-execution_count="28">
+<div id="8735898b" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">1</span>,figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">5</span>))</span>
@@ -1567,13 +1567,13 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-29-output-1.png" width="1211" height="511" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It appears that the current reorder guidance isn’t enough - so what should reorder? Lets try and estimate what would happen if we reordered more.</p>
-<div id="e7476c36" class="cell" data-execution_count="29">
+<div id="23d2ba56" class="cell" data-execution_count="29">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Try estimating the impact of 500 new units at time T=100</span></span>
@@ -1635,14 +1635,14 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-30-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Clearly this is now way too much stock and we’d be over-ordering. So how can we identify the right amount to stock so that we don’t have stockouts but we don’t over-order?</p>
 <p>We could just simulate repeatedly with different stock reorder inputs like below.</p>
-<div id="8c328555" class="cell" data-execution_count="30">
+<div id="1b45f92e" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sim_stockout_rate(stock_reorder, lambd, samples_per_iter<span class="op">=</span><span class="dv">100</span>):    </span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    init_state <span class="op">=</span> get_current_state(</span>
@@ -1685,14 +1685,14 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-31-output-1.png" width="791" height="491" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It’s clear that right around 300 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.</p>
 <p>That’s an exercise for another time. Let’s reorder the recommended 300 units and see what happens.</p>
-<div id="5bcf134d" class="cell" data-execution_count="31">
+<div id="6244c075" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>init_state <span class="op">=</span> get_current_state(rentals<span class="op">=</span>rentals, stock<span class="op">=</span>stock)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Try adding x new units at time T=100</span></span>
@@ -1706,7 +1706,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> observe_future(random.PRNGKey(SEED), init_state, start_time<span class="op">=</span><span class="dv">100</span>, end_time<span class="op">=</span><span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Notice that this time we’re not loading in any parameters into the <code>Predictive</code> call. That’s because we’re using the true data-generating process to simulate what happens this time. We’re basically observing one possible future in the original fake world we created.</p>
-<div id="c87a4358" class="cell" data-execution_count="32">
+<div id="8915e8f1" class="cell" data-execution_count="32">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="dv">1</span>,</span>
@@ -1739,7 +1739,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-33-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-33-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1750,7 +1750,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <section id="can-we-do-something-more-simple" class="level2">
 <h2 class="anchored" data-anchor-id="can-we-do-something-more-simple">Can we do something more simple?</h2>
 <p>Was all of this really necessary? Let’s see for ourselves by taking a naive approach. We’ll fit a basic regression where we control for the global stockout rate and dummy-encode stockouts - meant to represent a basic tabular data science approach.</p>
-<div id="6a17af51" class="cell" data-execution_count="33">
+<div id="b63ad330" class="cell" data-execution_count="33">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> sm.OLS.from_formula(</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rentals ~ total_stockout_rate + stockout"</span>, </span>
@@ -1761,7 +1761,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> daily_rentals.query(<span class="ss">f"product_id=='product_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'"</span>).tail(<span class="dv">1</span>).assign(stockout<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>fcast <span class="op">=</span> model.predict(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="326269a1" class="cell" data-execution_count="34">
+<div id="a2e34f02" class="cell" data-execution_count="34">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>naive_rental_rate_fcast <span class="op">=</span> np.vstack([fcast <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>)]) <span class="co"># broadcast the forecast</span></span>
@@ -1782,13 +1782,13 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-35-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-35-output-1.png" width="511" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We can see that this approach leads to a recommendation of 200 units reordered. Is that reasonable? Let’s see what happens.</p>
-<div id="88699518" class="cell" data-execution_count="35">
+<div id="7420ea33" class="cell" data-execution_count="35">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>init_state <span class="op">=</span> get_current_state(rentals<span class="op">=</span>rentals, stock<span class="op">=</span>stock)</span>
@@ -1832,7 +1832,7 @@ E[\text{stock}_{t+\Delta t} | \text{do}(\text{stock}_{T=t}=X), \text{demand}_{t-
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2024-02-06-censored-demand_files/figure-html/cell-36-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="2024-02-06-censored-demand_files/figure-html/cell-36-output-1.png" width="1211" height="611" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2021,18 +2021,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -2064,7 +2053,45 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kylejcaron\.github\.io\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -2099,7 +2126,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -2147,7 +2178,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
