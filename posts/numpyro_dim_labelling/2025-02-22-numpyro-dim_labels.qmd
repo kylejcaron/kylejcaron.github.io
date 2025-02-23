@@ -932,4 +932,4 @@ This was alot more difficult than I thought, and there are no guarantees this is
 Some things that still need to be explored are:
 
 1. Will this still work when there's scoping with sub-models? Or integration with other libraries like flax?
-1. What changes need to be made to get this app0proach extended to SVI?
+1. What changes need to be made to get this approach extended to SVI?
