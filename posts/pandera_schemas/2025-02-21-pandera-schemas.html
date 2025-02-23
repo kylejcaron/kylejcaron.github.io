@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2025-02-21">
 
-<title>Introduction to Surrogate Indexes – Kyle Caron</title>
+<title>Pandera and Object Oriented Data Validation – Kyle Caron</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -160,7 +160,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Introduction to Surrogate Indexes</h1>
+      <h1 class="title">Pandera and Object Oriented Data Validation</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">object oriented programming</div>
                 <div class="quarto-category">data processing</div>
@@ -192,7 +192,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#inheritance-for-reusing-schema" id="toc-inheritance-for-reusing-schema" class="nav-link" data-scroll-target="#inheritance-for-reusing-schema">Inheritance for reusing schema</a></li>
+  <li><a href="#inheritance-for-reusing-schemas" id="toc-inheritance-for-reusing-schemas" class="nav-link" data-scroll-target="#inheritance-for-reusing-schemas">Inheritance for reusing schemas</a></li>
   <li><a href="#concluding-thoughts" id="toc-concluding-thoughts" class="nav-link" data-scroll-target="#concluding-thoughts">Concluding Thoughts</a></li>
   </ul>
 </nav>
@@ -204,7 +204,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 
 
-<div id="8df31668" class="cell" data-execution_count="1">
+<div id="3e22a01f" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -215,18 +215,18 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p>Pandera schema’s are a useful tool to make sure input data is as expected. If you’ve ever used dbt before, theyre just like schema tests or great-expectations.</p>
 <p>Data validation is extremely important for just about everyone in the data science space. For instance, your model may not be expecting null values, or maybe it needs data to be iid. This is where Pandera can come in and excel, especially when you don’t have control over the input data.</p>
 </section>
-<section id="inheritance-for-reusing-schema" class="level1">
-<h1>Inheritance for reusing schema</h1>
-<p>I recently had a project where I wasn’t responsible for and had no control over the input data. For a particularly model, many different datasets would be sent to different models for inference, and I couldn’t always rely on the data being properly structured.</p>
+<section id="inheritance-for-reusing-schemas" class="level1">
+<h1>Inheritance for reusing schemas</h1>
+<p>I recently had a project where I wasn’t responsible for and had no control over the input data. For a particular model, many different datasets would be sent to different models for inference, and I couldn’t always rely on the data being properly structured.</p>
 <p>I was also working with a range of different models including time-varying survival and time series models. I wanted to be able to reuse as much code across models, which is where Pandera comes in.</p>
 <p>Lets start with looking at some panel data:</p>
-<div id="87a5fc74" class="cell" data-execution_count="2">
+<div id="a309ed5f" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>panel <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"entity_id"</span>:[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,],</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>:[<span class="st">'2023-01-01'</span>,<span class="st">'2023-02-01'</span>,<span class="st">'2023-01-01'</span>],</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>panel.assign(metric<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -313,12 +313,17 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>As a starting point, this makes it really easy to extend to time series models.</p>
-<div id="a07262ec" class="cell" data-execution_count="3">
+<div id="ad429c15" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>panel.query(<span class="st">"entity_id==1"</span>).assign(y<span class="op">=</span>[<span class="dv">100</span>, <span class="dv">105</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a fake sales dataframe</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"entity_id"</span>:<span class="dv">1</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>:pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, freq<span class="op">=</span><span class="st">'MS'</span>, periods<span class="op">=</span><span class="dv">4</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"y"</span>:[<span class="dv">100</span>, <span class="dv">105</span>, <span class="dv">96</span>, <span class="dv">120</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -344,17 +349,29 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <td>2023-02-01</td>
 <td>105</td>
 </tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>2023-03-01</td>
+<td>96</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1</td>
+<td>2023-04-01</td>
+<td>120</td>
+</tr>
 </tbody>
 </table>
 
 </div>
 </div>
 </div>
-<p>I can take my PanelSchema and inherit it for different data models. A simple example is lets say I need a non-null outcome:</p>
+<p>I can take my <code>PanelSchema</code> and inherit it for different data models. A simple example is lets say I need a non-null outcome:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UnivariateTimeSeriesSchema(PanelSchema):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    y: Series[<span class="bu">float</span>] <span class="op">=</span> pa.Field(<span class="bu">coerce</span><span class="op">=</span><span class="va">True</span>, nullable<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>and just like that, I have all of those previous data checks extended to my time series model.</p>
-<p>There are some downsides though. First, you cant parameterize field names, for instance your outcome needs to be named <code>y</code>. I’d also need an <code>entity_id</code> column for this to work because the PanelSchema requires it - but that’s simple enough, you could just add say a product_id field with the product name you’re forecasting.</p>
+<p>There are some downsides though. First, you cant parameterize field names, for instance your outcome needs to be named <code>y</code>. Second, you need to make sure you can generalize</p>
 <p>For time-varying survival schema, they can be defined as</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TimeVaryingSurvivalSchema(PanelSchema):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A schema for Time Varying Survival Analysis, should be a unique and complete panel dataset</span></span>
@@ -376,7 +393,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> check_event_is_last_obs_per_entity(cls, df: DataFrame) <span class="op">-&gt;</span> Seris[<span class="bu">bool</span>]:</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In this case, it inherits all of the previous schema checks from PanelSchema. We extend it further to add some survival analysis schema specific checks - for instance, for each entity_id, we expect there to be a tenure column indicating each consecutive time period. A common example for tenure is the months since a customer started a subscription.</p>
-<div id="9555c00e" class="cell" data-execution_count="4">
+<div id="6a29a96e" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>panel.assign(</span>
@@ -385,7 +402,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    event <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 

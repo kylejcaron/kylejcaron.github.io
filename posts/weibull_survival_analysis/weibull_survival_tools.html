@@ -250,7 +250,7 @@ window.Quarto = {
 <section id="a-quick-recap-on-survival-curves" class="level2">
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-survival-curves">A (quick) Recap on Survival Curves</h2>
 <p>Survival Curves model time to some event (such as a failure) - they can tell you the probability of a binary event occurring at each future time point in somethings lifetime. An example survival curve is shown below:</p>
-<div id="e51a942b" class="cell" data-execution_count="1">
+<div id="e7b25e9c" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> <span class="op">*</span></span>
@@ -316,7 +316,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-quick-recap-on-hazard-curves">A (quick) Recap on Hazard Curves</h2>
 <p>Hazard Curves are another way to think about survival analysis problems. A hazard curve tells you the instantaneous risk of an event occurring at each time point.</p>
 <p>Hazard Curves tend to be very informative as they allow you to see how risk changes over time - sometimes it might decelerate, or sometimes it might even accelerate exponentially. Here’s an example of a hazard curve below.</p>
-<div id="fe5bc351" class="cell" data-execution_count="2">
+<div id="d437f457" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="fl">1.5</span></span>
@@ -351,7 +351,7 @@ window.Quarto = {
 <section id="the-k-parameter" class="level2">
 <h2 class="anchored" data-anchor-id="the-k-parameter">The <span class="math inline">\(k\)</span> Parameter</h2>
 <p>Sometimes also called <span class="math inline">\(\rho\)</span>, this parameter controls the degree of acceleration of the hazard curve.</p>
-<div id="64081d26" class="cell" data-execution_count="3">
+<div id="b9e55fff" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ks <span class="op">=</span> [<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="fl">1.5</span>, <span class="dv">2</span>, <span class="fl">2.5</span>]</span>
@@ -392,7 +392,7 @@ window.Quarto = {
 <section id="the-lambda-parameter" class="level2">
 <h2 class="anchored" data-anchor-id="the-lambda-parameter">The <span class="math inline">\(\lambda\)</span> Parameter</h2>
 <p>Sometimes also referred to as a <em>scale parameter</em>, this parameter represents the time point where there’s a 63.2% probability of an event having occurred. Weird, I know, its just an arbitrary thing quality</p>
-<div id="bc1ed251" class="cell" data-execution_count="4">
+<div id="16e1602c" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="fl">1.5</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="dv">30</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> Weibull(k, lambd)</span>
@@ -407,7 +407,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Let’s see this visually as well - if you look at the plot below, each survival curve indicates that there’s a 63.2% probability of an event having occurred at the exact time that <span class="math inline">\(t=\lambda\)</span></p>
-<div id="8b4a381a" class="cell" data-execution_count="5">
+<div id="e8915473" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ks <span class="op">=</span> <span class="fl">1.5</span></span>
@@ -494,7 +494,7 @@ window.Quarto = {
 <span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We already looked into hazard and survival curves - let’s take a look at estimating the average lifetime.</p>
-<div id="b90fee09" class="cell" data-execution_count="6">
+<div id="54915a15" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="fl">1.5</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>lambd <span class="op">=</span> <span class="dv">30</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -506,11 +506,11 @@ window.Quarto = {
 </div>
 </div>
 <p>Does this align with reality? Lets simulate event times from the weibull distribution to find out</p>
-<div id="200abc99" class="cell" data-execution_count="7">
+<div id="62bbfd4d" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>event_times <span class="op">=</span> dist.sample(n<span class="op">=</span><span class="dv">1000000</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Simulated Average Lifetime = </span><span class="sc">{</span><span class="bu">round</span>(event_times.mean(),<span class="dv">1</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simulated Average Lifetime = 27.0</code></pre>
+<pre><code>Simulated Average Lifetime = 27.1</code></pre>
 </div>
 </div>
 </section>
@@ -548,20 +548,20 @@ MRL(t) = \frac{\lambda \: \Gamma(1+1/k, \: (\frac{t}{\lambda})^k)}{S(t)} - t
 <span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The code above returns negative values when St=0. This clipping corrects those cases</span></span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.clip(result, <span class="dv">0</span>, np.inf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>And we can call that function like so:</p>
-<div id="df2ddce6" class="cell" data-execution_count="8">
+<div id="8cbbcfb9" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>curr_time <span class="op">=</span> <span class="dv">40</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>k, lambd <span class="op">=</span> <span class="fl">1.5</span>, <span class="dv">30</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> Weibull(k,lambd)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>remaining_life <span class="op">=</span> dist.mean_residual_life(curr_time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <pre><code>2. Simulate</code></pre>
-<div id="cad7d320" class="cell" data-execution_count="9">
+<div id="45d3d628" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> dist.sample(n<span class="op">=</span><span class="dv">10000000</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>units_reached_curr_time <span class="op">=</span> T[T<span class="op">&gt;</span>curr_time] <span class="op">-</span> curr_time</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>remaining_life_simulated <span class="op">=</span> units_reached_curr_time.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>With truncated sampling, this can also be more efficient</p>
-<div id="e0df9e5c" class="cell" data-execution_count="10">
+<div id="77e03632" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>T_cond <span class="op">=</span> dist.sample(n<span class="op">=</span><span class="dv">10000000</span>,left_trunc<span class="op">=</span>curr_time) <span class="op">-</span> curr_time</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>remaining_life_simulated2 <span class="op">=</span> T_cond.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -575,18 +575,18 @@ S(t) = \text{exp}(-Ht)
 E[T] = \int_{t=0}^\infty S(t) \, dt
 \]</span></p>
 <p>Using these relationships, we can 1. take the hazard curve from time 40 onwards 2. turn it into the cumulative hazard 3. transform that into a survival curve 4. integrate the survival curve into an expectation</p>
-<div id="69278133" class="cell" data-execution_count="11">
+<div id="e80102ca" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ht <span class="op">=</span> dist.hazard(np.arange(curr_time, curr_time<span class="op">+</span><span class="dv">1000</span>))</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Ht <span class="op">=</span> ht.cumsum()</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>St <span class="op">=</span> np.exp(<span class="op">-</span>Ht)</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>remaining_life_from_hazard <span class="op">=</span> scipy.integrate.simps(St)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_19389/124568412.py:4: DeprecationWarning: 'scipy.integrate.simps' is deprecated in favour of 'scipy.integrate.simpson' and will be removed in SciPy 1.14.0
+<pre><code>/var/folders/3n/bm6t53l15kddzf7prg_kj3140000gn/T/ipykernel_24415/124568412.py:4: DeprecationWarning: 'scipy.integrate.simps' is deprecated in favour of 'scipy.integrate.simpson' and will be removed in SciPy 1.14.0
   remaining_life_from_hazard = scipy.integrate.simps(St)</code></pre>
 </div>
 </div>
 <p>Comparing all of these methods we end up with the following:</p>
-<div id="1c767eae" class="cell" data-execution_count="12">
+<div id="db460641" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
@@ -650,7 +650,7 @@ S(t|\text{curr time}=40) = S(t)/S(40)
 <span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>        St <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> <span class="va">self</span>.cdf(t))<span class="op">/</span>norm</span>
 <span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> St</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>And as we can see below, it lines up perfectly with an empirically calculated kaplan meier curve</p>
-<div id="6ced9edf" class="cell" data-execution_count="13">
+<div id="e4be6464" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> KaplanMeierFitter</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>curr_time <span class="op">=</span> <span class="dv">40</span></span>
