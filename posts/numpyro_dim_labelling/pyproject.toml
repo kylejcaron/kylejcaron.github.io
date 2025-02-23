@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "numpyro-dim-labelling"
+version = "0.1.0"
+description = ""
+authors = ["Kyle Caron"]
+package-mode = false
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpyro = "^0.17.0"
+arviz = "^0.20.0"
+jaxtyping = "^0.2.38"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+pyyaml = "^6.0.2"
+jupyter = "^1.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
