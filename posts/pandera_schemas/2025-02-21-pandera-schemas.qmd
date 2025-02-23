@@ -17,14 +17,11 @@ import pandas as pd
 Pandera schema's are a useful tool to make sure input data is as expected. If you've ever used dbt 
 before, theyre just like schema tests or great-expectations. 
 
-Data validation is extremely important for just about everyone in the data science space. For instance, your
-model may not be expecting null values, or maybe it needs data to be iid. This is where Pandera can come in and excel, especially when you don't have control over the input data.
+Data validation is extremely important for just about everyone in the data science space. For instance, your model may not be expecting null values, or maybe it needs data to be iid. This is where Pandera can come in and excel, especially when you don't have control over the input data.
 
+# Inheritance for reusing schemas
 
-
-# Inheritance for reusing schema
-
-I recently had a project where I wasn't responsible for and had no control over the input data. For a particularly model, many different datasets would be sent to different models for inference, and I couldn't always rely on the data being properly structured. 
+I recently had a project where I wasn't responsible for and had no control over the input data. For a particular model, many different datasets would be sent to different models for inference, and I couldn't always rely on the data being properly structured. 
 
 I was also working with a range of different models including time-varying survival and time series models. I wanted to be able to reuse as much code across models, which is where Pandera comes in.
 
@@ -37,7 +34,6 @@ panel = pd.DataFrame({
 })
 panel.assign(metric=[0,1,1])
 ```
-
 
 It turns out Time Series data is typically going to be panel data (although not always true). Time-varying survival data is also a special case of panel data, where each entity (for instance a 
 customer's subscription id) starts at some point at there are consistently spaced observations.
@@ -102,10 +98,15 @@ As a starting point, this makes it really easy to extend to time series models.
 ```{python}
 #| code-fold: true
 
-panel.query("entity_id==1").assign(y=[100, 105])
+# Make a fake sales dataframe
+pd.DataFrame({
+    "entity_id": 1,
+    "date": pd.date_range(start='2023-01-01', freq='MS', periods=4),
+    "y":[100, 105, 96, 120]
+})
 ```
 
-I can take my PanelSchema and inherit it for different data models. A simple example is lets say I need a non-null outcome:
+I can take my `PanelSchema` and inherit it for different data models. A simple example is lets say I need a non-null outcome:
 
 ```python
 class UnivariateTimeSeriesSchema(PanelSchema):
@@ -114,10 +115,7 @@ class UnivariateTimeSeriesSchema(PanelSchema):
 
 and just like that, I have all of those previous data checks extended to my time series model. 
 
-There are some downsides though. First, you cant parameterize field names, for instance your outcome
-needs to be named `y`. I'd also need an `entity_id` column for this to work because the PanelSchema
-requires it - but that's simple enough, you could just add say a product_id field with the product
-name you're forecasting.
+There are some downsides though. My biggest issue with this is that you can't parameterize field names, for instance your outcome needs to be named `y` and you need to have a column named `entity_id` in this case. 
 
 For time-varying survival schema, they can be defined as
 
@@ -143,8 +141,8 @@ class TimeVaryingSurvivalSchema(PanelSchema):
         ...
 ```
 
-In this case, it inherits all of the previous schema checks from PanelSchema. We extend it further
-to add some survival analysis schema specific checks - for instance, for each entity_id, we expect
+In this case, it inherits all of the previous schema checks from `PanelSchema`. We extend it further
+to add some survival analysis schema specific checks - for each entity_id, we expect
 there to be a tenure column indicating each consecutive time period. A common example for tenure is
 the months since a customer started a subscription. 
 
@@ -158,9 +156,7 @@ panel.assign(
 )
 ```
 
-Whats great about this is that its all so easy to read and mimics how we think about it conceptually.
-Time Series and Time-varying survival are just sub-categories of panel data. And our code mimics
-that perfectly.
+Whats great about this is that its easy to read and understand. Time Series and Time-varying survival are just sub-categories of panel data. And our code mimics that perfectly.
 
 # Concluding Thoughts
 
@@ -178,14 +174,13 @@ how that one will play out when the data needs to be batched.
 class methods. There can be some growing pains for less experienced programmers
 1. There is a really cool yaml output feature that lets you take a schema and get a yaml list of all
 of the checks it will run, but it doesn't support custom checks and that basically makes it unusable.
-1. I found that the project maintainers weren't that responsive on github
-
+1. I'm not sure its a particularly active project
 
 Overall, its definitely a useful tool to keep in your back pocket, but I have two pieces of advice:
 
 1. If you have the luxury of predictable data inputs or you're modeling a single dataset over time, 
 you probably don't need this and can stick to dbt validation or something simple.
 1. If you're working on large datasets, maybe do a POC and make sure your schema approach will work
-for data thats loaded in batches
+for data thats loaded in batches.
 
 Note: I may update this later to have actual working code to demo, but for now it's pseudocode.
