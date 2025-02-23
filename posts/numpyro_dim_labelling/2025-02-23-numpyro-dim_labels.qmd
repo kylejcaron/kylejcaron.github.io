@@ -5,7 +5,7 @@ date: "2025-02-23"
 categories:
  - numpyro
  - tensors
- - arviz
+ - ArviZ
 ---
 
 
@@ -32,17 +32,51 @@ print(
     "numpyro version:", numpyro.__version__,
     "\njax version:", jax.__version__,
     "\njaxlib version", jaxlib.__version__,
-    "\narviz version: ", az.__version__
+    "\nArviZ version: ", az.__version__
 )
 ```
 
-The goal of this post is to figure out how to use numpyro internals to auto-label variable dimensions for arviz. PyMC is heavily integrated with arviz and their dimension labelling is fantastic - I want it to be just as easy with numpyro.
+The goal of this post is to figure out how to use numpyro internals to auto-label variable dimensions for ArviZ. PyMC is heavily integrated with ArviZ and their dimension labelling is fantastic - I want it to be just as easy with numpyro.
 
-This isn't necessarily supposed to be a fun blog post, it's meant to follow my exact thought process as I work through this problem. Maybe that's helpful for some people? But mostly it will be a good reference for myself in the future.
+This isn't going to be a very fun blog post, it's meant to follow my thought process as I work through this problem. Maybe that's helpful for some people? But mostly it will be a good reference for myself in the future.
 
-# Part 1: A simple regression
+# Part 1: Setting a baseline
 
-We'll start with simulating some regression data
+## What are coords and dims?
+
+I'm assuming readers are familiar with this, but here is a quick refresher. ArviZ takes in a bayesian posterior and organizes it as an xarray dataset - picture pandas but for tensors. ArviZ expects `coords` and `dims` to map parameter dimensions to names and categories as show below
+
+```python
+coords = {
+    "category": ['A', 'B', 'C', 'D', 'E'],
+    'features': ['X1', 'X1', 'X3']
+}
+
+dims = {
+    'beta': ['category', 'features'],
+    "gamma": ['category']
+}
+idata = az.from_numpyro(mcmc_object, coords=coords, dims=dims)
+```
+
+The `coords` map the category names to a positional index, where A corresponds to index 0, B corresponds to index 1, and so on.
+
+Our `dims` tell us that our `gamma` parameter is indexed by `category`. This would estimate a gamma parameter for each category, i.e. `gamma[0]` is the gamma estimate for category A. `beta` in this case has a separate estimate for each category {A, B, C, D, E} and for each feature {X1, X2, X3}.
+
+This is helpful for so many reasons - plots are easier to read with the category names displayed for each parameter, and you can do operations using the dimension names
+
+The code snippet below returns the average estimate for beta when the category=A, which is extremely easy to read
+
+```python
+beta = idata.posterior['beta']
+avg_beta_groupA = beta.sel(category='A').mean(("chain", "draw"))
+```
+
+A properly labelled InferenceData object from ArviZ is a massive quality of life improvement.
+
+## Numpyro's default behavior
+
+Let's explore numpyro's default behavior and see where it falls short. We'll start with simulating some regression data
 
 ```{python}
 rng = np.random.default_rng(SEED)
@@ -62,13 +96,35 @@ y = rng.normal(mu, sigma)
 
 # we'll make a coords dictionary for later
 coords = {
-    "Z": [f'X{i}' for i in range(1, z_cardinality+1)],
+    "Z": ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
     "obs_id": np.arange(N),
-    "features": [f'X{i}' for i in range(1, n_feats+1)],
+    "features": ['X1', 'X2', 'X3'],
 }
 ```
 
-Next, lets fit a linear regression model and try and pass it into arviz to see what happens
+Next, lets fit a linear regression model and try and pass it into ArviZ to see what the dims for our parameters look like
+
+```{python}
+#| code-fold: true
+
+def run_inference(
+    model: Callable,
+    key: random.PRNGKey,
+    num_warmup: int = 50, 
+    num_chains: int = 2, 
+    num_samples: int = 50,
+    **kwargs
+) -> MCMC:
+    kernel = NUTS(model)
+    mcmc = MCMC(kernel, num_warmup=num_warmup, num_chains=num_chains, num_samples=num_samples, progress_bar=False)
+    mcmc.run(key, **kwargs)
+    return mcmc
+
+def print_site_dims(idata, vars = ['alpha', 'beta', 'mu']):
+    for var in vars:
+        print(f"{var}:", idata.posterior[var].dims )
+
+```
 
 ```{python}
 def model(
@@ -91,44 +147,21 @@ def model(
         mu = numpyro.deterministic("mu", alpha[z] + jnp.dot(X, beta))
         return numpyro.sample("y", dist.Normal(mu, sigma))
 
-
-def run_inference(
-    model: Callable,
-    key: random.PRNGKey,
-    num_warmup: int = 50, 
-    num_chains: int = 2, 
-    num_samples: int = 50,
-    **kwargs
-) -> MCMC:
-    kernel = NUTS(model)
-    mcmc = MCMC(kernel, num_warmup=num_warmup, num_chains=num_chains, num_samples=num_samples, progress_bar=False)
-    mcmc.run(key, **kwargs)
-    return mcmc
-
-
 mcmc = run_inference(model, random.PRNGKey(0), X=X, Z=z, y=y)
 idata = az.from_numpyro(mcmc)
-```
-
-
-Now lets inspect the dimensions of a few sites to understand the default behavior
-
-```{python}
-def print_site_dims(idata, vars = ['alpha', 'beta', 'mu']):
-    for var in vars:
-        print(f"{var}:", idata.posterior[var].dims )
-
 print_site_dims(idata)
 ```
 
-What we really want is for those dimensions labeled "{site}_dim_0" to be labelled by their plate names, so we need to see if there's a way to automatically grab the plate sizes, and a mapping of which sites correspond to which plates. Luckily there's an `inspect` module in numpyro that seems like it might cover some of this!
+What we really want is for those dimensions labeled "{site}_dim_0" to be labelled by their plate names, so we need to see if there's a way to automatically grab the plate metadata. Luckily there's an `inspect` module in numpyro that seems like it might cover some of this.
+
+## Pulling model relations
 
 ```{python}
 model_relations = inspect.get_model_relations(model, model_kwargs=dict(X=X, Z=z, y=y))
 model_relations
 ```
 
-It looks like `plate_sample has exactly what we need, its just in the wrong order. It should really be formatted as 
+It looks like `plate_sample` has exactly what we need, its just in the wrong order. It should really be formatted as 
 
 ```python
 {
@@ -158,18 +191,17 @@ print_site_dims(idata)
 
 Perfect! Next lets make sure this works when a site is within multiple plates - I'm concerned that my approach for reversing the plate mapping wont get the order right when a site is within multiple plates
 
-# Part 2: Adding an edge case: multiple plates per site
+# Part 2: Adding an edge case with multiple plates per site
 
-We'll have to simulate some new data. I'm going to make each feature have a group specific effect so that I can test if my solutions will work with nested plates
+## Does our approach preserve the dimension order?
 
+We'll have to simulate some new data where $\beta$ has group-specific effects. I'm going to make each feature have a group specific effect so that I can test if my solutions will work with nested plates.
 
 ```{python}
-
+# Simulate new data
 beta = rng.normal(size=(z_cardinality, n_feats))
-
 mu = alpha + (X * beta[z]).sum(-1) + gamma[z]
 y = rng.normal(mu, sigma)
-
 
 def model2(
     X: Float[Array, "obs features"], 
@@ -195,7 +227,6 @@ mcmc = run_inference(model2, random.PRNGKey(0), X=X, Z=z, y=y)
 idata = az.from_numpyro(mcmc)
 print_site_dims(idata)
 ```
-
 
 ```{python}
 model2_relations = inspect.get_model_relations(model2, model_kwargs=dict(X=X, Z=z, y=y))
@@ -240,6 +271,8 @@ print(model2_reversed_relations['plate_sample'])
 ```
 
 This is bad news - looking at the plate_samples's above, we see the same result despite the plates having different dims. This approach isn't going to maintain the plate order, so we'll end up mislabelling dims in our previous approach.
+
+## Finding better plate metadata
 
 I took a closer look at the [`get_model_relations`](https://github.com/pyro-ppl/numpyro/blob/aa829fb85c79bc0dee1c897ec82469aa20b555bb/numpyro/infer/inspect.py#L337) function and it looks like this is where they're pulling plate information
 
@@ -371,6 +404,8 @@ print_site_dims(idata)
 
 # Part 3: What happens with the ZeroSumNormal distribution
 
+## A quick tangent on tensor shapes and why the ZeroSumNormal is different
+
 I recently ported the ZeroSumNormal distribution from [PyMC](https://www.pymc.io/projects/docs/en/stable/api/distributions/generated/pymc.ZeroSumNormal.html) to numpyro and it follows some different conventions than the typical distribution. 
 
 To understand it, you probably need to have some background on tensor shapes - theres a great blog from [Eric Ma here](https://ericmjl.github.io/blog/2019/5/29/reasoning-about-shapes-and-probability-distributions/).
@@ -406,6 +441,8 @@ mcmc.get_samples()['gamma'].shape
 ```
 
 It looks like this unfortunately doesnt work, it creates a batch_shape=10, event_shape=10 when we only want the event_shape in this case.
+
+## A custom primitive for labelling event dims
 
 This is going to be a problem that I'm not sure is solve-able with the current tools. But what if we could create a primitive that could save dim names for us in the trace without actually doing anything? ie
 
@@ -528,7 +565,11 @@ delta = idata_zsn.log_likelihood['y'] - idata_zsn_pseudoplate.log_likelihood['y'
 print("Difference in Log Likelihood with and without the pseudoplate:", float(delta.mean()))
 ```
 
-I'm a bit shocked to say that this works so far. Next we need to make sure it works if we have a batch dimension
+I'm a bit shocked to say that this works so far. 
+
+## Another edge case: both batch and event dims 
+
+Next we need to make sure it works if we also have a batch dimension
 
 ```{python}
 def test_model_batches():
@@ -546,20 +587,23 @@ Sadly this didnt quite work - it seems like the dim-handling isn't working as we
 trace['gamma']
 ```
 
+## Improving the primitive to store new metadata
+
 Taking a step back, it's clear I thought about this wrong - the Conditional Indepdence Stack is for batch dimensions that are conditionally independent, and by putting our pseudoplate in there, we're messing with how the batch dimensions are arranged. 
 
-This approach might also be unstable over future versions its a bit like working with a private method - I'm not sure that consistency is guaranteed over minor package releases. It's also hard to follow exactly how the conditional indepence stack is used throughout the code, and if that will have any unexpected consequences.
+It's also hard to follow exactly how the conditional indepence stack is used throughout the code, and if that will have any unexpected consequences.
 
-I'm going to try something new - lets make a new primitive that creates a `dep_stack` and we'll put the pseudo plates in there and see if it fixes things
+I'm going to try something new - lets make a new primitive that creates a `dep_stack` and we'll put the pseudo plates in there and see if it fixes things. This is going to get even more ugly so I'm hiding the implementation below in a code fold
 
 ```{python}
+#| code-fold: true
+
 from typing import Tuple
 from collections import namedtuple
 import numpyro
 
 from numpyro.primitives import Messenger, Message, apply_stack, _subsample_fn
 from numpyro.util import find_stack_level
-
 
 DepStackFrame = namedtuple("DepStackFrame", ["name", "dim", "size"])
 
@@ -648,8 +692,12 @@ class pseudo_plate(numpyro.plate):
         else:
             assert dim not in occupied_dims
         return dim, subsample
+```
 
 
+Note that I'm copying alot of the code above directly from the `plate` [primitive](https://github.com/pyro-ppl/numpyro/blob/627d19a8e01e3d1b6c7a594ef7f49face4921f92/numpyro/primitives.py#L467).
+
+```{python}
 def test_model_batches():
     n_groups = 10
     with pseudo_plate("groups", n_groups), numpyro.plate("batches", 3):
@@ -660,15 +708,15 @@ trace = jax.eval_shape(partial(get_trace, test_model_batches, model_kwargs={})).
 trace['gamma']['value']
 ```
 
-Perfect this works, we just need to combine our two plate stacks!
+Perfect this now works, we just need to combine our two plate stacks!
 
 ```{python}
 trace['gamma']['cond_indep_stack'] + trace['gamma']['dep_stack']
 ```
 
-# The resulting implementation
+# Part 4: The resulting implementation
 
-Finally, lets bring this altogether. In the code-fold below is all of the needed functions in one place
+Finally, lets bring this altogether. In the code-fold below is all of the needed functions in one place, but they really need to be cleaned up.
 
 ```{python}
 #| code-fold: true
@@ -910,14 +958,15 @@ def model(
 
 
 coords = {
-    "Z": [f'X{i}' for i in range(1, z_cardinality+1)],
+    "Z": ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
     "obs_id": np.arange(N),
-    "features": [f'X{i}' for i in range(1, n_feats+1)],
+    "features": ['X1', 'X2', 'X3'],
 }
 model_kwargs = dict(X=X, Z=z, y=y)
 mcmc, idata = run_inference(model, random.PRNGKey(0), coords=coords, **model_kwargs)
 print_site_dims(idata, vars=['beta', 'gamma', 'mu'])
 ```
+
 
 We can see above that the dims are all properly labelled, and below we can see them properly mapped to the coords provided
 
