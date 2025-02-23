@@ -13,14 +13,14 @@
 <lastBuildDate>Sun, 23 Feb 2025 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Automatic Dim Labelling with Numpyro?</title>
-  <link>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-22-numpyro-dim_labels.html</link>
+  <link>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html</link>
   <description><![CDATA[ 
 
 
 
 
 
-<div id="395efeb0" class="cell" data-execution_count="1">
+<div id="09d2406a" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -127,7 +127,7 @@ arviz version:  0.20.0</code></pre>
 <section id="part-1-a-simple-regression" class="level1">
 <h1>Part 1: A simple regression</h1>
 <p>We’ll start with simulating some regression data</p>
-<div id="46dc6aff" class="cell" data-execution_count="2">
+<div id="fe79a84e" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">rng <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> np.random.default_rng(SEED)</span>
@@ -251,7 +251,7 @@ font-style: inherit;">1</span>)],</span>
 <span id="cb3-21">}</span></code></pre></div>
 </div>
 <p>Next, lets fit a linear regression model and try and pass it into arviz to see what happens</p>
-<div id="5324e472" class="cell" data-execution_count="3">
+<div id="da08d2d0" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -424,7 +424,7 @@ background-color: null;
 font-style: inherit;">=</span> az.from_numpyro(mcmc)</span></code></pre></div>
 </div>
 <p>Now lets inspect the dimensions of a few sites to understand the default behavior</p>
-<div id="bbffbf04" class="cell" data-execution_count="4">
+<div id="7bdbf302" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -468,7 +468,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 </div>
 <p>What we really want is for those dimensions labeled “{site}_dim_0” to be labelled by their plate names, so we need to see if there’s a way to automatically grab the plate sizes, and a mapping of which sites correspond to which plates. Luckily there’s an <code>inspect</code> module in numpyro that seems like it might cover some of this!</p>
-<div id="dfb2be63" class="cell" data-execution_count="5">
+<div id="ade721d4" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">model_relations <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> inspect.get_model_relations(model, model_kwargs<span class="op" style="color: #5E5E5E;
@@ -524,7 +524,7 @@ background-color: null;
 font-style: inherit;">"obs_id"</span>]</span>
 <span id="cb9-6">}</span></code></pre></div>
 <p>All we need to do is make a quick dictionary reversing function</p>
-<div id="ad97a80c" class="cell" data-execution_count="6">
+<div id="88dc8366" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> collections <span class="im" style="color: #00769E;
@@ -594,7 +594,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <section id="part-2-adding-an-edge-case-multiple-plates-per-site" class="level1">
 <h1>Part 2: Adding an edge case: multiple plates per site</h1>
 <p>We’ll have to simulate some new data. I’m going to make each feature have a group specific effect so that I can test if my solutions will work with nested plates</p>
-<div id="33c011ce" class="cell" data-execution_count="7">
+<div id="c440c95b" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">beta <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.normal(size<span class="op" style="color: #5E5E5E;
@@ -755,7 +755,7 @@ beta: ('chain', 'draw', 'beta_dim_0', 'beta_dim_1')
 mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 </div>
-<div id="c9750f79" class="cell" data-execution_count="8">
+<div id="3f8e2bbd" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">model2_relations <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> inspect.get_model_relations(model2, model_kwargs<span class="op" style="color: #5E5E5E;
@@ -790,7 +790,7 @@ font-style: inherit;">=</span>y))</span>
 </div>
 </div>
 <p>This is tricky. Beta should have dims (chain, draw, features, Z), but how do we know the plate_sample dictionary will return the correct order? What happens if we reverse the plate order?</p>
-<div id="dad04ae7" class="cell" data-execution_count="9">
+<div id="7db52958" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="kw" style="color: #003B4F;
@@ -926,7 +926,7 @@ background-color: null;
 font-style: inherit;">=</span>y)</span></code></pre></div>
 </details>
 </div>
-<div id="bef11c5e" class="cell" data-execution_count="10">
+<div id="fbcb6103" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">model2_reversed_relations <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> inspect.get_model_relations(model2_reversed, model_kwargs<span class="op" style="color: #5E5E5E;
@@ -1008,7 +1008,7 @@ font-style: inherit;">"deterministic"</span>]</span>
 <span id="cb19-9"></span>
 <span id="cb19-10">    ...</span></code></pre></div>
 <p>I’m going to try and see what other information is in there by copying their approach of pulling a model trace. Some helper functions are hidden in the code-fold below</p>
-<div id="4da58ca0" class="cell" data-execution_count="11">
+<div id="24b9938e" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="im" style="color: #00769E;
@@ -1150,7 +1150,7 @@ font-weight: bold;
 font-style: inherit;">return</span> PytreeTrace(trace)</span></code></pre></div>
 </details>
 </div>
-<div id="7162a29c" class="cell" data-execution_count="12">
+<div id="76cbef81" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">trace <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> jax.eval_shape(partial(get_trace, model2, model_kwargs)).trace</span>
@@ -1175,7 +1175,7 @@ font-style: inherit;">'beta'</span>]</span></code></pre></div>
 </div>
 <p>This is perfect! For each site, we can see the plates they are nested within and the dimensions of those plates.</p>
 <p>We also see for the reversed model, the order of the plates and the dim values follow a consistent pattern.</p>
-<div id="33553f39" class="cell" data-execution_count="13">
+<div id="ffa27843" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">trace_reversed <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> jax.eval_shape(partial(get_trace, model2_reversed, model_kwargs)).trace</span>
@@ -1234,7 +1234,7 @@ background-color: null;
 font-style: inherit;">"deterministic"</span>]</span>
 <span id="cb25-5">}</span></code></pre></div>
 <p>The working implementation is below (but could probably be cleaned up)</p>
-<div id="144e2fb1" class="cell" data-execution_count="14">
+<div id="eccfa2b4" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -1461,7 +1461,7 @@ font-style: inherit;">1</span>, event_shape<span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">=</span>(n_groups,)))</span></code></pre></div>
 <p>We need to figure out how to have dims mapped for the ZeroSumNormal despite it not using a plate. The first test will be seeing what happens when we do nest it under a plate</p>
-<div id="0fac2f75" class="cell" data-execution_count="15">
+<div id="20a8047d" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -1544,7 +1544,7 @@ background-color: null;
 font-style: inherit;">=</span>(n_groups,)))</span></code></pre></div>
 <p>The main idea is that we could store information thats retrieavable in the trace, mimicking plates but without actually expanding the parameter shape like a plate would</p>
 <p>Below is an implementation and a quick test model to make sure it has the correct shape saved</p>
-<div id="915a4b4f" class="cell" data-execution_count="16">
+<div id="9329a11e" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> numpyro.primitives <span class="im" style="color: #00769E;
@@ -1728,7 +1728,7 @@ font-style: inherit;">'gamma'</span>].shape</span></code></pre></div>
 </div>
 </div>
 <p>As we can see above, we got the correct shape for gamma. Lets see if this works in a model</p>
-<div id="83f30682" class="cell" data-execution_count="17">
+<div id="b1485899" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -1934,7 +1934,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>This seemed to work! But are there any unintended consequences of having another “plate” in the <code>CondIndepStack</code>? Lets fit a second version of the model without the pseudo_plate and see if they return similar results</p>
-<div id="487c15d4" class="cell" data-execution_count="18">
+<div id="12ca6bc5" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">mcmc_zsn <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> run_inference(model3, random.PRNGKey(<span class="dv" style="color: #AD0000;
@@ -1960,7 +1960,7 @@ background-color: null;
 font-style: inherit;">False</span>)</span></code></pre></div>
 </div>
 <p>We’ll check that parameter estimation for the site is the same</p>
-<div id="9d3d4683" class="cell" data-execution_count="19">
+<div id="5c47784e" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
@@ -1988,13 +1988,13 @@ font-style: inherit;">"Gamma Estimates Across both Models"</span>)</span>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-22-numpyro-dim_labels_files/figure-html/cell-20-output-1.png" width="572" height="732" class="figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels_files/figure-html/cell-20-output-1.png" width="572" height="732" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>And more importantly, we’ll make sure this doesnt impact the final likelihood estimate</p>
-<div id="f642d3e4" class="cell" data-execution_count="20">
+<div id="7bf31a50" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">idata_zsn_pseudoplate <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> az.from_numpyro(mcmc_zsn_pseudoplate)</span>
@@ -2024,7 +2024,7 @@ font-style: inherit;">float</span>(delta.mean()))</span></code></pre></div>
 </div>
 </div>
 <p>I’m a bit shocked to say that this works so far. Next we need to make sure it works if we have a batch dimension</p>
-<div id="619c3cf5" class="cell" data-execution_count="21">
+<div id="4ce780ca" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -2069,7 +2069,7 @@ font-style: inherit;">'value'</span>]</span></code></pre></div>
 </div>
 </div>
 <p>Sadly this didnt quite work - it seems like the dim-handling isn’t working as we want it to because the batch shape is (3,1) instead of just (3,) - this is because of the way we aranged the plates, we put the batches in the position of dim=-2. Lets look at the trace</p>
-<div id="fe27b205" class="cell" data-execution_count="22">
+<div id="82e6bb6e" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1">trace[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'gamma'</span>]</span></code></pre></div>
@@ -2092,7 +2092,7 @@ font-style: inherit;">'gamma'</span>]</span></code></pre></div>
 <p>Taking a step back, it’s clear I thought about this wrong - the Conditional Indepdence Stack is for batch dimensions that are conditionally independent, and by putting our pseudoplate in there, we’re messing with how the batch dimensions are arranged.</p>
 <p>This approach might also be unstable over future versions its a bit like working with a private method - I’m not sure that consistency is guaranteed over minor package releases. It’s also hard to follow exactly how the conditional indepence stack is used throughout the code, and if that will have any unexpected consequences.</p>
 <p>I’m going to try something new - lets make a new primitive that creates a <code>dep_stack</code> and we’ll put the pseudo plates in there and see if it fixes things</p>
-<div id="b83efac6" class="cell" data-execution_count="23">
+<div id="324cb509" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> typing <span class="im" style="color: #00769E;
@@ -2637,7 +2637,7 @@ font-style: inherit;">'value'</span>]</span></code></pre></div>
 </div>
 </div>
 <p>Perfect this works, we just need to combine our two plate stacks!</p>
-<div id="60522741" class="cell" data-execution_count="24">
+<div id="d9567cb6" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1">trace[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'gamma'</span>][<span class="st" style="color: #20794D;
@@ -2658,7 +2658,7 @@ font-style: inherit;">'dep_stack'</span>]</span></code></pre></div>
 <section id="the-resulting-implementation" class="level1">
 <h1>The resulting implementation</h1>
 <p>Finally, lets bring this altogether. In the code-fold below is all of the needed functions in one place</p>
-<div id="13df5294" class="cell" data-execution_count="25">
+<div id="9e5d19c1" class="cell" data-execution_count="25">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><span class="im" style="color: #00769E;
@@ -3481,7 +3481,7 @@ font-style: inherit;">:"</span>, idata.posterior[var].dims )</span></code></pre>
 </details>
 </div>
 <p>And the simulation code is underneath the following code-fold</p>
-<div id="b0794bd7" class="cell" data-execution_count="26">
+<div id="aff2dbb1" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb50" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><span class="co" style="color: #5E5E5E;
@@ -3574,7 +3574,7 @@ font-style: inherit;"># y = rng.normal(mu, sigma)</span></span></code></pre></di
 </details>
 </div>
 <p>And finally here’s how we’d actually use all of these tools</p>
-<div id="8f6ef257" class="cell" data-execution_count="27">
+<div id="dc5ed1bd" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb51" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -3882,7 +3882,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>We can see above that the dims are all properly labelled, and below we can see them properly mapped to the coords provided</p>
-<div id="87a88881" class="cell" data-execution_count="28">
+<div id="a2e5e736" class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb53" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1">idata.posterior[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'gamma'</span>].coords[<span class="st" style="color: #20794D;
@@ -4263,9 +4263,9 @@ dl.xr-attrs {
 array(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'],
       dtype='&lt;U3')
 Coordinates:
-  * Z        (Z) &lt;U3 120B 'X1' 'X2' 'X3' 'X4' 'X5' 'X6' 'X7' 'X8' 'X9' 'X10'</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.DataArray</div><div class="xr-array-name">'Z'</div><ul class="xr-dim-list"><li><span class="xr-has-index">Z</span>: 10</li></ul></div><ul class="xr-sections"><li class="xr-section-item"><div class="xr-array-wrap"><input id="section-b55b73c9-d0fa-4fb7-be5a-b98bbb9dc2c0" class="xr-array-in" type="checkbox" checked=""><label for="section-b55b73c9-d0fa-4fb7-be5a-b98bbb9dc2c0" title="Show/hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-array-preview xr-preview"><span>'X1' 'X2' 'X3' 'X4' 'X5' 'X6' 'X7' 'X8' 'X9' 'X10'</span></div><div class="xr-array-data"><pre>array(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'],
-      dtype='&lt;U3')</pre></div></div></li><li class="xr-section-item"><input id="section-1b646b9d-970e-4d81-a68a-2881e7a8d49b" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-1b646b9d-970e-4d81-a68a-2881e7a8d49b" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">Z</span></div><div class="xr-var-dims">(Z)</div><div class="xr-var-dtype">&lt;U3</div><div class="xr-var-preview xr-preview">'X1' 'X2' 'X3' ... 'X8' 'X9' 'X10'</div><input id="attrs-b0234922-187d-499d-a030-e6f3ed7762c7" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-b0234922-187d-499d-a030-e6f3ed7762c7" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-e90e6ac1-2025-4d5a-9a4f-e9ca27388471" class="xr-var-data-in" type="checkbox"><label for="data-e90e6ac1-2025-4d5a-9a4f-e9ca27388471" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'],
-      dtype='&lt;U3')</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-517c89ff-f945-4981-9145-d80468533b21" class="xr-section-summary-in" type="checkbox"><label for="section-517c89ff-f945-4981-9145-d80468533b21" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>Z</div></div><div class="xr-index-preview">PandasIndex</div><input type="checkbox" disabled=""><label></label><input id="index-a276a693-3e44-446f-b9e7-32a67d2c8edd" class="xr-index-data-in" type="checkbox"><label for="index-a276a693-3e44-446f-b9e7-32a67d2c8edd" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'], dtype='object', name='Z'))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-95bc72a1-7450-4117-ac1d-2ef97ba7457a" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-95bc72a1-7450-4117-ac1d-2ef97ba7457a" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
+  * Z        (Z) &lt;U3 120B 'X1' 'X2' 'X3' 'X4' 'X5' 'X6' 'X7' 'X8' 'X9' 'X10'</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.DataArray</div><div class="xr-array-name">'Z'</div><ul class="xr-dim-list"><li><span class="xr-has-index">Z</span>: 10</li></ul></div><ul class="xr-sections"><li class="xr-section-item"><div class="xr-array-wrap"><input id="section-d673e23f-8969-4bba-a9c9-819997ddd25b" class="xr-array-in" type="checkbox" checked=""><label for="section-d673e23f-8969-4bba-a9c9-819997ddd25b" title="Show/hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-array-preview xr-preview"><span>'X1' 'X2' 'X3' 'X4' 'X5' 'X6' 'X7' 'X8' 'X9' 'X10'</span></div><div class="xr-array-data"><pre>array(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'],
+      dtype='&lt;U3')</pre></div></div></li><li class="xr-section-item"><input id="section-c47fc7e3-37ad-4331-8145-fa193bc8c41b" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-c47fc7e3-37ad-4331-8145-fa193bc8c41b" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">Z</span></div><div class="xr-var-dims">(Z)</div><div class="xr-var-dtype">&lt;U3</div><div class="xr-var-preview xr-preview">'X1' 'X2' 'X3' ... 'X8' 'X9' 'X10'</div><input id="attrs-16273181-a42a-4bce-a704-47c365207719" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-16273181-a42a-4bce-a704-47c365207719" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-eae5cd3f-dad0-4c8f-b9f0-ae02590d8172" class="xr-var-data-in" type="checkbox"><label for="data-eae5cd3f-dad0-4c8f-b9f0-ae02590d8172" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'],
+      dtype='&lt;U3')</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-5147fda7-3a73-4981-83d0-814e073a5eb3" class="xr-section-summary-in" type="checkbox"><label for="section-5147fda7-3a73-4981-83d0-814e073a5eb3" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>Z</div></div><div class="xr-index-preview">PandasIndex</div><input type="checkbox" disabled=""><label></label><input id="index-0ee3ae32-ec48-4bdd-b0b9-b2b9eb906e50" class="xr-index-data-in" type="checkbox"><label for="index-0ee3ae32-ec48-4bdd-b0b9-b2b9eb906e50" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index(['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', 'X9', 'X10'], dtype='object', name='Z'))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-43f069dd-6e4a-4a7b-9b5b-b297efbd5129" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-43f069dd-6e4a-4a7b-9b5b-b297efbd5129" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
 </div>
 </div>
 </section>
@@ -4275,7 +4275,7 @@ Coordinates:
 <p>Some things that still need to be explored are:</p>
 <ol type="1">
 <li>Will this still work when there’s scoping with sub-models? Or integration with other libraries like flax?</li>
-<li>What changes need to be made to get this app0proach extended to SVI?</li>
+<li>What changes need to be made to get this approach extended to SVI?</li>
 </ol>
 
 
@@ -4285,7 +4285,7 @@ Coordinates:
   <category>numpyro</category>
   <category>tensors</category>
   <category>arviz</category>
-  <guid>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-22-numpyro-dim_labels.html</guid>
+  <guid>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html</guid>
   <pubDate>Sun, 23 Feb 2025 05:00:00 GMT</pubDate>
 </item>
 <item>
