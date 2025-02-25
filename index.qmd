@@ -47,7 +47,7 @@ listing:
   sort-ui: true
   filter-ui: true
   fields: [date, title, reading-time, description, categories, image]
-  image-placeholder: "assets/img/profile.jpg"
+  image-placeholder: "assets/img/placeholder.png"
   feed: true
 page-layout: full
 title-block-banner: false
