@@ -4984,7 +4984,7 @@ font-style: inherit;">1</span>]</span>
 <section id="part-1-looking-at-the-data" class="level1">
 <h1>Part 1: Looking at the data</h1>
 <hr>
-<div id="ca0266d1" class="cell" data-execution_count="1">
+<div id="f9e75a42" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -5183,7 +5183,7 @@ font-style: inherit;">10000</span></span></code></pre></div>
 <li><code>stock</code> showing available stock levels for that product over time</li>
 <li><code>product_purchases</code> showing how much was bought for each product and when</li>
 </ul>
-<div id="562941b7" class="cell" data-execution_count="2">
+<div id="3c1b1bf5" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">rentals.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
@@ -5241,7 +5241,7 @@ font-style: inherit;">10000</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="07631a4f" class="cell" data-execution_count="3">
+<div id="59fd1cde" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">stock.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
@@ -5299,7 +5299,7 @@ font-style: inherit;">10000</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="558f27c9" class="cell" data-execution_count="4">
+<div id="903973ad" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">purchases.head()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
@@ -5360,7 +5360,7 @@ font-style: inherit;">10000</span></span></code></pre></div>
 <section id="plotting-product-rentals" class="level2">
 <h2 class="anchored" data-anchor-id="plotting-product-rentals">Plotting Product Rentals</h2>
 <p>Lets convert the rental data to time series data and see what it looks like</p>
-<div id="3d9b5be5" class="cell" data-execution_count="5">
+<div id="d8e7f891" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
@@ -5497,7 +5497,7 @@ font-style: inherit;">None</span>)</span>
 </div>
 <p>It looks like there are typically 0-15 rentals per day for a given product, and there are typically 5000 rentals total each day.</p>
 <p>Looking at the distribution of total rentals across products, we see that it is mildly long-tailed.</p>
-<div id="90c39e00" class="cell" data-execution_count="6">
+<div id="e60e7975" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -5560,7 +5560,7 @@ font-style: inherit;">=</span>ax )</span>
 </div>
 </div>
 <p>We can also see that stockouts are extremely prevalent - on a given day, up to 85% of products could be stocked out. A recent reorder in June helped a little but not enough. How can we reduce the stockout problem and reorder accordingly?</p>
-<div id="4bb8405b" class="cell" data-execution_count="7">
+<div id="4392506c" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -5608,7 +5608,7 @@ font-style: inherit;">'Percent of products with a Stockout each day'</span>))</s
 <section id="looking-at-a-single-product" class="level2">
 <h2 class="anchored" data-anchor-id="looking-at-a-single-product">Looking at a single product</h2>
 <p>We’re going to start with a single product and see if we can come up with a system that informs us how many units we should reorder.</p>
-<div id="7eedeb63" class="cell" data-execution_count="8">
+<div id="fa03d292" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">j<span class="op" style="color: #5E5E5E;
@@ -5769,7 +5769,7 @@ font-style: inherit;">1</span>)</span>
 <p>As shown above, just looking at a time series of rentals each day is a bit confusing - there are seemingly random spikes in demand for just this product that dont seem to line up with spikes in total demand across products.</p>
 <p>When we look at the stockout rate across all products over time, it looks like the stockout rate drops at the same time demand increases for Product ID 165.</p>
 <p>Let’s join stock data to rental data and see whats happening for this product.</p>
-<div id="994345ca" class="cell" data-execution_count="9">
+<div id="ad40e497" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">daily_rentals <span class="op" style="color: #5E5E5E;
@@ -5918,7 +5918,7 @@ font-style: inherit;">'</span>]].head()</span></code></pre></div>
 </div>
 </div>
 <p>Now that we have this data joined, we can plot the rental data with corresponding stock data.</p>
-<div id="38487025" class="cell" data-execution_count="10">
+<div id="5572e140" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">ax <span class="op" style="color: #5E5E5E;
@@ -6010,7 +6010,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 <section id="preparing-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="preparing-the-data">Preparing the data</h3>
 <p>It’s easy to see that there are plenty of rentals that are still out with customers and haven’t been returned yet. For these unreturned rentals, we can’t calculate an accurate rental duration.</p>
-<div id="29b7babe" class="cell" data-execution_count="11">
+<div id="ef60da22" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">rentals.sample(<span class="dv" style="color: #AD0000;
@@ -6112,7 +6112,7 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 </div>
 <p>It’s important to remember that even though these items aren’t returned, some have been rented out for 30, 40, 50 days, and it is important information to know that some items have been out for at least that long. A good example is that if it is possible for some items to be rented out for 200 days, but we’ve only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.</p>
 <p>What we can instead do is calculate the rental duration to date and then use a survival model to properly incorporate those unreturned items.</p>
-<div id="8a691a52" class="cell" data-execution_count="12">
+<div id="53bef3da" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">curr_date <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.date.<span class="bu" style="color: null;
@@ -6168,48 +6168,48 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">435530</td>
-<td>c645b14a-e90c-49e7-9fc3-bbc0ca685b3f</td>
-<td>2022-06-02</td>
-<td>2022-06-17</td>
-<td>product_865</td>
-<td>15</td>
+<td data-quarto-table-cell-role="th">206163</td>
+<td>b2da4df7-066b-4a2d-940b-0117535b7c90</td>
+<td>2022-05-31</td>
+<td>2022-06-05</td>
+<td>product_395</td>
+<td>5</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">376184</td>
-<td>efbcb28a-14bc-4a7c-b8d7-60a5b57a160a</td>
-<td>2022-04-12</td>
-<td>2022-04-21</td>
-<td>product_747</td>
-<td>9</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">441054</td>
-<td>e019412c-9930-46f9-92d7-15b0f6eac6a1</td>
-<td>2022-06-13</td>
-<td>2022-06-26</td>
-<td>product_876</td>
+<td data-quarto-table-cell-role="th">167082</td>
+<td>5ed20edf-fa98-4d6f-8b02-a558db5cb19f</td>
+<td>2022-04-29</td>
+<td>2022-05-12</td>
+<td>product_321</td>
 <td>13</td>
 <td>1</td>
 </tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">159965</td>
+<td>765bdbb8-36df-46ac-ab0b-43b7a880e7d0</td>
+<td>2022-06-02</td>
+<td>2022-06-09</td>
+<td>product_306</td>
+<td>7</td>
+<td>1</td>
+</tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">159011</td>
-<td>09a4f7d4-f377-4c1b-8bec-da017a3b25c6</td>
-<td>2022-04-21</td>
-<td>2022-04-30</td>
-<td>product_305</td>
+<td data-quarto-table-cell-role="th">90327</td>
+<td>06bb1c49-d794-470b-ba84-8b5e01bd32cd</td>
+<td>2022-05-16</td>
+<td>2022-05-25</td>
+<td>product_178</td>
 <td>9</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">240968</td>
-<td>9b3e1c3e-cc04-461a-93a5-5eedc52745c8</td>
-<td>2022-06-21</td>
+<td data-quarto-table-cell-role="th">437958</td>
+<td>dfd13840-3011-46e0-9b4c-b88820366c0c</td>
+<td>2022-06-27</td>
 <td>NaT</td>
-<td>product_470</td>
-<td>18</td>
+<td>product_869</td>
+<td>12</td>
 <td>0</td>
 </tr>
 </tbody>
@@ -6228,7 +6228,7 @@ font-style: inherit;">5</span>)</span></code></pre></div>
 </ul>
 <p>For simplicity, we’re assuming the data is lognormally distributed (and we simulated the data that way). In reality, it is best to plot distributions of your data and decide for yourself.</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Csmall%7B%0A%5Cdisplaylines%7B%0A%5Ctext%7Brental%20duration%7D%20%5Csim%20%5Ctext%7BLognormal%7D(%5Ctheta,%20%5Csigma)%0A%7D%7D%0A"></p>
-<div id="ca17d21b" class="cell" data-execution_count="13">
+<div id="a9a58d90" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -6315,7 +6315,7 @@ background-color: null;
 font-style: inherit;">=</span>T)</span></code></pre></div>
 </div>
 <p>We can now use numpyro to fit a model and estimate the typical rental duration.</p>
-<div id="0d7061dd" class="cell" data-execution_count="14">
+<div id="e10b865b" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">E <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rentals.query(<span class="ss" style="color: #20794D;
@@ -6381,7 +6381,7 @@ background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 </div>
 <p>Remember, this is simulated data so we know the truth and can use that as a way to test this is working - a correctly specified model should recover the the true parameter values.</p>
-<div id="a46d985a" class="cell" data-execution_count="15">
+<div id="74f29a69" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -6482,7 +6482,7 @@ font-style: inherit;">1</span>].legend()</span>
 </div>
 </div>
 </div>
-<div id="00c5f78a" class="cell" data-execution_count="16">
+<div id="6b88fe29" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -6577,7 +6577,7 @@ font-style: inherit;">'Rental Duration'</span>)</span>
 <h3 class="anchored" data-anchor-id="looking-at-the-demand-data">Looking at the demand data</h3>
 <p>The rental demand model is going to start simple for this single-product case - we’ll just estimate a poisson distribuion.</p>
 <p>Taking a look at the data again, it is clear that demand is constrained, or censored, by stockouts here.</p>
-<div id="42fa0431" class="cell" data-execution_count="17">
+<div id="5b410352" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">ax <span class="op" style="color: #5E5E5E;
@@ -6632,7 +6632,7 @@ font-style: inherit;">'Reorder: new units added to inventory'</span>)</span>
 </div>
 </div>
 <p>To confirm this is the case, we can take a look at the typical number of rentals when there is a stockout vs.&nbsp;when there isn’t - observed rentals are lower on days when there are stockouts - the sample size of stocked out periods is also smaller.</p>
-<div id="7ef15358" class="cell" data-execution_count="18">
+<div id="29e13d70" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">(</span>
@@ -6700,7 +6700,7 @@ font-style: inherit;">2</span>)</span>
 <h3 class="anchored" data-anchor-id="defining-and-fitting-the-model-1">Defining and fitting the model</h3>
 <p>We can leverage survival analysis again to estimate demand. We define a censored poisson model below that assumes demand is constant over time and if there’s a stockout, the model thinks that rentals might’ve been higher than observed if there was more stock, otherwise if there’s no stockout it thinks that demand is the number of rentals that day (plus some noise of course)</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Csmall%7B%0A%5Cdisplaylines%7B%0A%5Ctext%7Blog%7D(%5Clambda)%20%5Csim%20%5Calpha%20+%20%5Cbeta%20X%20%5C%5C%0A%5Ctext%7Brentals%7D%20=%20%5Ctext%7Bmin%7D(%5Ctext%7Bstock%7D,%20%5Ctext%7BPoisson%7D(%5Clambda))%0A%7D%7D%0A"></p>
-<div id="89b3b9eb" class="cell" data-execution_count="19">
+<div id="88c334af" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -6832,7 +6832,7 @@ background-color: null;
 font-style: inherit;">=</span>y)</span></code></pre></div>
 </div>
 <p>We can then fit this model with numpyro below:</p>
-<div id="a3b9b300" class="cell" data-execution_count="20">
+<div id="285f7c59" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> daily_rentals.loc[<span class="ss" style="color: #20794D;
@@ -6907,7 +6907,7 @@ background-color: null;
 font-style: inherit;">=</span> mcmc.get_samples()</span></code></pre></div>
 </div>
 <p>We can check the estimated rental rate parameter, <img src="https://latex.codecogs.com/png.latex?%5Clambda">, against the actual value that we simulated and find that our model does have coverage over the ground truth.</p>
-<div id="aa19801e" class="cell" data-execution_count="21">
+<div id="a0e74b31" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">params <span class="op" style="color: #5E5E5E;
@@ -7011,7 +7011,7 @@ font-style: inherit;">10</span>)</span>
 </div>
 </div>
 <p>Note that this is the base level of demand for the product - as competing products stock out, we expect <img src="https://latex.codecogs.com/png.latex?%5Clambda"> to increase. Currently, that is represented by <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> in the model above, which is the relationship of the products demand to global stockout rate. As global stockout rate climbs, <img src="https://latex.codecogs.com/png.latex?%5Clambda"> increases. We can roughly estimate lambda at differen’t stockout levels.</p>
-<div id="8347da1f" class="cell" data-execution_count="22">
+<div id="42f3eb29" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="co" style="color: #5E5E5E;
@@ -7668,7 +7668,7 @@ font-style: inherit;">return</span> rentals_as_arr</span></code></pre></div>
 <section id="simulating-the-impact-of-reordering-more-units" class="level2">
 <h2 class="anchored" data-anchor-id="simulating-the-impact-of-reordering-more-units">Simulating the impact of reordering more units</h2>
 <p>There are some helper functions in the code block below that we’ll use. Feel free to skip past these. They’re used to transform data from long form into a wide form where time periods are the column axis and each product is an row.</p>
-<div id="f6a02109" class="cell" data-execution_count="23">
+<div id="c1d00363" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><span class="im" style="color: #00769E;
@@ -7917,7 +7917,7 @@ font-style: inherit;">*</span>reorder_amount</span></code></pre></div>
 </details>
 </div>
 <p>The convenience function below combines all of the helper functions above to transform rental and stock data into a usable form for the model.</p>
-<div id="43864f0d" class="cell" data-execution_count="24">
+<div id="7bdf99e1" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># set initial state to last observed state in dataset</span></span>
@@ -7982,7 +7982,7 @@ background-color: null;
 font-style: inherit;">'"</span>))</span></code></pre></div>
 </div>
 <p>We can now simulate what might happen if we re-stocked different amounts.</p>
-<div id="2920d5fc" class="cell" data-execution_count="25">
+<div id="89d5be9b" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Try adding new units at time T=100</span></span>
@@ -8074,7 +8074,7 @@ font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>The code above runs a full series of 250 simulations. Ideally in the future, the lambda parameter would be a forecast as opposed to just using the latest rental rate, but that’s a problem for later.</p>
 <p>Let’s look at one potential outcome of the simulation. You can try re-running this multiple times to see a range of different outcomes that are all possible under this reorder policy. Most of these end up still being stocked out.</p>
-<div id="6707b871" class="cell" data-execution_count="26">
+<div id="b3b6abe3" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">sample_idx <span class="op" style="color: #5E5E5E;
@@ -8177,7 +8177,7 @@ font-style: inherit;">'Reorder'</span>)</span>
 </div>
 </div>
 <p>We can summarize all of these simulations with uncertainty intervals.</p>
-<div id="0c4e437c" class="cell" data-execution_count="27">
+<div id="e4fdd0e4" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -8475,7 +8475,7 @@ font-style: inherit;">"preview_image.png"</span>)</span>
 </div>
 <p>This view makes it a little more obvious that there are probably stockouts happening, but it doesn’t tell us for sure. We can actually calculate the stockout rate over time by averaging over all of the existing simulations and counting the number of simulations that have 0 stock each day.</p>
 <p>We could also go back and update the simulator to log things like <em>“missed rentals due to stockouts”</em> or other quantities that might be helpful.</p>
-<div id="3e742df1" class="cell" data-execution_count="28">
+<div id="edbccc28" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">fig, ax <span class="op" style="color: #5E5E5E;
@@ -8548,7 +8548,7 @@ font-style: inherit;">0</span>))</span>
 </div>
 </div>
 <p>It appears that the current reorder guidance isn’t enough - so what should reorder? Lets try and estimate what would happen if we reordered more.</p>
-<div id="329b0fa2" class="cell" data-execution_count="29">
+<div id="e515ff09" class="cell" data-execution_count="29">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="co" style="color: #5E5E5E;
@@ -8928,7 +8928,7 @@ font-style: inherit;">14</span>)</span>
 </div>
 <p>Clearly this is now way too much stock and we’d be over-ordering. So how can we identify the right amount to stock so that we don’t have stockouts but we don’t over-order?</p>
 <p>We could just simulate repeatedly with different stock reorder inputs like below.</p>
-<div id="e0788de8" class="cell" data-execution_count="30">
+<div id="16fe380e" class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -9136,7 +9136,7 @@ font-style: inherit;">'Estimated Stockout Rate as we reorder more units'</span>)
 </div>
 <p>It’s clear that right around 300 units is when the probability of a stockout gets really low. We could speed this up if we wanted by building an optimizer. One easy way might be to build a binary search algorithm that gets you the minimum amount of stock without having any stockouts.</p>
 <p>That’s an exercise for another time. Let’s reorder the recommended 300 units and see what happens.</p>
-<div id="7e1fd313" class="cell" data-execution_count="31">
+<div id="4e39600d" class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">init_state <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> get_current_state(rentals<span class="op" style="color: #5E5E5E;
@@ -9194,7 +9194,7 @@ background-color: null;
 font-style: inherit;">200</span>)</span></code></pre></div>
 </div>
 <p>Notice that this time we’re not loading in any parameters into the <code>Predictive</code> call. That’s because we’re using the true data-generating process to simulate what happens this time. We’re basically observing one possible future in the original fake world we created.</p>
-<div id="dfb8361a" class="cell" data-execution_count="32">
+<div id="c5b84155" class="cell" data-execution_count="32">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">fig, axes <span class="op" style="color: #5E5E5E;
@@ -9395,7 +9395,7 @@ font-style: inherit;">0.025</span>)</span></code></pre></div>
 <section id="can-we-do-something-more-simple" class="level2">
 <h2 class="anchored" data-anchor-id="can-we-do-something-more-simple">Can we do something more simple?</h2>
 <p>Was all of this really necessary? Let’s see for ourselves by taking a naive approach. We’ll fit a basic regression where we control for the global stockout rate and dummy-encode stockouts - meant to represent a basic tabular data science approach.</p>
-<div id="c5df057a" class="cell" data-execution_count="33">
+<div id="05953a6e" class="cell" data-execution_count="33">
 <div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> statsmodels.api <span class="im" style="color: #00769E;
@@ -9444,7 +9444,7 @@ font-style: inherit;">0</span>)</span>
 background-color: null;
 font-style: inherit;">=</span> model.predict(X)</span></code></pre></div>
 </div>
-<div id="1a89ad21" class="cell" data-execution_count="34">
+<div id="5972282a" class="cell" data-execution_count="34">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">naive_rental_rate_fcast <span class="op" style="color: #5E5E5E;
@@ -9549,7 +9549,7 @@ font-style: inherit;">10</span>)</span>
 </div>
 </div>
 <p>We can see that this approach leads to a recommendation of 200 units reordered. Is that reasonable? Let’s see what happens.</p>
-<div id="d3360042" class="cell" data-execution_count="35">
+<div id="885de5a5" class="cell" data-execution_count="35">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">init_state <span class="op" style="color: #5E5E5E;
