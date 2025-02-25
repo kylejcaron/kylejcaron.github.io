@@ -2,6 +2,7 @@
 layout: post
 title:  "Introduction to Surrogate Indexes"
 date: "2023-07-09"
+image: "../../assets/img/placeholder.png"
 categories:
  - experimentation
  - Causal Inference

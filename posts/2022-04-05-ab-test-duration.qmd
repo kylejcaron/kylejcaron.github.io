@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "How long should you run an A/B test for?"
+image: "../assets/img/placeholder.png"
 date: "2022-04-15"
 ---
 

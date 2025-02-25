@@ -25,7 +25,12 @@ page-layout: full
 
 ::: {.g-col-6}
 # About Me
-I'm a self-taught data scientist interested in causal inference and bayesian methods. I mainly use this blog to practice what I learn, but hopefully others find this helpful as well! 
+I'm a data scientist interested in causal inference and bayesian methods. I mainly use this blog to practice what I learn, but hopefully others find this helpful as well! 
+
+
+For a work sample, please refer to [this post](posts/censored_demand/2024-02-06-censored-demand.html)
+
+
 :::
 
 :::
@@ -41,7 +46,8 @@ listing:
   categories: false
   sort-ui: true
   filter-ui: true
-  fields: [date, title, reading-time, description, categories]
+  fields: [date, title, reading-time, description, categories, image]
+  image-placeholder: "assets/img/profile.jpg"
   feed: true
 page-layout: full
 title-block-banner: false

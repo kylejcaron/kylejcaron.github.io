@@ -2,15 +2,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def plot_rentals(daily_rentals, daily_stock, show_stock=True, show_stockouts=False):
+def plot_rentals(daily_rentals, daily_stock, show_stock=True, show_stockouts=False, figsize=None):
 
     if show_stockouts:
         fig, axes = plt.subplots(2,1, 
-                    gridspec_kw= dict(width_ratios=[15], height_ratios=[10,1]), 
-                    figsize=(12,5),
+                    gridspec_kw= dict(width_ratios=[15], height_ratios=[10,1]),
+                    figsize=figsize,
                     sharex=True)
     else:
-        fig, axes = plt.subplots(1,1,figsize=(12,5))
+        fig, axes = plt.subplots(1,1,figsize=figsize)
     
     #t = np.arange( len(daily_stock))
     t = daily_rentals.index
