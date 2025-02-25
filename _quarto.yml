@@ -15,7 +15,9 @@ theme: default
 highlight-style: atom-one-light
 format:
   html:
-    css: theme.scss
+    css: 
+      - theme.scss
+      - styles.css
     highlight-style: atom-one-light
 
 
