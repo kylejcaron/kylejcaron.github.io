@@ -1,5 +1,18 @@
 /*-- scss:defaults --*/
 $primary:  #06436e !default;
-$font-family-base:  'Source Sans Pro',  'Lato', 'Merriweather', 'Roboto Regular', 'Cabin Regular' !default;
-$body-color: $gray-700 !default;
+// $font-family-base:  'Source Sans Pro',  'Lato', 'Merriweather', 'Roboto Regular', 'Cabin Regular' !default;
+$body-color: #5a5a5a !default;
 $headings-font-family:  'Prata', 'Roboto', 'Playfair Display', 'Montserrat'    !default;
+
+// color settings
+$headings-color: #5b77c0;
+$link-color: #5BAAC0;
+$link-hover: #4170aa;
+$link-visit: #96e4f3;
+$gray-projects: #363a3c;
+
+.column-body-custom {
+    grid-column: 6;
+    // font-family: $font-family-base;
+    color: $gray-projects;
+  }
