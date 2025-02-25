@@ -11,8 +11,6 @@ website:
         href: blog.qmd
       - icon: github
         href: https://github.com/kylejcaron
-      - icon: twitter
-        href: https://twitter.com
 theme: default 
 highlight-style: atom-one-light
 format:
