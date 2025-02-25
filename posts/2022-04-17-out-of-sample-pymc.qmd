@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Making out of sample predictions with PyMC"
+image: "../assets/img/placeholder.png"
 date: "2022-04-17"
 ---
 

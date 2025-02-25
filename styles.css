@@ -1,1 +1,12 @@
 /* css styles */
+
+.figure {
+    max-width: 100%;  /* Adjust this value as needed */
+    margin: 0 auto;    /* Centers the figure */
+    width: 100%;       /* Ensures it scales down on smaller screens */
+}
+
+.figure-img {
+    max-width: 100%;   /* Ensures image does not exceed figure width */
+    height: auto;      /* Keeps aspect ratio */
+}

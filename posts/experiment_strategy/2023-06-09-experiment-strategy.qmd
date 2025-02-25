@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Desiging an Experimentation Strategy"
+image: "../../assets/img/placeholder.png"
 date: "2023-06-12"
 categories:
  - experimentation

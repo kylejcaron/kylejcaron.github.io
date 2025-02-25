@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Why do we need A/B tests? The Potential Outcomes Model"
+image: "../assets/img/placeholder.png"
 date: "2022-09-17"
 categories:
  - experimentation

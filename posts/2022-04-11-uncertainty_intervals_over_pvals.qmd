@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Uncertainty Intervals or p-values?"
+image: "../assets/img/placeholder.png"
 date: "2022-04-11"
 ---
 

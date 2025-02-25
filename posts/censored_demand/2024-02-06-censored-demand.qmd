@@ -2,6 +2,7 @@
 layout: post
 title:  "Modeling Anything With First Principles: Demand under extreme stockouts"
 date: "2023-07-09"
+image: "./preview_image.png"
 categories:
  - Time Series
  - Demand Modeling
@@ -53,12 +54,14 @@ warnings.filterwarnings("ignore")
 # Plot styling
 plt.style.use("arviz-darkgrid")
 plt.rcParams.update({
-    'axes.labelsize': 14,
-    'axes.titlesize':22, 
-    'font.size': 14, 
-    'legend.fontsize': 14, 
-    'xtick.labelsize': 14, 
-    'ytick.labelsize': 14
+    'axes.labelsize': 10,
+    'axes.titlesize':16, 
+    'font.size': 10, 
+    'legend.fontsize': 10, 
+    'xtick.labelsize': 10, 
+    'ytick.labelsize': 10,
+    'figure.figsize': (8, 4),
+
 })
 # Global vars
 SEED = 100
@@ -72,8 +75,7 @@ stock = (pd.read_csv(f"{BASE_URL}/data/stock_levels.csv")
          .assign(date=lambda d: pd.to_datetime(d.date))
         )
 purchases = (pd.read_csv(f"{BASE_URL}/data/product_purchases.csv")
-           .assign(date=lambda d: pd.to_datetime(d.date))
-          )
+           .assign(date=lambda d: pd.to_datetime(d.date)))
 J_PRODUCTS, MAX_PERIODS = 1000, 10000
 ```
 
@@ -110,7 +112,7 @@ def rental_events_to_ts(rentals, freq='D'):
 
 daily_rentals = rentals.pipe(rental_events_to_ts, freq='D')
 
-fig, ax = plt.subplots(2,1,figsize=(12,7),sharex=True)
+fig, ax = plt.subplots(2,1,sharex=True)
 
 ax[0].set(ylabel='Total Daily Rentals', xlabel='Date', title='Total Daily Rentals')
 daily_rentals.groupby("date").sum().rentals.plot(ax=ax[0])
@@ -142,7 +144,7 @@ We can also see that stockouts are extremely prevalent - on a given day, up to 8
 ```{python}
 #| code-fold: true
 
-fig, ax = plt.subplots(1,1,figsize=(12,5))
+fig, ax = plt.subplots(1,1)
 (stock
  .assign(stockout_rate=lambda d: d.ending_units==0)
  .groupby("date").stockout_rate.mean()
@@ -172,7 +174,7 @@ fig, ax = plt.subplot_mosaic(
     AAA
     BBB
     CCC
-    """,figsize=(12,8),sharex=True)
+    """,sharex=True)
 
 ax['A'].set_title(f"Daily Rentals for Product ID {j}")
 daily_rentals.loc[f'product_{j}'].plot(ax=ax['A'], color='k',ylabel='Rentals')
@@ -350,7 +352,7 @@ Remember, this is simulated data so we know the truth and can use that as a way 
 #| code-fold: true
 
 
-fig, ax = plt.subplots(1,2,figsize=(12,5))
+fig, ax = plt.subplots(1,2)
 sns.histplot( idata['theta'],ax=ax[0] )
 ax[0].axvline(2.9,color='k', ls='--', label='Ground Truth')
 ax[0].set(title="Theta Estimate", xlabel='Value')
@@ -804,7 +806,7 @@ daily_rentals_j = pd.concat((historical_data.rentals, sim_data))
 daily_stock_j = np.concatenate((historical_data.starting_units.values, results['starting_stock'][sample_idx,:].squeeze(-1)))
 
 ax = plot_rentals(daily_rentals_j, daily_stock_j)
-ax.set(title=f'Simulated Stock Levels after Reordering {reorder_amount} units')
+ax.set(title=f'Simulated Stock Levels\nafter Reordering {reorder_amount} units')
 ax.axvline(daily_rentals_j.index.values[100], color='k', ls='--', label='Reorder')
 ax.legend()
 plt.show()
@@ -816,8 +818,8 @@ We can summarize all of these simulations with uncertainty intervals.
 #| code-fold: true
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
-        sharex=True, 
-        figsize=(12,6))
+        sharex=True)
+    
 
 # Plot simulations
 daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
@@ -826,7 +828,7 @@ axes[0].plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', la
 # axes[0].axvline(dates[60], color='C0',ls='--', label='Reorder (40 units)')
 axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
 axes[0].set(
-    title=f'Simulated Stock Levels: what would happen after reordering {reorder_amount} units?',
+    title=f'Simulated Stock Levels:\nwhat would happen after reordering {reorder_amount} units?',
     ylabel='Stock Levels',
     xlabel=''
 )
@@ -846,7 +848,7 @@ axes[-1].vlines(historical_stockouts,0,1, color='r', lw=5)
 axes[-1].vlines(sim_stockouts,0,1, color='r', lw=5)
 axes[-1].set_yticks([])
 axes[-1].annotate("Stockouts", xy=(0.01, 0.2),xycoords='axes fraction', fontsize=14)
-
+plt.savefig("preview_image.png")
 plt.show()
 ```
 
@@ -858,7 +860,7 @@ We could also go back and update the simulator to log things like *"missed renta
 ```{python}
 #| code-fold: true
 
-fig, ax = plt.subplots(1,1,figsize=(12,5))
+fig, ax = plt.subplots(1,1)
 p_stockout = (daily_ending_stock_sim==0).mean(0)
 ax.plot(dates[100:200], p_stockout)
 ax.axvline(dates[100], color='k', ls='--', label='Reorder Time')
@@ -899,8 +901,7 @@ results = simulation(random.PRNGKey(SEED), init_state, start_time=100, end_time=
 # Plot
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
-        sharex=True, 
-        figsize=(12,6))
+        sharex=True)
 
 # Plot simulations
 daily_ending_stock_sim = results['ending_stock'].squeeze(-1)
@@ -908,7 +909,7 @@ az.plot_hdi(dates[100:], daily_ending_stock_sim, smooth=False,ax=axes[0], color=
 axes[0].plot(dates[100:], daily_ending_stock_sim.mean(0), color='r', ls='--', label='Simulated Stock Levels')
 axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
 axes[0].set(
-    title=f'Simulated Stock Levels: what would happen after reordering {reorder_amount} units?',
+    title=f'Simulated Stock Levels:\nwhat would happen after reordering {reorder_amount} units?',
     ylabel='Stock Levels',
     xlabel=''
 )
@@ -1001,8 +1002,7 @@ Notice that this time we're not loading in any parameters into the `Predictive` 
 #| code-fold: true
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
-        sharex=True, 
-        figsize=(12,6))
+        sharex=True)
 
 daily_ending_stock = pd.concat((
     daily_rentals.loc[f'product_{j}'].ending_units,
@@ -1084,8 +1084,7 @@ results = observe_future(random.PRNGKey(SEED), init_state, start_time=100, end_t
 
 fig, axes = plt.subplots(2,1,
         gridspec_kw=dict(width_ratios=[15], height_ratios=[10,1]), 
-        sharex=True, 
-        figsize=(12,6))
+        sharex=True)
 
 daily_ending_stock = pd.concat((
     daily_rentals.loc[f'product_{j}'].ending_units,
@@ -1097,7 +1096,7 @@ axes[0].axvline(dates[100], color='k',ls='--', label='Reorder')
 axes[0].set(
     ylabel='Stock Levels', 
     xlabel='Date', 
-    title=f'Naive Approach: Observed Stock Levels after reordering {reorder_amount} units')
+    title=f'Naive Approach:\nObserved Stock Levels after reordering {reorder_amount} units')
 axes[0].axhline(0, color='r', lw=2, ls='--')
 axes[0].legend()
 
