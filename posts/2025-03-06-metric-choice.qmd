@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "An easy way to choose a metric"
+title:  "An easy way to choose evaluation metrics"
 image: "../../assets/img/placeholder.png"
 date: "2025-03-06"
 categories:
@@ -9,73 +9,112 @@ categories:
  - time series
 ---
 
+::: {.callout-warning title='Disclaimer'}
+I'm not going to dive into forecasting evaluation here. I'm going to highlight a simple technique to consider when you're struggling with metric choice.
+:::
+
+# The Problem
+
+You work at a company that wants to forecast demand with historical sales data. Your team is going back and forth on what the perfect evaluation metric is. The goal is to use the evaluation metric to decide which forecast to use.
+
+The team's a bit hung up, some feel strongly RMSE is the right choice, while others want to use MAPE. It turns out there can often be easy ways to choose a metric with simulation.
+
+We'll focus on the question, __"if we have a perfect forecast, what would our error metrics look like?"__ and we'll use it to inform metric choice.
+
+# Simulating a fake sales time series
+
+We're going to simulate data where we know the real demand, and we add realistic amount of noise to it that resembles our actual dataset. In our case we'll simulate 
+
+$$
+\text{sales} \sim \text{Poisson}(\lambda = \text{demand})
+$$
+
+The plot below shows the true underlying demand overlayed with daily sales
 
 ```{python}
+#| code-fold: true
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+pd.options.display.float_format = '{:.2f}'.format
+np.random.seed(1)
 
 # Parameters
-years = 5  # Number of years
-period = 365  # Annual period (days)
-t = np.arange(0, years * period)  # Time variable for multiple years
+years = 5
+period = 365 
+t = np.arange(0, years * period)  
 
 # We add a phase shift to make sure the first peak happens at day 182
 seasonality = np.cos(2 * np.pi * (t - 182) / period) 
-mu = np.exp( 2*seasonality )
+mu = 1 + np.exp( 2*seasonality )
 y = np.random.poisson(mu)
 
 df = pd.DataFrame({"demand":mu, "sales":y}, index=pd.date_range("2014-01-01", periods=len(t)))
 
 # Plotting
-plt.figure(figsize=(12, 6))
-plt.plot(t, mu, label='True Demand', ls='--', color='C3')
-# plt.plot(t, y, label='Observed Data', ls='--', color='k')
-# plt.scatter(t, y, label='Observed Data', ls='--', color='k', alpha=0.05)
-plt.scatter(t, y, label='Observed Data', edgecolor='k', facecolor='none',  alpha=0.25, s=5)
-
-
-plt.legend()
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.plot(df.index, mu, label='True Demand', ls='--', color='C3')
+ax.scatter(df.index, y, label='Observed Sales', edgecolor='k', facecolor='none',  alpha=0.25, s=5)
+ax.set(title='True Demand and Simulated Daily Sales', ylabel='Sales')
+ax.legend()
 plt.show()
+```
 
-from sklearn.metrics import mean_absolute_percentage_error as mape, mean_absolute_error as mae, root_mean_squared_error as rmse
+What we're doing is really simple - we know we have a perfect forecast (its the true underlying demand), so ideally a good choice of metric should look reasonable here. 
 
-import numpy as np
-
-def safe_mape(y, yhat, epsilon=1e-4):
-    return np.mean(np.abs((y - yhat) / np.maximum(np.abs(y), epsilon))) * 100
-
-def maep(y, yhat):
-    mae = np.mean(np.abs(y - yhat))
-    return (mae / np.mean(np.abs(y)))
-
-pd.DataFrame(
-    [safe_mape(y, mu), mae(y, mu), rmse(y, mu), maep(y, mu)], 
-    index=['mape', 'mae', 'rmse', 'maep']
-)
+We're going to evaluate the forecast at the weekly level for simplicity, but its important to use domain knowledge to make this decision in real life.
 
 
+```{python}
+#| code-fold: true
 
 dfW = df.resample("W").sum()
-demandW, salesW = dfW['demand'].values, dfW['sales'].values
 
-
-pd.DataFrame(
-    [mape(demandW, salesW), mae(demandW, salesW), rmse(demandW, salesW), maep(demandW, salesW)], 
-    index=['mape', 'mae', 'mse', 'maep']
-)
-
-# dfW.plot(color=['red', 'k'], alpha=0.8, figsize=(12,5))
-ax = dfW[['demand']].plot(color='red', ls='--', alpha=0.75, figsize=(12,5))
-dfW[['sales']].plot(color='k',  alpha=0.75, ax=ax)
-
-# plt.title('Seasonal Time Series.')
-# plt.xlabel('Days')
-# plt.ylabel('Seasonality')
-# plt.axvline(x=182, color='r', linestyle='--', label='Peak (Day 182)')
-# plt.axvline(x=0, color='b', linestyle='--', label='Trough (Day 0)')
-# plt.axvline(x=365, color='b', linestyle='--', label='Trough (Day 365)')
-# plt.axvline(x=547, color='r', linestyle='--', label='Peak (Day 547)')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
+fig, ax = plt.subplots(figsize=(12,5))
+dfW[['demand']].plot(ls='--', color='r', alpha=0.75, ax=ax)
+dfW[['sales']].plot(color='k', alpha=0.75, ax=ax)
+ax.set(title='True Demand and Simulated Weekly Sales', ylabel='Sales')
+plt.show()
 ```
+
+# In-sample forecast evaluation
+
+In-sample forecast evaluation will be used for simplicity since its a simulation anyways, but with real data its important to use n-step-ahead evaluation or time series cross validation.
+
+```{python}
+#| code-fold: true
+from sklearn.metrics import (
+    mean_absolute_percentage_error as mape, 
+    mean_absolute_error as mae, 
+    root_mean_squared_error as rmse
+)
+args = (dfW.sales.values, dfW.demand.values,)
+pd.DataFrame(
+    [mape(*args), mae(*args), rmse(*args) ], 
+    columns=['metric'],
+    index=['MAPE', 'MAE', 'RMSE']
+).round(2)
+
+```
+
+MAE and RMSE error look fine here, but MAPE looks terrible - __a _perfect_ forecast here is off by 25% on average__ (weekly). Imagine telling a stakeholder that your great forecast is off by 25% on average. 
+
+::: {.callout-important}
+In general, MAPE is pretty well known to be a [meh choice of metric](https://openforecast.org/2024/04/17/avoid-using-mape/), but its especially apparent with low count data like this example.
+:::
+
+We also established a definition of what a good forecast is ( assuming our simulation resembles reality) - we know a perfect forecast on data of this magnitude and noise tends to have an MAE of 3.62 sales / week. If we're anywhere near that we know we're doing a good job.
+
+This process has made it clear that MAE or RMSE error are suitable choices to consider while MAPE isn't. Theory can drive the next step: MAE minimizes the median and is very interpretable while RMSE minimizes the mean but you lose a bit of interpretability.
+
+There are also plenty of other metrics and evaluation techniques to consider, I just chose 3 of the most simple metrics for this example. 
+
+# Concluding Thoughts
+
+This exercise was really simple: "if we had a perfect forecast, what would our error metrics look like?"
+
+Using simulation to answer this question not only informs metric choice, but it also helps to establish a defintion of what a good forecast is.
+
+I acknowledge there's alot more that goes on in forecasting than just this. But in reality, alot of stakeholders (and even data team members) can get hung up on questions like this. 
+
+I had to use this exact process once to make sure my team didn't use MAPE as an evaluation metric - telling someone that the best you can do with MAPE is a 25% error is a pretty convincing argument not to use it.

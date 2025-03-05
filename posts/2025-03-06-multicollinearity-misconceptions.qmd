@@ -1,4 +1,4 @@
----
+<!-- ---
 layout: post
 title:  "Common Misconceptions with Multicollinearity"
 image: "../../assets/img/placeholder.png"
@@ -57,4 +57,4 @@ plt.yticks([])
 plt.xlabel("Beta Coefficient")
 plt.legend()
 plt.show()
-```
+``` -->
