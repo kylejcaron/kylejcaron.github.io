@@ -23,7 +23,7 @@ We'll focus on the question, __"if we have a perfect forecast, what would our er
 
 # Simulating a fake sales time series
 
-We're going to simulate data where we know the real demand, and we add realistic amount of noise to it that resembles our actual dataset. In our case we'll simulate 
+We're going to simulate data where we know the real demand, and we add realistic amount of noise to it that resembles our actual dataset. In our case we assume the real dataset is poisson distributed, so we make our simulation have the same level of noise
 
 $$
 \text{sales} \sim \text{Poisson}(\lambda = \text{demand})
@@ -51,31 +51,18 @@ y = np.random.poisson(mu)
 
 df = pd.DataFrame({"demand":mu, "sales":y}, index=pd.date_range("2014-01-01", periods=len(t)))
 
+# resample to weekly level
+dfW = df.resample("W").sum()
+
 # Plotting
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.plot(df.index, mu, label='True Demand', ls='--', color='C3')
-ax.scatter(df.index, y, label='Observed Sales', edgecolor='k', facecolor='none',  alpha=0.25, s=5)
-ax.set(title='True Demand and Simulated Daily Sales', ylabel='Sales')
-ax.legend()
+fig, ax = plt.subplots(figsize=(12,5))
+dfW[['demand']].plot(ls='--', color='r', alpha=0.75, ax=ax, label = 'True Demand')
+dfW[['sales']].plot(color='k', alpha=0.75, ax=ax, label='Sales')
+ax.set(title='True Demand and Simulated Weekly Sales', ylabel='Sales')
 plt.show()
 ```
 
 What we're doing is really simple - we know we have a perfect forecast (its the true underlying demand), so ideally a good choice of metric should look reasonable here. 
-
-We're going to evaluate the forecast at the weekly level for simplicity, but its important to use domain knowledge to make this decision in real life.
-
-
-```{python}
-#| code-fold: true
-
-dfW = df.resample("W").sum()
-
-fig, ax = plt.subplots(figsize=(12,5))
-dfW[['demand']].plot(ls='--', color='r', alpha=0.75, ax=ax)
-dfW[['sales']].plot(color='k', alpha=0.75, ax=ax)
-ax.set(title='True Demand and Simulated Weekly Sales', ylabel='Sales')
-plt.show()
-```
 
 # In-sample forecast evaluation
 
@@ -103,7 +90,7 @@ MAE and RMSE error look fine here, but MAPE looks terrible - __a _perfect_ forec
 In general, MAPE is pretty well known to be a [meh choice of metric](https://openforecast.org/2024/04/17/avoid-using-mape/), but its especially apparent with low count data like this example.
 :::
 
-We also established a definition of what a good forecast is ( assuming our simulation resembles reality) - we know a perfect forecast on data of this magnitude and noise tends to have an MAE of 3.62 sales / week. If we're anywhere near that we know we're doing a good job.
+We also established a __definition of what a good forecast is__ - we know a perfect forecast on data of this magnitude and noise tends to have an MAE of 3.62 sales / week. If we're anywhere near that we know we're doing a good job.
 
 This process has made it clear that MAE or RMSE error are suitable choices to consider while MAPE isn't. Theory can drive the next step: MAE minimizes the median and is very interpretable while RMSE minimizes the mean but you lose a bit of interpretability.
 
@@ -115,6 +102,6 @@ This exercise was really simple: "if we had a perfect forecast, what would our e
 
 Using simulation to answer this question not only informs metric choice, but it also helps to establish a defintion of what a good forecast is.
 
-I acknowledge there's alot more that goes on in forecasting than just this. But in reality, alot of stakeholders (and even data team members) can get hung up on questions like this. 
+I acknowledge there's alot more that goes on in forecasting and decision making than just this. But in reality, alot of stakeholders (and even data team members) can get hung up on questions like this. 
 
 I had to use this exact process once to make sure my team didn't use MAPE as an evaluation metric - telling someone that the best you can do with MAPE is a 25% error is a pretty convincing argument not to use it.
