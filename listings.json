@@ -2,6 +2,8 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/2025-03-06-metric-choice.html",
+      "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
       "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
@@ -18,6 +20,8 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/2025-03-06-metric-choice.html",
+      "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
       "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
@@ -34,6 +38,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/2025-03-06-metric-choice.html",
+      "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
       "/posts/pandera_schemas/2025-02-21-pandera-schemas.html",
       "/posts/censored_demand/2024-02-06-censored-demand.html",
