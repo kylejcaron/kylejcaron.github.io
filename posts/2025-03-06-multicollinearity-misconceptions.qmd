@@ -10,7 +10,7 @@ categories:
 ---
 
 
-I recently saw a viral linkedin post discussing how multicollinearity will ruin your regression estimates. The solution? Simply throw out variables with high variance inflation factors and re-run your regression. 
+I recently saw a viral linkedin post discussing how multicollinearity will ruin your regression estimates. The solution? Simply throw out variables with high Variance Inflation Factors and re-run your regression. 
 
 Let me tell you, __don't do this__. A fear of multicollinearity is this misconception in data science that is far too prevalent. 
 
