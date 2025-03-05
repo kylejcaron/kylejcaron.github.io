@@ -84,27 +84,24 @@ m1 = sm.OLS.from_formula("y ~ x2 + x3", data=df).fit()
 # domain knowledge informed variable selection
 m2 = sm.OLS.from_formula("y ~ x1 + x2 + x3", data=df).fit()
 
-def get_ci(model):
+def plot_ci(model, ax, color='C0', label=None):
     lb = (model.params - model.bse*2)
     ub = model.params + model.bse*2
-    return lb, ub
+    ax.hlines(0, lb.loc['x3'], ub.loc['x3'], lw=2, label=label, color=color)
+    ax.scatter(model.params.loc['x3'], 0, facecolor='white', edgecolor=color, zorder=10, s=10)
 
-lb, ub = get_ci(m1)
-plt.hlines(0, lb.loc['x3'], ub.loc['x3'], lw=2, label='VIF informed model', color='C1')
-plt.scatter(m1.params.loc['x3'], 0, facecolor='white', edgecolor='C1', zorder=10, s=10)
 
-lb, ub = get_ci(m2)
-plt.hlines(1, lb.loc['x3'], ub.loc['x3'], lw=2, label='Causally informed model')
-plt.scatter(m2.params.loc['x3'], 1, facecolor='white', edgecolor='C0',zorder=10, s=10)
+fig, ax = plt.subplots()
+plot_ci(m1, ax=ax, color='C1', label='VIF informed model')
+plot_ci(m2, ax=ax, color='C0', label='Causally informed model')
 
-plt.axvline(0, ls='--', color='k')
-plt.axvline(TRUE_EFFECT, color='r', ls='--', lw=1, label='True Effect')
-plt.xlim(-1, 1)
-plt.ylim(-1,2)
-plt.yticks([])
-plt.title("Estimated effect of X3 -> y")
-plt.xlabel("Beta Coefficient")
-plt.legend()
+ax.axvline(0, ls='--', color='k')
+ax.axvline(TRUE_EFFECT, color='r', ls='--', lw=1, label='True Effect')
+ax.set_xlim(-1,1)
+ax.set_ylim(-1,1)
+ax.set_yticks([])
+ax.set(title="Estimated effect of X3 -> y", xlabel="Beta Coefficient")
+ax.legend()
 plt.show()
 ```
 
