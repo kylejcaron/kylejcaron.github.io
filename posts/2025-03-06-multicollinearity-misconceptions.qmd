@@ -65,9 +65,9 @@ pd.DataFrame(
 ).round(2)
 ```
 
-Based on this, we supposedly should remove X1 from our regression (VIFs of 5-10 are considered high).
+Based on this, we supposedly should remove $X_1$ from our regression (VIFs of 5-10 are considered high).
 
-If we look at the correlation, we reach the same conclusions - x1 has high correlation with x3 so supposedly "they provide the same information and only 1 is useful"
+If we look at the correlation, we reach the same conclusions - $X_1$ has high correlation with $X_3$ so supposedly _"they provide the same information and only 1 is useful"_
 
 ```{python}
 X.corr().loc['x3']
