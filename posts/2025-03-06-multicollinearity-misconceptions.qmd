@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Common Misconceptions with Multicollinearity"
-image: "../../assets/img/placeholder.png"
+image: "../../assets/img/multicollinearity.png"
 date: "2025-03-06"
 categories:
  - multicollinearity
@@ -31,6 +31,8 @@ digraph G {
 The simulation below makes it clear the true effect of $X_3$ on $y$ is 0.7, so we know our regression _should hopefully_ return it as an estimate
 
 ```{python}
+#| code-fold: true
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -52,12 +54,14 @@ df = (
     # simulate y as a function of x1,x2,x3
     .assign(y = lambda d: rng.normal(0.5 + d.x1*-4 + d.x2*-0.5 + d.x3*TRUE_EFFECT, SIG))
 )
-df.head()
+df.head().round(2)
 ```
 
 Lets take a look at the variance inflation factors below
 
 ```{python}
+#| code-fold: true
+
 X = df.filter(like='x')
 pd.DataFrame(
     {"VIF": [vif(X.values, i) for i in range(X.shape[1])]}, 
@@ -96,7 +100,7 @@ def plot_ci(model, ax, color='C0', label=None):
 
 
 fig, ax = plt.subplots()
-plot_ci(m1, ax=ax, color='C1', label='VIF informed model')
+plot_ci(m1, ax=ax, color='C1', label='VIF/Corr. informed model')
 plot_ci(m2, ax=ax, color='C0', label='Causally informed model')
 
 ax.axvline(0, ls='--', color='k')
