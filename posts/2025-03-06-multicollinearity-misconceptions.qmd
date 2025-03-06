@@ -83,6 +83,10 @@ m1 = sm.OLS.from_formula("y ~ x2 + x3", data=df).fit()
 
 # domain knowledge informed variable selection
 m2 = sm.OLS.from_formula("y ~ x1 + x2 + x3", data=df).fit()
+```
+
+```{python}
+#| code-fold: true
 
 def plot_ci(model, ax, color='C0', label=None):
     lb = (model.params - model.bse*2)
@@ -105,7 +109,7 @@ ax.legend()
 plt.show()
 ```
 
-Not only is the VIF informed model wrong, but more importantly it actually thinks x3 has a negative effect instead of a positive effect! 
+Not only is the VIF informed model wrong, but more importantly it actually thinks $X_3$ has a negative effect instead of a positive effect! 
 
 # Why did this happen?
 
@@ -123,4 +127,4 @@ It's clear that $X_1$ causally effects both $X_3$ and $y$ - this makes it a conf
 
 A classic (and dark) example is the ice-cream and drowning relationship. As people eat more ice cream there tend to be more drownings. Why? Warm weather causes ice cream and increased pool and beach use lead to the unfortunate increase in drownings. Accounting for warm weather explains away this relationship, and thats exactly how regression can work.
 
-This is why its so important to incorporate domain knowledge in your modeling. Mapping out the data generating process and using it to inform your model is always the right choice. For more on this check out [A Crash Course on Good and Bad Controls](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf). I also really like Richard McElreath's discussion on this in his 2nd edition of Statistical Rethinking.
+This is why its so important to incorporate domain knowledge in your modeling. Mapping pout the data generating process and using it to inform your model is always the right choice. For more on this check out [A Crash Course on Good and Bad Controls](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf). I also really like Richard McElreath's discussion on this in his 2nd edition of Statistical Rethinking.
