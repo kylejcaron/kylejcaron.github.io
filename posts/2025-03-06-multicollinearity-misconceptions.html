@@ -301,7 +301,9 @@ window.Quarto = {
 </div>
 </div>
 <p>The simulation below makes it clear the true effect of <span class="math inline">\(X_3\)</span> on <span class="math inline">\(y\)</span> is 0.7, so we know our regression <em>should hopefully</em> return it as an estimate</p>
-<div id="7fb30bb4" class="cell" data-execution_count="1">
+<div id="f3fd14fa" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
@@ -324,6 +326,7 @@ window.Quarto = {
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    .assign(y <span class="op">=</span> <span class="kw">lambda</span> d: rng.normal(<span class="fl">0.5</span> <span class="op">+</span> d.x1<span class="op">*-</span><span class="dv">4</span> <span class="op">+</span> d.x2<span class="op">*-</span><span class="fl">0.5</span> <span class="op">+</span> d.x3<span class="op">*</span>TRUE_EFFECT, SIG))</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -381,12 +384,15 @@ window.Quarto = {
 </div>
 </div>
 <p>Lets take a look at the variance inflation factors below</p>
-<div id="429e7f93" class="cell" data-execution_count="2">
+<div id="4d34acc9" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">'x'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"VIF"</span>: [vif(X.values, i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(X.shape[<span class="dv">1</span>])]}, </span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>X.columns</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>).<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -419,7 +425,7 @@ window.Quarto = {
 </div>
 <p>Based on this, we supposedly should remove <span class="math inline">\(X_1\)</span> from our regression (VIFs of 5-10 are considered high).</p>
 <p>If we look at the correlation, we reach the same conclusions - <span class="math inline">\(X_1\)</span> has high correlation with <span class="math inline">\(X_3\)</span> so supposedly <em>“they provide the same information and only 1 is useful”</em></p>
-<div id="33bb5486" class="cell" data-execution_count="3">
+<div id="3ef3c05c" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X.corr().loc[<span class="st">'x3'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>x1    0.990898
@@ -432,41 +438,46 @@ Name: x3, dtype: float64</code></pre>
 <section id="does-it-work" class="level1">
 <h1>Does it work?</h1>
 <p>We’re going to fit two regressions - one that follows the advice of throwing out variables with high VIFs or correlation - and another that is informed by domain knowledge.</p>
-<div id="cc6ec277" class="cell" data-execution_count="4">
+<div id="5469b811" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vif/correlation informed variable selection</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"y ~ x2 + x3"</span>, data<span class="op">=</span>df).fit()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># domain knowledge informed variable selection</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>m2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"y ~ x1 + x2 + x3"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_ci(model, ax, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    lb <span class="op">=</span> (model.params <span class="op">-</span> model.bse<span class="op">*</span><span class="dv">2</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    ub <span class="op">=</span> model.params <span class="op">+</span> model.bse<span class="op">*</span><span class="dv">2</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    ax.hlines(<span class="dv">0</span>, lb.loc[<span class="st">'x3'</span>], ub.loc[<span class="st">'x3'</span>], lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span>label, color<span class="op">=</span>color)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    ax.scatter(model.params.loc[<span class="st">'x3'</span>], <span class="dv">0</span>, facecolor<span class="op">=</span><span class="st">'white'</span>, edgecolor<span class="op">=</span>color, zorder<span class="op">=</span><span class="dv">10</span>, s<span class="op">=</span><span class="dv">10</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>plot_ci(m1, ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'VIF informed model'</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>plot_ci(m2, ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="st">'Causally informed model'</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, ls<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>ax.axvline(TRUE_EFFECT, color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>, lw<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'True Effect'</span>)</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>ax.set_yticks([])</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Estimated effect of X3 -&gt; y"</span>, xlabel<span class="op">=</span><span class="st">"Beta Coefficient"</span>)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>m2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"y ~ x1 + x2 + x3"</span>, data<span class="op">=</span>df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d3a21050" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_ci(model, ax, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    lb <span class="op">=</span> (model.params <span class="op">-</span> model.bse<span class="op">*</span><span class="dv">2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    ub <span class="op">=</span> model.params <span class="op">+</span> model.bse<span class="op">*</span><span class="dv">2</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    ax.hlines(<span class="dv">0</span>, lb.loc[<span class="st">'x3'</span>], ub.loc[<span class="st">'x3'</span>], lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span>label, color<span class="op">=</span>color)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    ax.scatter(model.params.loc[<span class="st">'x3'</span>], <span class="dv">0</span>, facecolor<span class="op">=</span><span class="st">'white'</span>, edgecolor<span class="op">=</span>color, zorder<span class="op">=</span><span class="dv">10</span>, s<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>plot_ci(m1, ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'C1'</span>, label<span class="op">=</span><span class="st">'VIF/Corr. informed model'</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plot_ci(m2, ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="st">'Causally informed model'</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, ls<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>ax.axvline(TRUE_EFFECT, color<span class="op">=</span><span class="st">'r'</span>, ls<span class="op">=</span><span class="st">'--'</span>, lw<span class="op">=</span><span class="dv">1</span>, label<span class="op">=</span><span class="st">'True Effect'</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>ax.set_yticks([])</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Estimated effect of X3 -&gt; y"</span>, xlabel<span class="op">=</span><span class="st">"Beta Coefficient"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">"multicollinearity.png"</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2025-03-06-multicollinearity-misconceptions_files/figure-html/cell-5-output-1.png" width="575" height="449" class="figure-img"></p>
+<p><img src="2025-03-06-multicollinearity-misconceptions_files/figure-html/cell-6-output-1.png" width="575" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Not only is the VIF informed model wrong, but more importantly it actually thinks x3 has a negative effect instead of a positive effect!</p>
+<p>Not only is the VIF informed model wrong, but more importantly it actually thinks <span class="math inline">\(X_3\)</span> has a negative effect instead of a positive effect!</p>
 </section>
 <section id="why-did-this-happen" class="level1">
 <h1>Why did this happen?</h1>
@@ -536,7 +547,8 @@ Name: x3, dtype: float64</code></pre>
 </div>
 </div>
 <p>It’s clear that <span class="math inline">\(X_1\)</span> causally effects both <span class="math inline">\(X_3\)</span> and <span class="math inline">\(y\)</span> - this makes it a confounding variable, or a “backdoor” for <span class="math inline">\(X_3\)</span>. If we want our regression to have proper estimates of <span class="math inline">\(X_3\)</span>, we therefore need to make sure our regression model accounts for <span class="math inline">\(X_1\)</span> to de-bias <span class="math inline">\(X_3\)</span>.</p>
-<p>This is why its so important to incorporate domain knowledge in your modeling. Mapping out the data generating process and using it to inform your model is always the right choice. For more on this check out <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf">A Crash Course on Good and Bad Controls</a>. I also really like Richard McElreath’s discussion on this in his 2nd edition of Statistical Rethinking.</p>
+<p>A classic (and dark) example is the ice-cream and drowning relationship. As people eat more ice cream there tend to be more drownings. Why? Warm weather causes ice cream and increased pool and beach use lead to the unfortunate increase in drownings. Accounting for warm weather explains away this relationship, and thats exactly how regression can work.</p>
+<p>This is why its so important to incorporate domain knowledge in your modeling. Mapping pout the data generating process and using it to inform your model is always the right choice. For more on this check out <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf">A Crash Course on Good and Bad Controls</a>. I also really like Richard McElreath’s discussion on this in his 2nd edition of Statistical Rethinking.</p>
 
 
 </section>

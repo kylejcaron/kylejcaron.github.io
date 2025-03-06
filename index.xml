@@ -44,7 +44,7 @@ Disclaimer
 <p>We’re going to simulate data where we know the real demand, and we add realistic amount of noise to it that resembles our actual dataset. In our case we assume the real dataset is poisson distributed, so we make our simulation have the same level of noise</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7Bsales%7D%20%5Csim%20%5Ctext%7BPoisson%7D(%5Clambda%20=%20%5Ctext%7Bdemand%7D)%0A"></p>
 <p>The plot below shows the true underlying demand overlayed with daily sales</p>
-<div id="31650c2a" class="cell" data-execution_count="1">
+<div id="9b0980d6" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -234,7 +234,7 @@ font-style: inherit;">'Sales'</span>)</span>
 <section id="in-sample-forecast-evaluation" class="level1">
 <h1>In-sample forecast evaluation</h1>
 <p>In-sample forecast evaluation will be used for simplicity since its a simulation anyways, but with real data its important to use n-step-ahead evaluation or time series cross validation.</p>
-<div id="f9acb27d" class="cell" data-execution_count="2">
+<div id="d8dbccf5" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
@@ -347,7 +347,7 @@ Important
   <category>time series</category>
   <guid>https://kylejcaron.github.io/posts/2025-03-06-metric-choice.html</guid>
   <pubDate>Thu, 06 Mar 2025 05:00:00 GMT</pubDate>
-  <media:content url="https://kylejcaron.github.io/assets/img/placeholder.png" medium="image" type="image/png" height="95" width="144"/>
+  <media:content url="https://kylejcaron.github.io/assets/img/metric_sim.png" medium="image" type="image/png" height="60" width="144"/>
 </item>
 <item>
   <title>Common Misconceptions with Multicollinearity</title>
@@ -429,7 +429,9 @@ Important
 </div>
 </div>
 <p>The simulation below makes it clear the true effect of <img src="https://latex.codecogs.com/png.latex?X_3"> on <img src="https://latex.codecogs.com/png.latex?y"> is 0.7, so we know our regression <em>should hopefully</em> return it as an estimate</p>
-<div id="7fb30bb4" class="cell" data-execution_count="1">
+<div id="f3fd14fa" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
@@ -548,6 +550,7 @@ background-color: null;
 font-style: inherit;">*</span>TRUE_EFFECT, SIG))</span>
 <span id="cb1-21">)</span>
 <span id="cb1-22">df.head()</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -605,7 +608,9 @@ font-style: inherit;">*</span>TRUE_EFFECT, SIG))</span>
 </div>
 </div>
 <p>Lets take a look at the variance inflation factors below</p>
-<div id="429e7f93" class="cell" data-execution_count="2">
+<div id="4d34acc9" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">X <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> df.<span class="bu" style="color: null;
@@ -637,6 +642,7 @@ background-color: null;
 font-style: inherit;">round</span>(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -669,7 +675,7 @@ font-style: inherit;">2</span>)</span></code></pre></div>
 </div>
 <p>Based on this, we supposedly should remove <img src="https://latex.codecogs.com/png.latex?X_1"> from our regression (VIFs of 5-10 are considered high).</p>
 <p>If we look at the correlation, we reach the same conclusions - <img src="https://latex.codecogs.com/png.latex?X_1"> has high correlation with <img src="https://latex.codecogs.com/png.latex?X_3"> so supposedly <em>“they provide the same information and only 1 is useful”</em></p>
-<div id="33bb5486" class="cell" data-execution_count="3">
+<div id="3ef3c05c" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">X.corr().loc[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'x3'</span>]</span></code></pre></div>
@@ -684,7 +690,7 @@ Name: x3, dtype: float64</code></pre>
 <section id="does-it-work" class="level1">
 <h1>Does it work?</h1>
 <p>We’re going to fit two regressions - one that follows the advice of throwing out variables with high VIFs or correlation - and another that is informed by domain knowledge.</p>
-<div id="cc6ec277" class="cell" data-execution_count="4">
+<div id="5469b811" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># vif/correlation informed variable selection</span></span>
@@ -705,9 +711,12 @@ font-style: inherit;">=</span> sm.OLS.from_formula(<span class="st" style="color
 background-color: null;
 font-style: inherit;">"y ~ x1 + x2 + x3"</span>, data<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span>df).fit()</span>
-<span id="cb5-6"></span>
-<span id="cb5-7"><span class="kw" style="color: #003B4F;
+font-style: inherit;">=</span>df).fit()</span></code></pre></div>
+</div>
+<div id="d3a21050" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> plot_ci(model, ax, color<span class="op" style="color: #5E5E5E;
@@ -719,7 +728,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>):</span>
-<span id="cb5-8">    lb <span class="op" style="color: #5E5E5E;
+<span id="cb6-2">    lb <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (model.params <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -728,7 +737,7 @@ background-color: null;
 font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span>)</span>
-<span id="cb5-9">    ub <span class="op" style="color: #5E5E5E;
+<span id="cb6-3">    ub <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> model.params <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -737,7 +746,7 @@ background-color: null;
 font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span></span>
-<span id="cb5-10">    ax.hlines(<span class="dv" style="color: #AD0000;
+<span id="cb6-4">    ax.hlines(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>, lb.loc[<span class="st" style="color: #20794D;
 background-color: null;
@@ -752,7 +761,7 @@ background-color: null;
 font-style: inherit;">=</span>label, color<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>color)</span>
-<span id="cb5-11">    ax.scatter(model.params.loc[<span class="st" style="color: #20794D;
+<span id="cb6-5">    ax.scatter(model.params.loc[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'x3'</span>], <span class="dv" style="color: #AD0000;
 background-color: null;
@@ -771,12 +780,12 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10</span>)</span>
-<span id="cb5-12"></span>
-<span id="cb5-13"></span>
-<span id="cb5-14">fig, ax <span class="op" style="color: #5E5E5E;
+<span id="cb6-6"></span>
+<span id="cb6-7"></span>
+<span id="cb6-8">fig, ax <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> plt.subplots()</span>
-<span id="cb5-15">plot_ci(m1, ax<span class="op" style="color: #5E5E5E;
+<span id="cb6-9">plot_ci(m1, ax<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>ax, color<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -786,8 +795,8 @@ font-style: inherit;">'C1'</span>, label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'VIF informed model'</span>)</span>
-<span id="cb5-16">plot_ci(m2, ax<span class="op" style="color: #5E5E5E;
+font-style: inherit;">'VIF/Corr. informed model'</span>)</span>
+<span id="cb6-10">plot_ci(m2, ax<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>ax, color<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -798,8 +807,8 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Causally informed model'</span>)</span>
-<span id="cb5-17"></span>
-<span id="cb5-18">ax.axvline(<span class="dv" style="color: #AD0000;
+<span id="cb6-11"></span>
+<span id="cb6-12">ax.axvline(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>, ls<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -810,7 +819,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'k'</span>)</span>
-<span id="cb5-19">ax.axvline(TRUE_EFFECT, color<span class="op" style="color: #5E5E5E;
+<span id="cb6-13">ax.axvline(TRUE_EFFECT, color<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -827,22 +836,22 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'True Effect'</span>)</span>
-<span id="cb5-20">ax.set_xlim(<span class="op" style="color: #5E5E5E;
+<span id="cb6-14">ax.set_xlim(<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>)</span>
-<span id="cb5-21">ax.set_ylim(<span class="op" style="color: #5E5E5E;
+<span id="cb6-15">ax.set_ylim(<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>)</span>
-<span id="cb5-22">ax.set_yticks([])</span>
-<span id="cb5-23">ax.<span class="bu" style="color: null;
+<span id="cb6-16">ax.set_yticks([])</span>
+<span id="cb6-17">ax.<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">set</span>(title<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -853,17 +862,21 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Beta Coefficient"</span>)</span>
-<span id="cb5-24">ax.legend()</span>
-<span id="cb5-25">plt.show()</span></code></pre></div>
+<span id="cb6-18">ax.legend()</span>
+<span id="cb6-19">plt.savefig(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multicollinearity.png"</span>)</span>
+<span id="cb6-20">plt.show()</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/2025-03-06-multicollinearity-misconceptions_files/figure-html/cell-5-output-1.png" width="575" height="449" class="figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/2025-03-06-multicollinearity-misconceptions_files/figure-html/cell-6-output-1.png" width="575" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Not only is the VIF informed model wrong, but more importantly it actually thinks x3 has a negative effect instead of a positive effect!</p>
+<p>Not only is the VIF informed model wrong, but more importantly it actually thinks <img src="https://latex.codecogs.com/png.latex?X_3"> has a negative effect instead of a positive effect!</p>
 </section>
 <section id="why-did-this-happen" class="level1">
 <h1>Why did this happen?</h1>
@@ -933,7 +946,8 @@ font-style: inherit;">"Beta Coefficient"</span>)</span>
 </div>
 </div>
 <p>It’s clear that <img src="https://latex.codecogs.com/png.latex?X_1"> causally effects both <img src="https://latex.codecogs.com/png.latex?X_3"> and <img src="https://latex.codecogs.com/png.latex?y"> - this makes it a confounding variable, or a “backdoor” for <img src="https://latex.codecogs.com/png.latex?X_3">. If we want our regression to have proper estimates of <img src="https://latex.codecogs.com/png.latex?X_3">, we therefore need to make sure our regression model accounts for <img src="https://latex.codecogs.com/png.latex?X_1"> to de-bias <img src="https://latex.codecogs.com/png.latex?X_3">.</p>
-<p>This is why its so important to incorporate domain knowledge in your modeling. Mapping out the data generating process and using it to inform your model is always the right choice. For more on this check out <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf">A Crash Course on Good and Bad Controls</a>. I also really like Richard McElreath’s discussion on this in his 2nd edition of Statistical Rethinking.</p>
+<p>A classic (and dark) example is the ice-cream and drowning relationship. As people eat more ice cream there tend to be more drownings. Why? Warm weather causes ice cream and increased pool and beach use lead to the unfortunate increase in drownings. Accounting for warm weather explains away this relationship, and thats exactly how regression can work.</p>
+<p>This is why its so important to incorporate domain knowledge in your modeling. Mapping pout the data generating process and using it to inform your model is always the right choice. For more on this check out <a href="https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf">A Crash Course on Good and Bad Controls</a>. I also really like Richard McElreath’s discussion on this in his 2nd edition of Statistical Rethinking.</p>
 
 
 </section>
@@ -944,7 +958,7 @@ font-style: inherit;">"Beta Coefficient"</span>)</span>
   <category>regression</category>
   <guid>https://kylejcaron.github.io/posts/2025-03-06-multicollinearity-misconceptions.html</guid>
   <pubDate>Thu, 06 Mar 2025 05:00:00 GMT</pubDate>
-  <media:content url="https://kylejcaron.github.io/assets/img/placeholder.png" medium="image" type="image/png" height="95" width="144"/>
+  <media:content url="https://kylejcaron.github.io/assets/img/multicollinearity.png" medium="image" type="image/png" height="103" width="144"/>
 </item>
 <item>
   <title>Automatic Dim Labelling with Numpyro?</title>
