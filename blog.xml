@@ -24,7 +24,7 @@
 <h1>Background</h1>
 <p>This is a more of a tutorial for using numpyro’s <code>scope</code> handler. It’s fairly straightforward and allows one to use a composable model framework in numpyro - ie calling multiple models within a model.</p>
 <p>The code fold below just has some imports and helper functions</p>
-<div id="c4011c98" class="cell" data-execution_count="1">
+<div id="8dcda6e1" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
@@ -330,7 +330,7 @@ font-style: inherit;">self</span></span></code></pre></div>
 <section id="how-does-scope-work" class="level1">
 <h1>How does scope work?</h1>
 <p>We’ll simulate a dataset and fit it with scope to show how it works</p>
-<div id="a819da83" class="cell" data-execution_count="2">
+<div id="87daa541" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">rng <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> np.random.default_rng(SEED)</span>
@@ -385,7 +385,7 @@ font-style: inherit;">"Y"</span>)</span>
 </div>
 </div>
 <p>Now lets define a simple linear model</p>
-<div id="e488b0e5" class="cell" data-execution_count="3">
+<div id="5e1c9f02" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -470,7 +470,7 @@ font-style: inherit;">return</span> mu, y</span></code></pre></div>
 <h3 class="anchored" data-anchor-id="fitting-a-model-using-scope">Fitting a model using scope</h3>
 <p>We could just fit a model with the linear model above, but to illustrate how scope works, we’ll use the linear model as a sub-module in another model</p>
 <p>Note, scope has no use in this example, this is just to illustrate how it works</p>
-<div id="7e9bcf13" class="cell" data-execution_count="4">
+<div id="ad46773f" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -527,22 +527,22 @@ background-color: null;
 font-style: inherit;">=</span>SEED)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6ab46c750f434132a6fd020a2e7d7b0b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"ec94d6335ef549adafb4d6d0801da9d2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"042d12d51adc4151a54c8b687583f618","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"22c3e5da729a41119c0b75b7a8cb005c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b3b87224b63240be88a782c4e9560b98","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"3e020b59afa94193a8b1c88f655600ec","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"9dd6b8f206554b2ebb66346799af2bbd","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"3a33f6202c054b29a39d057196d45718","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
@@ -550,7 +550,7 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 <h4 class="anchored" data-anchor-id="now-lets-look-at-the-fitted-parameters-theyre-the-same-but-scope-has-a-prefix">Now lets look at the fitted parameters (theyre the same but scope has a prefix)</h4>
 <p>If we peek at both posteriors below, we see that the results are identical, but the site names are different - Model 2 (that used <code>scope</code>), has a prefix <code>M.*</code> for each site. Thats all scope does</p>
 <p>This is an important feature that lets you call multiple models within your numpyro model. Remember, that models with duplicate site names will fail. This allows us to call the same model multiple times in a different model</p>
-<div id="d0ba72a2" class="cell" data-execution_count="5">
+<div id="bc1edb4c" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># looks at first 3 samples for each parameter</span></span>
@@ -591,6 +591,14 @@ font-style: inherit;">'mu'</span>}</span>
  'sigma': Array([0.9782854, 0.9691421, 1.0134417], dtype=float32)}</code></pre>
 </div>
 </div>
+<div id="2eaa73a3" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">peek( m2.params )</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>{'M.alpha': Array([1.2196213, 1.1488996, 1.1982138], dtype=float32),
+ 'M.beta': Array([0.41865802, 0.4032275 , 0.40824327], dtype=float32),
+ 'M.sigma': Array([0.9782854, 0.9691421, 1.0134417], dtype=float32)}</code></pre>
+</div>
+</div>
 </section>
 </section>
 </section>
@@ -599,7 +607,7 @@ font-style: inherit;">'mu'</span>}</span>
 <p>This is the fun part. We’ll use Double Machine Learning as an example of why <code>scope</code> is so useful.</p>
 <section id="double-ml-background" class="level3">
 <h3 class="anchored" data-anchor-id="double-ml-background">Double ML background</h3>
-<p>For some quick background, Double ML is a procedure for estimating unbiased Average Treatment Effects (ATE) where <img src="https://latex.codecogs.com/png.latex?A"> is the treatment, <img src="https://latex.codecogs.com/png.latex?y"> is the outcome, <img src="https://latex.codecogs.com/png.latex?X"> are covariates, and <code>*</code> represents residuals, ie <img src="https://latex.codecogs.com/png.latex?A%5E*%20=%20(A-%5Chat%7BA%7D)"></p>
+<p>For some quick background, Double ML is a procedure for estimating unbiased Average Treatment Effects (ATE) where <img src="https://latex.codecogs.com/png.latex?A"> is the treatment, <img src="https://latex.codecogs.com/png.latex?y"> is the outcome, <img src="https://latex.codecogs.com/png.latex?X"> are covariates, and <code>*</code> represents residuals, ie <img src="https://latex.codecogs.com/png.latex?A%5E*%20=%20(A-%5Chat%7BA%7D)">. It is comprised of 3 models:</p>
 <ol type="1">
 <li><strong>Model 1: Propensity Model</strong>, <img src="https://latex.codecogs.com/png.latex?E%5BA%7CX%5D">: Debiases the treatment with propensity scores</li>
 <li><strong>Model 2: Outcome Model</strong> <img src="https://latex.codecogs.com/png.latex?E%5By%7CX%5D">: Denoises the Outcome</li>
@@ -608,26 +616,26 @@ font-style: inherit;">'mu'</span>}</span>
 </section>
 <section id="simulate-some-data-with-a-biased-treatment" class="level3">
 <h3 class="anchored" data-anchor-id="simulate-some-data-with-a-biased-treatment">Simulate some data with a biased treatment</h3>
-<div id="9c476774" class="cell" data-execution_count="6">
+<div id="12109776" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># simulate a biased treatment</span></span>
-<span id="cb7-2"><span class="co" style="color: #5E5E5E;
+<span id="cb9-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># X -&gt; A -&gt; y, X -&gt; y</span></span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="co" style="color: #5E5E5E;
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># treatment effect</span></span>
-<span id="cb7-5">tau <span class="op" style="color: #5E5E5E;
+<span id="cb9-5">tau <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.4</span> </span>
-<span id="cb7-6"></span>
-<span id="cb7-7">X <span class="op" style="color: #5E5E5E;
+<span id="cb9-6"></span>
+<span id="cb9-7">X <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.normal(<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -638,7 +646,7 @@ background-color: null;
 font-style: inherit;">=</span>(N,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span>))</span>
-<span id="cb7-8">b <span class="op" style="color: #5E5E5E;
+<span id="cb9-8">b <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.normal(<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -649,20 +657,20 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span>)</span>
-<span id="cb7-9">pA <span class="op" style="color: #5E5E5E;
+<span id="cb9-9">pA <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> sp.expit(<span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.25</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> np.dot(X, b))</span>
-<span id="cb7-10">A <span class="op" style="color: #5E5E5E;
+<span id="cb9-10">A <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.binomial(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>, pA)</span>
-<span id="cb7-11"></span>
-<span id="cb7-12">b_y <span class="op" style="color: #5E5E5E;
+<span id="cb9-11"></span>
+<span id="cb9-12">b_y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.normal(<span class="dv" style="color: #AD0000;
 background-color: null;
@@ -673,8 +681,8 @@ background-color: null;
 font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span>)</span>
-<span id="cb7-13"></span>
-<span id="cb7-14">mu_y <span class="op" style="color: #5E5E5E;
+<span id="cb9-13"></span>
+<span id="cb9-14">mu_y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -687,20 +695,20 @@ background-color: null;
 font-style: inherit;">*</span>A <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> np.dot(X, b_y)</span>
-<span id="cb7-15">y <span class="op" style="color: #5E5E5E;
+<span id="cb9-15">y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> rng.normal(mu_y, <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.2</span>)</span>
-<span id="cb7-16"></span>
-<span id="cb7-17"></span>
-<span id="cb7-18"><span class="co" style="color: #5E5E5E;
+<span id="cb9-16"></span>
+<span id="cb9-17"></span>
+<span id="cb9-18"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Show the data as a dataframe</span></span>
-<span id="cb7-19">df <span class="op" style="color: #5E5E5E;
+<span id="cb9-19">df <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (</span>
-<span id="cb7-20">    pd.DataFrame(X, columns<span class="op" style="color: #5E5E5E;
+<span id="cb9-20">    pd.DataFrame(X, columns<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[<span class="ss" style="color: #20794D;
 background-color: null;
@@ -721,16 +729,16 @@ background-color: null;
 font-style: inherit;">range</span>(X.shape[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>])])</span>
-<span id="cb7-21">    .assign(A<span class="op" style="color: #5E5E5E;
+<span id="cb9-21">    .assign(A<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>A)</span>
-<span id="cb7-22">    .assign(y<span class="op" style="color: #5E5E5E;
+<span id="cb9-22">    .assign(y<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>y)</span>
-<span id="cb7-23">)</span>
-<span id="cb7-24">df.head()</span></code></pre></div>
+<span id="cb9-23">)</span>
+<span id="cb9-24">df.head()</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -795,13 +803,13 @@ font-style: inherit;">=</span>y)</span>
 </section>
 <section id="next-lets-make-a-logit-model" class="level3">
 <h3 class="anchored" data-anchor-id="next-lets-make-a-logit-model">Next lets make a Logit model</h3>
-<div id="4cffe1a4" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="kw" style="color: #003B4F;
+<div id="75f9ff8c" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">class</span> Logit(NumpyroModel):</span>
-<span id="cb8-2"></span>
-<span id="cb8-3">    <span class="kw" style="color: #003B4F;
+<span id="cb10-2"></span>
+<span id="cb10-3">    <span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
@@ -813,7 +821,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>):</span>
-<span id="cb8-4">        alpha <span class="op" style="color: #5E5E5E;
+<span id="cb10-4">        alpha <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> numpyro.sample(<span class="st" style="color: #20794D;
 background-color: null;
@@ -822,7 +830,7 @@ background-color: null;
 font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2.5</span>))</span>
-<span id="cb8-5">        <span class="cf" style="color: #003B4F;
+<span id="cb10-5">        <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
@@ -832,7 +840,7 @@ background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>]):</span>
-<span id="cb8-6">            beta <span class="op" style="color: #5E5E5E;
+<span id="cb10-6">            beta <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> numpyro.sample(<span class="st" style="color: #20794D;
 background-color: null;
@@ -841,8 +849,8 @@ background-color: null;
 font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>))</span>
-<span id="cb8-7"></span>
-<span id="cb8-8">        <span class="cf" style="color: #003B4F;
+<span id="cb10-7"></span>
+<span id="cb10-8">        <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">with</span> numpyro.plate(<span class="st" style="color: #20794D;
@@ -850,26 +858,26 @@ background-color: null;
 font-style: inherit;">"obs_id"</span>, X.shape[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>]):</span>
-<span id="cb8-9">            eta <span class="op" style="color: #5E5E5E;
+<span id="cb10-9">            eta <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>  numpyro.deterministic(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"eta"</span>, alpha <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> jnp.dot(X, beta))</span>
-<span id="cb8-10">            mu <span class="op" style="color: #5E5E5E;
+<span id="cb10-10">            mu <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> numpyro.deterministic(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"mu"</span>, jsp.expit(eta))</span>
-<span id="cb8-11">            y <span class="op" style="color: #5E5E5E;
+<span id="cb10-11">            y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> numpyro.sample(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"obs"</span>, dist.Bernoulli(mu), obs<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>y)</span>
-<span id="cb8-12">            <span class="cf" style="color: #003B4F;
+<span id="cb10-12">            <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">return</span> mu, y</span></code></pre></div>
@@ -878,35 +886,35 @@ font-style: inherit;">return</span> mu, y</span></code></pre></div>
 <section id="finally-use-scope-to-fit-multiple-models-within-1-numpyro-model" class="level3">
 <h3 class="anchored" data-anchor-id="finally-use-scope-to-fit-multiple-models-within-1-numpyro-model">Finally, use scope to fit multiple models within 1 numpyro model</h3>
 <p>Notice how simple Scope allows the <code>__call__</code> function to be. We can also plug and play any models we want including non-parametric models for the debias/denoise models of Double ML</p>
-<div id="1c939b91" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="kw" style="color: #003B4F;
+<div id="5cb6ac95" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">class</span> DoubleML(NumpyroModel):</span>
-<span id="cb9-2">    <span class="kw" style="color: #003B4F;
+<span id="cb11-2">    <span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(</span>
-<span id="cb9-3">        <span class="va" style="color: #111111;
+<span id="cb11-3">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>,</span>
-<span id="cb9-4">        propensity_model: NumpyroModel <span class="op" style="color: #5E5E5E;
+<span id="cb11-4">        propensity_model: NumpyroModel <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>,</span>
-<span id="cb9-5">        outcome_model: NumpyroModel <span class="op" style="color: #5E5E5E;
+<span id="cb11-5">        outcome_model: NumpyroModel <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>,</span>
-<span id="cb9-6">        <span class="op" style="color: #5E5E5E;
+<span id="cb11-6">        <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">**</span>kwargs,</span>
-<span id="cb9-7">    ):</span>
-<span id="cb9-8">        <span class="va" style="color: #111111;
+<span id="cb11-7">    ):</span>
+<span id="cb11-8">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.debias_model <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -919,7 +927,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'.'</span>)</span>
-<span id="cb9-9">        <span class="va" style="color: #111111;
+<span id="cb11-9">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.denoise_model <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -932,7 +940,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'.'</span>)</span>
-<span id="cb9-10">        <span class="va" style="color: #111111;
+<span id="cb11-10">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.ate_model <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -945,18 +953,18 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'.'</span>)</span>
-<span id="cb9-11">        <span class="bu" style="color: null;
+<span id="cb11-11">        <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">super</span>().<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">**</span>kwargs)</span>
-<span id="cb9-12"></span>
-<span id="cb9-13">    <span class="co" style="color: #5E5E5E;
+<span id="cb11-12"></span>
+<span id="cb11-13">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Look how simple our model is</span></span>
-<span id="cb9-14">    <span class="kw" style="color: #003B4F;
+<span id="cb11-14">    <span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
@@ -968,8 +976,8 @@ background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>):</span>
-<span id="cb9-15"></span>
-<span id="cb9-16">        mu_A, A <span class="op" style="color: #5E5E5E;
+<span id="cb11-15"></span>
+<span id="cb11-16">        mu_A, A <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
@@ -980,7 +988,7 @@ background-color: null;
 font-style: inherit;">=</span>A) <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># estimate treatment E[A|X]</span></span>
-<span id="cb9-17">        mu_y, y <span class="op" style="color: #5E5E5E;
+<span id="cb11-17">        mu_y, y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
@@ -991,25 +999,25 @@ background-color: null;
 font-style: inherit;">=</span>y) <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># denoise outcome E[y|X]</span></span>
-<span id="cb9-18"></span>
-<span id="cb9-19">        <span class="co" style="color: #5E5E5E;
+<span id="cb11-18"></span>
+<span id="cb11-19">        <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># calculate residuals to debias and denoise</span></span>
-<span id="cb9-20">        A_star <span class="op" style="color: #5E5E5E;
+<span id="cb11-20">        A_star <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (A <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span> mu_A)</span>
-<span id="cb9-21">        y_star <span class="op" style="color: #5E5E5E;
+<span id="cb11-21">        y_star <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (y <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span> mu_y)</span>
-<span id="cb9-22"></span>
-<span id="cb9-23">        <span class="co" style="color: #5E5E5E;
+<span id="cb11-22"></span>
+<span id="cb11-23">        <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># run linear regression on residuals to estimate ATE</span></span>
-<span id="cb9-24">        <span class="cf" style="color: #003B4F;
+<span id="cb11-24">        <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">return</span> <span class="va" style="color: #111111;
@@ -1021,17 +1029,17 @@ background-color: null;
 font-style: inherit;">None</span>], y<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>y_star)</span>
-<span id="cb9-25">    </span>
-<span id="cb9-26">    <span class="at" style="color: #657422;
+<span id="cb11-25">    </span>
+<span id="cb11-26">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">@property</span></span>
-<span id="cb9-27">    <span class="kw" style="color: #003B4F;
+<span id="cb11-27">    <span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> ate(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>):</span>
-<span id="cb9-28">        <span class="cf" style="color: #003B4F;
+<span id="cb11-28">        <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">return</span> <span class="va" style="color: #111111;
@@ -1039,28 +1047,28 @@ background-color: null;
 font-style: inherit;">self</span>.params[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'M.beta'</span>].ravel()</span>
-<span id="cb9-29"></span>
-<span id="cb9-30"></span>
-<span id="cb9-31">dml <span class="op" style="color: #5E5E5E;
+<span id="cb11-29"></span>
+<span id="cb11-30"></span>
+<span id="cb11-31">dml <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> DoubleML(</span>
-<span id="cb9-32">    propensity_model<span class="op" style="color: #5E5E5E;
+<span id="cb11-32">    propensity_model<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>Logit(), </span>
-<span id="cb9-33">    outcome_model<span class="op" style="color: #5E5E5E;
+<span id="cb11-33">    outcome_model<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>Linear()</span>
-<span id="cb9-34">).fit(X, A, y, seed<span class="op" style="color: #5E5E5E;
+<span id="cb11-34">).fit(X, A, y, seed<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>SEED)</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"11a5333cd1ce41ed9bf87a99955a2ede","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"acca0ad2ff214de3a7d50d0cde0d796b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"48dfe06b592c493e81648e4dbfba0e5e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"62c80c7308d24b11bd2c8aae15c50643","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
@@ -1068,11 +1076,11 @@ font-style: inherit;">=</span>SEED)</span></code></pre></div>
 <section id="pulling-the-average-treatment-effect" class="level3">
 <h3 class="anchored" data-anchor-id="pulling-the-average-treatment-effect">Pulling the average treatment effect</h3>
 <p>From the Double ML literature, its clear that the <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> estimate of the final model is the unbiased average treatment effect, so all we have to do is pull that from the model posterior. We just have to make sure to reference the prefix, <code>M.</code> first</p>
-<div id="5e6aa2f7" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
+<div id="0dc806c4" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Plot the parameter recovery</span></span>
-<span id="cb10-2">sns.histplot(dml.params[<span class="st" style="color: #20794D;
+<span id="cb12-2">sns.histplot(dml.params[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'M.beta'</span>], element<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1083,7 +1091,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Estimate'</span>)</span>
-<span id="cb10-3">plt.axvline(tau, color<span class="op" style="color: #5E5E5E;
+<span id="cb12-3">plt.axvline(tau, color<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -1096,20 +1104,20 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Ground Truth'</span>)</span>
-<span id="cb10-4">plt.legend()</span>
-<span id="cb10-5">plt.xlabel(<span class="st" style="color: #20794D;
+<span id="cb12-4">plt.legend()</span>
+<span id="cb12-5">plt.xlabel(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"ATE"</span>)</span>
-<span id="cb10-6">plt.title(<span class="st" style="color: #20794D;
+<span id="cb12-6">plt.title(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Estimated ATE vs. Actual"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Text(0.5, 1.0, 'Estimated ATE vs. Actual')</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://kylejcaron.github.io/posts/2025-04-01-scope-double-ml_files/figure-html/cell-10-output-2.png" width="593" height="449" class="figure-img"></p>
+<p><img src="https://kylejcaron.github.io/posts/2025-04-01-scope-double-ml_files/figure-html/cell-11-output-2.png" width="593" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1118,84 +1126,84 @@ font-style: inherit;">"Estimated ATE vs. Actual"</span>)</span></code></pre></di
 <section id="what-happens-without-scope" class="level3">
 <h3 class="anchored" data-anchor-id="what-happens-without-scope">What happens without scope?</h3>
 <p>Note, without scope this would have failed because there would be multipled sites with the same param names, since both <code>Linear()</code> and <code>Logit()</code> models have sites named <code>alpha</code>, <code>beta</code>, etc</p>
-<div id="445c3971" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="im" style="color: #00769E;
+<div id="7b0a0750" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> traceback</span>
-<span id="cb12-2"></span>
-<span id="cb12-3"><span class="co" style="color: #5E5E5E;
+<span id="cb14-2"></span>
+<span id="cb14-3"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># We'll just change the __init__ to not use scope</span></span>
-<span id="cb12-4"><span class="co" style="color: #5E5E5E;
+<span id="cb14-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># but we'll keep everything else the same</span></span>
-<span id="cb12-5"><span class="kw" style="color: #003B4F;
+<span id="cb14-5"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">class</span> IncorrectDoubleML(DoubleML):</span>
-<span id="cb12-6">    </span>
-<span id="cb12-7">    <span class="kw" style="color: #003B4F;
+<span id="cb14-6">    </span>
+<span id="cb14-7">    <span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(</span>
-<span id="cb12-8">        <span class="va" style="color: #111111;
+<span id="cb14-8">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>,</span>
-<span id="cb12-9">        propensity_model: NumpyroModel <span class="op" style="color: #5E5E5E;
+<span id="cb14-9">        propensity_model: NumpyroModel <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>,</span>
-<span id="cb12-10">        outcome_model: NumpyroModel <span class="op" style="color: #5E5E5E;
+<span id="cb14-10">        outcome_model: NumpyroModel <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">None</span>,</span>
-<span id="cb12-11">        <span class="op" style="color: #5E5E5E;
+<span id="cb14-11">        <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">**</span>kwargs,</span>
-<span id="cb12-12">    ):</span>
-<span id="cb12-13">        <span class="bu" style="color: null;
+<span id="cb14-12">    ):</span>
+<span id="cb14-13">        <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">super</span>().<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">**</span>kwargs)</span>
-<span id="cb12-14">        <span class="va" style="color: #111111;
+<span id="cb14-14">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.debias_model <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> propensity_model</span>
-<span id="cb12-15">        <span class="va" style="color: #111111;
+<span id="cb14-15">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.denoise_model <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> outcome_model</span>
-<span id="cb12-16">        <span class="va" style="color: #111111;
+<span id="cb14-16">        <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.ate_model <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> Linear()</span>
-<span id="cb12-17"></span>
-<span id="cb12-18"></span>
-<span id="cb12-19"><span class="cf" style="color: #003B4F;
+<span id="cb14-17"></span>
+<span id="cb14-18"></span>
+<span id="cb14-19"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">try</span>:</span>
-<span id="cb12-20">    dml <span class="op" style="color: #5E5E5E;
+<span id="cb14-20">    dml <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> IncorrectDoubleML(</span>
-<span id="cb12-21">        propensity_model<span class="op" style="color: #5E5E5E;
+<span id="cb14-21">        propensity_model<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>Logit(), </span>
-<span id="cb12-22">        outcome_model<span class="op" style="color: #5E5E5E;
+<span id="cb14-22">        outcome_model<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>Linear()</span>
-<span id="cb12-23">    ).fit(X, A, y)</span>
-<span id="cb12-24"><span class="cf" style="color: #003B4F;
+<span id="cb14-23">    ).fit(X, A, y)</span>
+<span id="cb14-24"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">except</span> <span class="pp" style="color: #AD0000;
@@ -1203,12 +1211,12 @@ background-color: null;
 font-style: inherit;">Exception</span> <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">as</span> e:</span>
-<span id="cb12-25">    traceback.print_exc()</span></code></pre></div>
+<span id="cb14-25">    traceback.print_exc()</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Traceback (most recent call last):
-  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_23623/1941668504.py", line 23, in &lt;module&gt;
+  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_25763/1941668504.py", line 23, in &lt;module&gt;
     ).fit(X, A, y)
-  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_23623/3488910688.py", line 60, in fit
+  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_25763/3488910688.py", line 60, in fit
     mcmc.run(rng_key, *args, **kwargs)
   File "/Users/kylecaron/Desktop/kylejcaron.github.io/.venv/lib/python3.10/site-packages/numpyro/infer/mcmc.py", line 640, in run
     states, last_state = pmap(partial_map_fn)(map_args)
@@ -1254,9 +1262,9 @@ font-style: inherit;">as</span> e:</span>
     return self.fn(*args, **kwargs)
   File "/Users/kylecaron/Desktop/kylejcaron.github.io/.venv/lib/python3.10/site-packages/numpyro/primitives.py", line 105, in __call__
     return self.fn(*args, **kwargs)
-  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_23623/1207791297.py", line 17, in __call__
+  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_25763/1207791297.py", line 17, in __call__
     mu_y, y = self.denoise_model(X=X, y=y) # denoise outcome E[y|X]
-  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_23623/3665807378.py", line 4, in __call__
+  File "/var/folders/1p/v01fvg3j1cz1hzv988ygj8m00000gn/T/ipykernel_25763/3665807378.py", line 4, in __call__
     alpha = numpyro.sample("alpha", dist.Normal(0, 1))
   File "/Users/kylecaron/Desktop/kylejcaron.github.io/.venv/lib/python3.10/site-packages/numpyro/primitives.py", line 222, in sample
     msg = apply_stack(initial_msg)
