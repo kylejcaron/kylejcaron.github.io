@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Double ML in Numpyro using `scope`"
+title:  "Double ML in Numpyro using scope"
 image: "../assets/img/placeholder.png"
 date: "2025-04-01"
 categories:
