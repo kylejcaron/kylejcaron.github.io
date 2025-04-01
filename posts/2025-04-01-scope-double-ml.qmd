@@ -155,6 +155,10 @@ def peek(dct, n=3):
 peek( m1.params )
 ```
 
+```{python}
+peek( m2.params )
+```
+
 # Double ML example
 
 This is the fun part. We'll use Double Machine Learning as an example of why   `scope` is so useful. 
