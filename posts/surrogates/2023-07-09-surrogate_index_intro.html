@@ -430,7 +430,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <section id="step-1-simulating-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-simulating-the-data">Step 1: Simulating the data</h2>
 <p>We’ll start by simulating two datasets: A historical dataset and an experiment dataset. The advantage to simulating data is that we know the exact effects, so when we try and estimate them we can confirm our methods are recovering the true effect.</p>
-<div id="335cac4d" class="cell" data-execution_count="1">
+<div id="06383fce" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -587,7 +587,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 </div>
 <p>The underlying simulation code is below if you’re interested</p>
-<div id="fd32bffb" class="cell" data-execution_count="2">
+<div id="f5aafd7f" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Dict</span>
@@ -659,7 +659,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <section id="step-2-fitting-a-surrogate-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-fitting-a-surrogate-model">Step 2: Fitting a surrogate model</h2>
 <p>We’ll use the historical dataset to fit the surrogate index model, mapping <span class="math inline">\(S \rightarrow Y\)</span></p>
-<div id="9b7dc24e" class="cell" data-execution_count="3">
+<div id="201e5064" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>S_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"S"</span>).columns )</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X_vars <span class="op">=</span> <span class="st">" + "</span>.join( historical_data.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">"X"</span>).columns )</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -695,13 +695,13 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">Date:</td>
-<td>Sat, 22 Feb 2025</td>
+<td>Wed, 05 Mar 2025</td>
 <td data-quarto-table-cell-role="th">Prob (F-statistic):</td>
 <td>0.00</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">Time:</td>
-<td>11:34:39</td>
+<td>15:34:16</td>
 <td data-quarto-table-cell-role="th">Log-Likelihood:</td>
 <td>-33320.</td>
 </tr>
@@ -871,7 +871,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 <h2 class="anchored" data-anchor-id="step-3-estimate-long-term-treatment-effect">Step 3: Estimate Long Term Treatment Effect</h2>
 <p>We’ll now use the surrogate index to estimate a long term treatment effect</p>
 <p>Let’s take our experiment dataset and estimate <span class="math inline">\(E[\delta_{\text{LTO}}]\)</span>, the average treatment effect on the long term outcome. Notice, the long term outcome, <span class="math inline">\(Y\)</span>, hasn’t been observed yet.</p>
-<div id="f0426d15" class="cell" data-execution_count="4">
+<div id="21554f75" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>display(experiment_data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -999,7 +999,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 </div>
 <p>First, we’ll do some visulation of the experiment data.</p>
-<div id="96943659" class="cell" data-execution_count="5">
+<div id="190defb6" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Xdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>),sharey<span class="op">=</span><span class="va">True</span>)</span>
@@ -1021,7 +1021,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 <p>As we can see above, the pre-treatment variables are the exact same between the experiment groups. Thats because users are randomly allocated into treatment and control groups, and their pre-treatment varibles by definition are things not imapcted by the experiment.</p>
 <p>Conversely, if we look at the surrogate outcomes below, we’ll see some differences in surrogate outcomes between the treatment and control groups.</p>
-<div id="c207e7a3" class="cell" data-execution_count="6">
+<div id="2eb0da9b" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>,<span class="bu">int</span>(Sdims<span class="op">/</span><span class="dv">2</span>),figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
@@ -1043,7 +1043,7 @@ E[\delta_{\text{LTO}}] = E[\hat{Y} | T=1] - E[\hat{Y} | T=0]
 </div>
 <p>If our surrogate index estimator is correct, these observed surrogate outcomes should directly map to the Long Term Outcome deterministically, via <span class="math inline">\(\hat{Y} = f(S)\)</span>, where <span class="math inline">\(f()\)</span> is the surrogate index model.</p>
 <p>We can show that the surrogate index estimator recovers the true average treatment effect on the long term outcome</p>
-<div id="a6a76835" class="cell" data-execution_count="7">
+<div id="f9971b1f" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_delta_LTO(experiment_data, surrogate_model, predicted_sigma2):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Accepts experiment data with a binary treatment, a surrogate model, and the predicted sigma^2 of the surrogate model.</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns the ATE estimate and its uncertainty</span></span>

@@ -2,66 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://kylejcaron.github.io/blog.html</loc>
-    <lastmod>2025-02-22T14:42:25.034Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.973Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/archive.html</loc>
-    <lastmod>2025-02-22T14:42:25.029Z</lastmod>
+    <lastmod>2025-02-21T20:36:02.968Z</lastmod>
   </url>
   <url>
-    <loc>https://kylejcaron.github.io/posts/2022-04-03-explainable-ai-is-not-causal.html</loc>
-    <lastmod>2025-03-05T20:38:50.033Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/2022-04-11-uncertainty_intervals_over_pvals.html</loc>
-    <lastmod>2025-03-05T20:38:50.034Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</loc>
-    <lastmod>2025-03-05T20:38:50.035Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/2025-03-06-metric-choice.html</loc>
-    <lastmod>2025-03-06T13:21:16.866Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/experiment_design.html</loc>
-    <lastmod>2025-03-05T20:38:50.035Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html</loc>
-    <lastmod>2025-03-05T20:38:50.035Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/pandera_schemas/2025-02-21-pandera-schemas.html</loc>
-    <lastmod>2025-03-05T20:38:50.036Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro.html</loc>
-    <lastmod>2025-03-05T20:38:50.036Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/2022-04-17-out-of-sample-pymc.html</loc>
-    <lastmod>2025-03-05T20:38:50.034Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools.html</loc>
-    <lastmod>2025-02-22T14:42:25.038Z</lastmod>
-  </url>
-  <url>
-    <loc>https://kylejcaron.github.io/posts/2025-03-06-multicollinearity-misconceptions.html</loc>
-    <lastmod>2025-03-06T13:23:06.575Z</lastmod>
+    <loc>https://kylejcaron.github.io/posts/2025-04-01-scope-double-ml.html</loc>
+    <lastmod>2025-04-01T20:08:02.773Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/censored_demand/2024-02-06-censored-demand.html</loc>
-    <lastmod>2025-03-05T20:38:50.034Z</lastmod>
+    <lastmod>2025-02-25T21:39:25.349Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/2025-03-06-multicollinearity-misconceptions.html</loc>
+    <lastmod>2025-03-17T19:35:23.622Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/weibull_survival_analysis/weibull_survival_tools.html</loc>
+    <lastmod>2025-02-21T20:36:02.977Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/2022-04-17-out-of-sample-pymc.html</loc>
+    <lastmod>2025-02-25T21:39:25.349Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/surrogates/2023-07-09-surrogate_index_intro.html</loc>
+    <lastmod>2025-03-05T20:34:06.990Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/pandera_schemas/2025-02-21-pandera-schemas.html</loc>
+    <lastmod>2025-02-25T21:39:25.352Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html</loc>
+    <lastmod>2025-02-25T21:39:25.351Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/experiment_design.html</loc>
+    <lastmod>2025-02-25T21:39:25.350Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/2025-03-06-metric-choice.html</loc>
+    <lastmod>2025-03-17T19:35:23.622Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/experiment_strategy/2023-06-09-experiment-strategy.html</loc>
+    <lastmod>2025-02-25T21:39:25.351Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/2022-04-11-uncertainty_intervals_over_pvals.html</loc>
+    <lastmod>2025-02-25T21:39:25.348Z</lastmod>
+  </url>
+  <url>
+    <loc>https://kylejcaron.github.io/posts/2022-04-03-explainable-ai-is-not-causal.html</loc>
+    <lastmod>2025-02-25T21:39:25.347Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/posts/2022-04-05-ab-test-duration.html</loc>
-    <lastmod>2025-03-05T20:38:50.033Z</lastmod>
+    <lastmod>2025-02-25T21:39:25.348Z</lastmod>
   </url>
   <url>
     <loc>https://kylejcaron.github.io/index.html</loc>
-    <lastmod>2025-03-05T20:38:50.033Z</lastmod>
+    <lastmod>2025-02-25T21:39:25.347Z</lastmod>
   </url>
 </urlset>

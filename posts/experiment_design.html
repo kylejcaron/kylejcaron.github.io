@@ -247,7 +247,7 @@ window.Quarto = {
 <section id="a-hypothetical-world" class="level2">
 <h2 class="anchored" data-anchor-id="a-hypothetical-world">A Hypothetical world</h2>
 <p>What if we envision some hypothetical world we can observe the outcome for each customer who reached out to customer support, with and without having the treatment of receiving a promo?</p>
-<div id="381cbe60" class="cell" data-execution_count="1">
+<div id="39083a65" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -356,7 +356,7 @@ window.Quarto = {
 <p><span class="math display">\[
 \tau = \frac{1}{N} \sum^{N}_{i=0} Y_i(1) - Y_i(0)
 \]</span></p>
-<div id="56c330ae" class="cell" data-execution_count="2">
+<div id="7c554128" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data.ITE.mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>500.09949529999994</code></pre>
@@ -370,7 +370,7 @@ window.Quarto = {
 \end{align}
 \]</span></p>
 <p>We can confirm that this is equivalent to the ATE from above with code</p>
-<div id="30a5d767" class="cell" data-execution_count="3">
+<div id="97023b39" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> data[<span class="st">"T"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(pi <span class="op">*</span> data.groupby(<span class="st">"T"</span>).mean()[<span class="st">"ITE"</span>]).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
@@ -381,7 +381,7 @@ window.Quarto = {
 <section id="getting-hit-with-the-real-world" class="level2">
 <h2 class="anchored" data-anchor-id="getting-hit-with-the-real-world">Getting hit with the real world</h2>
 <p>So how can we create a scenario where we can observe each person with and without having received the promo? Sadly, we can’t. But is there a way to make use of data we already have? Here’s the actual data we might have access to. Notice that now the hypothetical potential outcomes are no longer visible (just like in the real world).</p>
-<div id="66543e58" class="cell" data-execution_count="4">
+<div id="f42edbd6" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Real world data</span></span>
@@ -473,7 +473,7 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p>Notice that I use the terms <span class="math inline">\(E[ Y(0) | T = 0 ]\)</span> and <span class="math inline">\(E[ Y(1) | T = 1 ]\)</span>. Reading these as plain english “the expected value (aka mean) of Y(0) given no treatment” and “the expected value (aka mean) of Y(1) given a treatment”</p>
 </blockquote>
-<div id="e1661c9a" class="cell" data-execution_count="5">
+<div id="f659cbe7" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">"T"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .mean()[[<span class="st">"Y"</span>]].T</span>
@@ -514,7 +514,7 @@ window.Quarto = {
 <section id="selection-bias" class="level2">
 <h2 class="anchored" data-anchor-id="selection-bias">Selection Bias</h2>
 <p>We can illustrate the problem by bringing another variable into the mix - customer unhappiness (we’re pretending we can measure it directly for examples sake).</p>
-<div id="1c063380" class="cell" data-execution_count="6">
+<div id="eefe9acc" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>,<span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">3</span>))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Histogram of</span><span class="ch">\n</span><span class="st">Customer unhappiness"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df.upset.hist(ax<span class="op">=</span>ax[<span class="dv">0</span>])</span>
@@ -687,7 +687,7 @@ E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 \]</span></p>
 <p>This is just saying selection bias is the fundamental difference between users who get picked for treatment vs.&nbsp;those who dont.</p>
 <p>In our case, the fundamental difference between whether users are selected for treatment is based upon their unhappiness. So if we can subtract out the effect of unhappiness, we can subtract out the selection bias</p>
-<div id="45a321eb" class="cell" data-execution_count="7">
+<div id="ea637b94" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">"T"</span>).mean()[[<span class="st">"upset"</span>]].T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
@@ -714,7 +714,7 @@ E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 </div>
 </div>
 <p>We can do this with OLS. The most obvious way is to fit a model relating unhappiness to LTV, and then subtract out that effect.</p>
-<div id="1dfef0ec" class="cell" data-execution_count="8">
+<div id="7bd6c06e" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"Y ~ upset"</span>, data<span class="op">=</span>df.loc[<span class="kw">lambda</span> d: d[<span class="st">"T"</span>]<span class="op">==</span><span class="dv">0</span>]).fit()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>Y0_hat <span class="op">=</span> model1.predict(df)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -749,7 +749,7 @@ E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 </div>
 </div>
 <p>And finally we can subtract out the effect, ending up with an estimate very close to the true ATE of 500</p>
-<div id="f4bbff11" class="cell" data-execution_count="9">
+<div id="4a5472c5" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df.assign(selection_bias <span class="op">=</span> Y0_hat)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"T"</span>).mean()[[<span class="st">"Y"</span>, <span class="st">"selection_bias"</span>]].T</span>
@@ -787,7 +787,7 @@ E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 </div>
 </div>
 <p>There’s actually an even more simple way to control for selection bias - it can just be included as a term in an OLS regression model.</p>
-<div id="b6c0fc11" class="cell" data-execution_count="10">
+<div id="9f4873e5" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> statsmodels_to_df(model):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> np.array(model.summary().tables[<span class="dv">1</span>].data)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(table[<span class="dv">1</span>:, <span class="dv">1</span>:], columns<span class="op">=</span>table[<span class="dv">0</span>,<span class="dv">1</span>:], index<span class="op">=</span>table[<span class="dv">1</span>:,<span class="dv">0</span>])</span>
@@ -852,7 +852,7 @@ E\big[Y(0)\mid T=1\big] - E\big[Y(0)\mid T=0\big]
 y = \alpha + \beta X + \epsilon
 \]</span></p>
 <p>We can also see that in our code, where the distribution of true HTE bias from our hypothetical dataset is centered at zero. Any time we’ve accounted for all selection bias, the HTE should be zero centered and cancel itself out as N increases.</p>
-<div id="c684ff3c" class="cell" data-execution_count="11">
+<div id="f11a46bc" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ATE <span class="op">=</span> data[<span class="st">"ITE"</span>].mean()</span>

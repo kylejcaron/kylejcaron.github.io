@@ -200,7 +200,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 
 
-<div id="3e22a01f" class="cell" data-execution_count="1">
+<div id="80a5e2e8" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -216,13 +216,13 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p>I recently had a project where I wasn’t responsible for and had no control over the input data. For a particular model, many different datasets would be sent to different models for inference, and I couldn’t always rely on the data being properly structured.</p>
 <p>I was also working with a range of different models including time-varying survival and time series models. I wanted to be able to reuse as much code across models, which is where Pandera comes in.</p>
 <p>Lets start with looking at some panel data:</p>
-<div id="a309ed5f" class="cell" data-execution_count="2">
+<div id="d21f8ba4" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>panel <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"entity_id"</span>:[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,],</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>:[<span class="st">'2023-01-01'</span>,<span class="st">'2023-02-01'</span>,<span class="st">'2023-01-01'</span>],</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>panel.assign(metric<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -309,17 +309,17 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>As a starting point, this makes it really easy to extend to time series models.</p>
-<div id="ad429c15" class="cell" data-execution_count="3">
+<div id="ab943f6f" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a fake sales dataframe</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"entity_id"</span>:<span class="dv">1</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>:pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, freq<span class="op">=</span><span class="st">'MS'</span>, periods<span class="op">=</span><span class="dv">4</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"entity_id"</span>: <span class="dv">1</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>: pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, freq<span class="op">=</span><span class="st">'MS'</span>, periods<span class="op">=</span><span class="dv">4</span>),</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"y"</span>:[<span class="dv">100</span>, <span class="dv">105</span>, <span class="dv">96</span>, <span class="dv">120</span>]</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -367,7 +367,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UnivariateTimeSeriesSchema(PanelSchema):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    y: Series[<span class="bu">float</span>] <span class="op">=</span> pa.Field(<span class="bu">coerce</span><span class="op">=</span><span class="va">True</span>, nullable<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>and just like that, I have all of those previous data checks extended to my time series model.</p>
-<p>There are some downsides though. First, you cant parameterize field names, for instance your outcome needs to be named <code>y</code>. Second, you need to make sure you can generalize</p>
+<p>There are some downsides though. My biggest issue with this is that you can’t parameterize field names, for instance your outcome needs to be named <code>y</code> and you need to have a column named <code>entity_id</code> in this case.</p>
 <p>For time-varying survival schema, they can be defined as</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TimeVaryingSurvivalSchema(PanelSchema):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""A schema for Time Varying Survival Analysis, should be a unique and complete panel dataset</span></span>
@@ -388,8 +388,8 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">@pa.dataframe_check</span></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> check_event_is_last_obs_per_entity(cls, df: DataFrame) <span class="op">-&gt;</span> Seris[<span class="bu">bool</span>]:</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>In this case, it inherits all of the previous schema checks from PanelSchema. We extend it further to add some survival analysis schema specific checks - for instance, for each entity_id, we expect there to be a tenure column indicating each consecutive time period. A common example for tenure is the months since a customer started a subscription.</p>
-<div id="6a29a96e" class="cell" data-execution_count="4">
+<p>In this case, it inherits all of the previous schema checks from <code>PanelSchema</code>. We extend it further to add some survival analysis schema specific checks - for each entity_id, we expect there to be a tenure column indicating each consecutive time period. A common example for tenure is the months since a customer started a subscription.</p>
+<div id="5a7ef51b" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>panel.assign(</span>
@@ -398,7 +398,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    event <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -444,7 +444,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<p>Whats great about this is that its all so easy to read and mimics how we think about it conceptually. Time Series and Time-varying survival are just sub-categories of panel data. And our code mimics that perfectly.</p>
+<p>Whats great about this is that its easy to read and understand. Time Series and Time-varying survival are just sub-categories of panel data. And our code mimics that perfectly.</p>
 </section>
 <section id="concluding-thoughts" class="level1">
 <h1>Concluding Thoughts</h1>
@@ -455,12 +455,12 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <li>Will this scale for massive datasets? I’m not sure if the code will be able to stay this clean at larger scales, especially for consecutive row based operations like validating frequencies. Not sure how that one will play out when the data needs to be batched.</li>
 <li>Pandera isn’t the most flexible since you’re typically working with uninstantiated classes and class methods. There can be some growing pains for less experienced programmers</li>
 <li>There is a really cool yaml output feature that lets you take a schema and get a yaml list of all of the checks it will run, but it doesn’t support custom checks and that basically makes it unusable.</li>
-<li>I found that the project maintainers weren’t that responsive on github</li>
+<li>I’m not sure its a particularly active project</li>
 </ol>
 <p>Overall, its definitely a useful tool to keep in your back pocket, but I have two pieces of advice:</p>
 <ol type="1">
 <li>If you have the luxury of predictable data inputs or you’re modeling a single dataset over time, you probably don’t need this and can stick to dbt validation or something simple.</li>
-<li>If you’re working on large datasets, maybe do a POC and make sure your schema approach will work for data thats loaded in batches</li>
+<li>If you’re working on large datasets, maybe do a POC and make sure your schema approach will work for data thats loaded in batches.</li>
 </ol>
 <p>Note: I may update this later to have actual working code to demo, but for now it’s pseudocode.</p>
 

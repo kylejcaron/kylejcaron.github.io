@@ -221,7 +221,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#what-are-coords-and-dims" id="toc-what-are-coords-and-dims" class="nav-link" data-scroll-target="#what-are-coords-and-dims">What are coords and dims?</a></li>
   <li><a href="#numpyros-default-behavior" id="toc-numpyros-default-behavior" class="nav-link" data-scroll-target="#numpyros-default-behavior">Numpyro’s default behavior</a></li>
-  <li><a href="#pulling-plate-metadata" id="toc-pulling-plate-metadata" class="nav-link" data-scroll-target="#pulling-plate-metadata">Pulling plate metadata</a></li>
+  <li><a href="#pulling-model-relations" id="toc-pulling-model-relations" class="nav-link" data-scroll-target="#pulling-model-relations">Pulling model relations</a></li>
   </ul></li>
   <li><a href="#part-2-adding-an-edge-case-with-multiple-plates-per-site" id="toc-part-2-adding-an-edge-case-with-multiple-plates-per-site" class="nav-link" data-scroll-target="#part-2-adding-an-edge-case-with-multiple-plates-per-site">Part 2: Adding an edge case with multiple plates per site</a>
   <ul class="collapse">
@@ -247,7 +247,7 @@ window.Quarto = {
 
 
 
-<div id="0309be02" class="cell" data-execution_count="1">
+<div id="035558d0" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Optional, Callable, List, Dict</span>
@@ -309,7 +309,7 @@ ArviZ version:  0.20.0</code></pre>
 <section id="numpyros-default-behavior" class="level2">
 <h2 class="anchored" data-anchor-id="numpyros-default-behavior">Numpyro’s default behavior</h2>
 <p>Let’s explore numpyro’s default behavior and see where it falls short. We’ll start with simulating some regression data</p>
-<div id="bc590f85" class="cell" data-execution_count="2">
+<div id="57a94c30" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(SEED)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>N, n_feats <span class="op">=</span> <span class="dv">1000</span>, <span class="dv">3</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>z_cardinality <span class="op">=</span> <span class="dv">10</span></span>
@@ -333,7 +333,7 @@ ArviZ version:  0.20.0</code></pre>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, lets fit a linear regression model and try and pass it into ArviZ to see what the dims for our parameters look like</p>
-<div id="6049740c" class="cell" data-execution_count="3">
+<div id="184b75f8" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_inference(</span>
@@ -354,7 +354,7 @@ ArviZ version:  0.20.0</code></pre>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>var<span class="sc">}</span><span class="ss">:"</span>, idata.posterior[var].dims )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="f63aec74" class="cell" data-execution_count="4">
+<div id="f78e6915" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> model(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    X: Float[Array, <span class="st">"obs features"</span>], </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    Z: Float[Array, <span class="st">" obs"</span>], </span>
@@ -386,9 +386,9 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 <p>What we really want is for those dimensions labeled “{site}_dim_0” to be labelled by their plate names, so we need to see if there’s a way to automatically grab the plate metadata. Luckily there’s an <code>inspect</code> module in numpyro that seems like it might cover some of this.</p>
 </section>
-<section id="pulling-plate-metadata" class="level2">
-<h2 class="anchored" data-anchor-id="pulling-plate-metadata">Pulling plate metadata</h2>
-<div id="890f1af1" class="cell" data-execution_count="5">
+<section id="pulling-model-relations" class="level2">
+<h2 class="anchored" data-anchor-id="pulling-model-relations">Pulling model relations</h2>
+<div id="b309a683" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_relations <span class="op">=</span> inspect.get_model_relations(model, model_kwargs<span class="op">=</span><span class="bu">dict</span>(X<span class="op">=</span>X, Z<span class="op">=</span>z, y<span class="op">=</span>y))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model_relations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
@@ -416,7 +416,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"y"</span>: [<span class="st">"obs_id"</span>]</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>All we need to do is make a quick dictionary reversing function</p>
-<div id="e54531c2" class="cell" data-execution_count="6">
+<div id="d4b51073" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reverse_plate_mapping(plate_mapping: Dict[<span class="bu">str</span>, List[<span class="bu">str</span>]]) <span class="op">-&gt;</span> Dict[<span class="bu">str</span>, List[<span class="bu">str</span>]]:</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    reversed_map <span class="op">=</span> defaultdict(<span class="bu">list</span>)</span>
@@ -443,7 +443,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <section id="does-our-approach-preserve-the-dimension-order" class="level2">
 <h2 class="anchored" data-anchor-id="does-our-approach-preserve-the-dimension-order">Does our approach preserve the dimension order?</h2>
 <p>We’ll have to simulate some new data where <span class="math inline">\(\beta\)</span> has group-specific effects. I’m going to make each feature have a group specific effect so that I can test if my solutions will work with nested plates.</p>
-<div id="a223bb62" class="cell" data-execution_count="7">
+<div id="7212a617" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate new data</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> rng.normal(size<span class="op">=</span>(z_cardinality, n_feats))</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> alpha <span class="op">+</span> (X <span class="op">*</span> beta[z]).<span class="bu">sum</span>(<span class="op">-</span><span class="dv">1</span>) <span class="op">+</span> gamma[z]</span>
@@ -478,7 +478,7 @@ beta: ('chain', 'draw', 'beta_dim_0', 'beta_dim_1')
 mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 </div>
-<div id="36613fa9" class="cell" data-execution_count="8">
+<div id="f3f3db1e" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model2_relations <span class="op">=</span> inspect.get_model_relations(model2, model_kwargs<span class="op">=</span><span class="bu">dict</span>(X<span class="op">=</span>X, Z<span class="op">=</span>z, y<span class="op">=</span>y))</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>model2_relations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -501,7 +501,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 </div>
 <p>This is tricky. Beta should have dims (chain, draw, features, Z), but how do we know the plate_sample dictionary will return the correct order? What happens if we reverse the plate order?</p>
-<div id="b18c9531" class="cell" data-execution_count="9">
+<div id="7fba7c7a" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> model2_reversed(</span>
@@ -528,7 +528,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 <span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>mcmc_reversed <span class="op">=</span> run_inference(model2_reversed, random.PRNGKey(<span class="dv">0</span>), X<span class="op">=</span>X, Z<span class="op">=</span>z, y<span class="op">=</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="fe5525c9" class="cell" data-execution_count="10">
+<div id="ff7363ba" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model2_reversed_relations <span class="op">=</span> inspect.get_model_relations(model2_reversed, model_kwargs<span class="op">=</span><span class="bu">dict</span>(X<span class="op">=</span>X, Z<span class="op">=</span>z, y<span class="op">=</span>y))</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model2_relations[<span class="st">'plate_sample'</span>])</span>
@@ -554,7 +554,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>I’m going to try and see what other information is in there by copying their approach of pulling a model trace. Some helper functions are hidden in the code-fold below</p>
-<div id="4447506c" class="cell" data-execution_count="11">
+<div id="699cd180" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
@@ -590,7 +590,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 <span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PytreeTrace(trace)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="3ad9e3ac" class="cell" data-execution_count="12">
+<div id="c8283e75" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>trace <span class="op">=</span> jax.eval_shape(partial(get_trace, model2, model_kwargs)).trace</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>trace[<span class="st">'beta'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
@@ -611,7 +611,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 </div>
 <p>This is perfect! For each site, we can see the plates they are nested within and the dimensions of those plates.</p>
 <p>We also see for the reversed model, the order of the plates and the dim values follow a consistent pattern.</p>
-<div id="1cea2dc4" class="cell" data-execution_count="13">
+<div id="91f3d166" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>trace_reversed <span class="op">=</span> jax.eval_shape(partial(get_trace, model2_reversed, model_kwargs)).trace</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>trace_reversed[<span class="st">'beta'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
@@ -638,7 +638,7 @@ mu: ('chain', 'draw', 'mu_dim_0')</code></pre>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> site[<span class="st">"type"</span>] <span class="kw">in</span> [<span class="st">"sample"</span>, <span class="st">"deterministic"</span>]</span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The working implementation is below (but could probably be cleaned up)</p>
-<div id="639d10a8" class="cell" data-execution_count="14">
+<div id="fa87d194" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_site_dims(model: Callable, <span class="op">**</span>kwargs):</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _get_dist_name(fn):</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(</span>
@@ -704,7 +704,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <p>with the ZeroSumNormal we define categorical parameters like this:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>gamma <span class="op">=</span> numpyro.sample(<span class="st">"gamma"</span>, dist.ZeroSumNormal(<span class="dv">1</span>, event_shape<span class="op">=</span>(n_groups,)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We need to figure out how to have dims mapped for the ZeroSumNormal despite it not using a plate. The first test will be seeing what happens when we do nest it under a plate</p>
-<div id="54951699" class="cell" data-execution_count="15">
+<div id="ccc0ffd1" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_model():</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    n_groups <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> numpyro.plate(<span class="st">"groups"</span>, n_groups):</span>
@@ -730,7 +730,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    gamma <span class="op">=</span> numpyro.sample(<span class="st">"gamma"</span>, dist.ZeroSumNormal(<span class="dv">1</span>, event_shape<span class="op">=</span>(n_groups,)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The main idea is that we could store information thats retrieavable in the trace, mimicking plates but without actually expanding the parameter shape like a plate would</p>
 <p>Below is an implementation and a quick test model to make sure it has the correct shape saved</p>
-<div id="19872d17" class="cell" data-execution_count="16">
+<div id="3b6c8ef4" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpyro.primitives <span class="im">import</span> Messenger, Message, CondIndepStackFrame</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> pseudo_plate(numpyro.plate):</span>
@@ -770,7 +770,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>As we can see above, we got the correct shape for gamma. Lets see if this works in a model</p>
-<div id="dac2476d" class="cell" data-execution_count="17">
+<div id="2419170c" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> model3(</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    X: Float[Array, <span class="st">"obs features"</span>], </span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    Z: Float[Array, <span class="st">" obs"</span>], </span>
@@ -811,11 +811,11 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>This seemed to work! But are there any unintended consequences of having another “plate” in the <code>CondIndepStack</code>? Lets fit a second version of the model without the pseudo_plate and see if they return similar results</p>
-<div id="beaa8c2b" class="cell" data-execution_count="18">
+<div id="f328658a" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>mcmc_zsn <span class="op">=</span> run_inference(model3, random.PRNGKey(<span class="dv">0</span>), num_chains<span class="op">=</span><span class="dv">2</span>, num_warmup<span class="op">=</span><span class="dv">1000</span>, num_samples<span class="op">=</span><span class="dv">1000</span>, <span class="op">**</span>model_kwargs, try_pseudo_plate<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We’ll check that parameter estimation for the site is the same</p>
-<div id="e08aaadd" class="cell" data-execution_count="19">
+<div id="55d657a7" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>az.plot_forest(</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    [mcmc_zsn_pseudoplate, mcmc_zsn],</span>
@@ -833,7 +833,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>And more importantly, we’ll make sure this doesnt impact the final likelihood estimate</p>
-<div id="68b8377f" class="cell" data-execution_count="20">
+<div id="96f75340" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>idata_zsn_pseudoplate <span class="op">=</span> az.from_numpyro(mcmc_zsn_pseudoplate)</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>idata_zsn <span class="op">=</span> az.from_numpyro(mcmc_zsn)</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -849,7 +849,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <section id="another-edge-case-both-batch-and-event-dims" class="level2">
 <h2 class="anchored" data-anchor-id="another-edge-case-both-batch-and-event-dims">Another edge case: both batch and event dims</h2>
 <p>Next we need to make sure it works if we also have a batch dimension</p>
-<div id="d7317474" class="cell" data-execution_count="21">
+<div id="03a367c2" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_model_batches():</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    n_groups <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pseudo_plate(<span class="st">"groups"</span>, n_groups), numpyro.plate(<span class="st">"batches"</span>, <span class="dv">3</span>):</span>
@@ -862,7 +862,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>Sadly this didnt quite work - it seems like the dim-handling isn’t working as we want it to because the batch shape is (3,1) instead of just (3,) - this is because of the way we aranged the plates, we put the batches in the position of dim=-2. Lets look at the trace</p>
-<div id="26fb0641" class="cell" data-execution_count="22">
+<div id="be2908f4" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>trace[<span class="st">'gamma'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>{'args': (),
@@ -886,7 +886,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <p>Taking a step back, it’s clear I thought about this wrong - the Conditional Indepdence Stack is for batch dimensions that are conditionally independent, and by putting our pseudoplate in there, we’re messing with how the batch dimensions are arranged.</p>
 <p>It’s also hard to follow exactly how the conditional indepence stack is used throughout the code, and if that will have any unexpected consequences.</p>
 <p>I’m going to try something new - lets make a new primitive that creates a <code>dep_stack</code> and we’ll put the pseudo plates in there and see if it fixes things. This is going to get even more ugly so I’m hiding the implementation below in a code fold</p>
-<div id="4b1072e7" class="cell" data-execution_count="23">
+<div id="f991f1c0" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Tuple</span>
@@ -986,7 +986,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </details>
 </div>
 <p>Note that I’m copying alot of the code above directly from the <code>plate</code> <a href="https://github.com/pyro-ppl/numpyro/blob/627d19a8e01e3d1b6c7a594ef7f49face4921f92/numpyro/primitives.py#L467">primitive</a>.</p>
-<div id="36e2fbe1" class="cell" data-execution_count="24">
+<div id="f0af7a23" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_model_batches():</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    n_groups <span class="op">=</span> <span class="dv">10</span></span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pseudo_plate(<span class="st">"groups"</span>, n_groups), numpyro.plate(<span class="st">"batches"</span>, <span class="dv">3</span>):</span>
@@ -1000,7 +1000,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>Perfect this now works, we just need to combine our two plate stacks!</p>
-<div id="52c1b302" class="cell" data-execution_count="25">
+<div id="a5eecb4a" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>trace[<span class="st">'gamma'</span>][<span class="st">'cond_indep_stack'</span>] <span class="op">+</span> trace[<span class="st">'gamma'</span>][<span class="st">'dep_stack'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="25">
 <pre><code>[CondIndepStackFrame(name='batches', dim=-1, size=3),
@@ -1012,7 +1012,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 <section id="part-4-the-resulting-implementation" class="level1">
 <h1>Part 4: The resulting implementation</h1>
 <p>Finally, lets bring this altogether. In the code-fold below is all of the needed functions in one place, but they really need to be cleaned up.</p>
-<div id="f157ec8c" class="cell" data-execution_count="26">
+<div id="497f5e4d" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Tuple, Any, Optional, List, Dict, Callable</span>
@@ -1179,7 +1179,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </details>
 </div>
 <p>And the simulation code is underneath the following code-fold</p>
-<div id="11da1e2e" class="cell" data-execution_count="27">
+<div id="044ea2f2" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #################</span></span>
@@ -1208,7 +1208,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </details>
 </div>
 <p>And finally here’s how we’d actually use all of these tools</p>
-<div id="40624d88" class="cell" data-execution_count="28">
+<div id="79432483" class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_inference(</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    model: Callable,</span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    key: random.PRNGKey,</span>
@@ -1265,7 +1265,7 @@ mu: ('chain', 'draw', 'obs_id')</code></pre>
 </div>
 </div>
 <p>We can see above that the dims are all properly labelled, and below we can see them properly mapped to the coords provided</p>
-<div id="0b8df25a" class="cell" data-execution_count="29">
+<div id="e3aa8645" class="cell" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>idata.posterior[<span class="st">'gamma'</span>].coords[<span class="st">'Z'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="29">
 <div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
@@ -1641,7 +1641,7 @@ dl.xr-attrs {
 </style><pre class="xr-text-repr-fallback">&lt;xarray.DataArray 'Z' (Z: 10)&gt; Size: 40B
 array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='&lt;U1')
 Coordinates:
-  * Z        (Z) &lt;U1 40B 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J'</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.DataArray</div><div class="xr-array-name">'Z'</div><ul class="xr-dim-list"><li><span class="xr-has-index">Z</span>: 10</li></ul></div><ul class="xr-sections"><li class="xr-section-item"><div class="xr-array-wrap"><input id="section-4e959f6e-be89-4c61-85b6-256f3e3b28eb" class="xr-array-in" type="checkbox" checked=""><label for="section-4e959f6e-be89-4c61-85b6-256f3e3b28eb" title="Show/hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-array-preview xr-preview"><span>'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J'</span></div><div class="xr-array-data"><pre>array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='&lt;U1')</pre></div></div></li><li class="xr-section-item"><input id="section-cd580160-41f1-4a8e-afc6-6dc8440ac456" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-cd580160-41f1-4a8e-afc6-6dc8440ac456" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">Z</span></div><div class="xr-var-dims">(Z)</div><div class="xr-var-dtype">&lt;U1</div><div class="xr-var-preview xr-preview">'A' 'B' 'C' 'D' ... 'G' 'H' 'I' 'J'</div><input id="attrs-6fc521f9-ae74-4537-bd42-6e7a6242cf4c" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-6fc521f9-ae74-4537-bd42-6e7a6242cf4c" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-6c035385-8428-4b0e-a0b4-90024e908d7e" class="xr-var-data-in" type="checkbox"><label for="data-6c035385-8428-4b0e-a0b4-90024e908d7e" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='&lt;U1')</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-f4f0c8ca-df0f-4195-9fa7-9de3d8f7a081" class="xr-section-summary-in" type="checkbox"><label for="section-f4f0c8ca-df0f-4195-9fa7-9de3d8f7a081" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>Z</div></div><div class="xr-index-preview">PandasIndex</div><input type="checkbox" disabled=""><label></label><input id="index-459ea2d2-694e-4f65-be95-97f790753e39" class="xr-index-data-in" type="checkbox"><label for="index-459ea2d2-694e-4f65-be95-97f790753e39" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='object', name='Z'))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-2a42a744-40b0-4562-b9a9-cc64aa4f101a" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-2a42a744-40b0-4562-b9a9-cc64aa4f101a" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
+  * Z        (Z) &lt;U1 40B 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J'</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.DataArray</div><div class="xr-array-name">'Z'</div><ul class="xr-dim-list"><li><span class="xr-has-index">Z</span>: 10</li></ul></div><ul class="xr-sections"><li class="xr-section-item"><div class="xr-array-wrap"><input id="section-98e7885a-bd06-4e1d-bb7b-e22eb81bf8ca" class="xr-array-in" type="checkbox" checked=""><label for="section-98e7885a-bd06-4e1d-bb7b-e22eb81bf8ca" title="Show/hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-array-preview xr-preview"><span>'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J'</span></div><div class="xr-array-data"><pre>array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='&lt;U1')</pre></div></div></li><li class="xr-section-item"><input id="section-e6811903-74c3-4c96-af9e-317021a43030" class="xr-section-summary-in" type="checkbox" checked=""><label for="section-e6811903-74c3-4c96-af9e-317021a43030" class="xr-section-summary">Coordinates: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">Z</span></div><div class="xr-var-dims">(Z)</div><div class="xr-var-dtype">&lt;U1</div><div class="xr-var-preview xr-preview">'A' 'B' 'C' 'D' ... 'G' 'H' 'I' 'J'</div><input id="attrs-b58abf52-b0af-4d8f-bcf6-709ef539eab8" class="xr-var-attrs-in" type="checkbox" disabled=""><label for="attrs-b58abf52-b0af-4d8f-bcf6-709ef539eab8" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use href="#icon-file-text2"></use></svg></label><input id="data-7c4b9f0e-4155-480d-be54-d45cb872d39c" class="xr-var-data-in" type="checkbox"><label for="data-7c4b9f0e-4155-480d-be54-d45cb872d39c" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"></dl></div><div class="xr-var-data"><pre>array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='&lt;U1')</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-6a12d220-ba7a-4d8e-8c18-8758ba853240" class="xr-section-summary-in" type="checkbox"><label for="section-6a12d220-ba7a-4d8e-8c18-8758ba853240" class="xr-section-summary">Indexes: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-index-name"><div>Z</div></div><div class="xr-index-preview">PandasIndex</div><input type="checkbox" disabled=""><label></label><input id="index-c6ec50e6-dc52-4e40-b685-944ae5ad10f0" class="xr-index-data-in" type="checkbox"><label for="index-c6ec50e6-dc52-4e40-b685-944ae5ad10f0" title="Show/Hide index repr"><svg class="icon xr-icon-database"><use href="#icon-database"></use></svg></label><div class="xr-index-data"><pre>PandasIndex(Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'], dtype='object', name='Z'))</pre></div></li></ul></div></li><li class="xr-section-item"><input id="section-44e769d6-d8a6-4e70-8baf-f7fade935d4d" class="xr-section-summary-in" type="checkbox" disabled=""><label for="section-44e769d6-d8a6-4e70-8baf-f7fade935d4d" class="xr-section-summary" title="Expand/collapse section">Attributes: <span>(0)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"></dl></div></li></ul></div></div>
 </div>
 </div>
 </section>

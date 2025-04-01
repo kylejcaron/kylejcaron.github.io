@@ -301,7 +301,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The simulation below makes it clear the true effect of <span class="math inline">\(X_3\)</span> on <span class="math inline">\(y\)</span> is 0.7, so we know our regression <em>should hopefully</em> return it as an estimate</p>
-<div id="f3fd14fa" class="cell" data-execution_count="1">
+<div id="7a06dd1b" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -325,7 +325,7 @@ window.Quarto = {
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># simulate y as a function of x1,x2,x3</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    .assign(y <span class="op">=</span> <span class="kw">lambda</span> d: rng.normal(<span class="fl">0.5</span> <span class="op">+</span> d.x1<span class="op">*-</span><span class="dv">4</span> <span class="op">+</span> d.x2<span class="op">*-</span><span class="fl">0.5</span> <span class="op">+</span> d.x3<span class="op">*</span>TRUE_EFFECT, SIG))</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>df.head().<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
@@ -344,38 +344,38 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>0.082494</td>
-<td>0.542553</td>
-<td>1.964734</td>
-<td>1.937899</td>
+<td>0.08</td>
+<td>0.54</td>
+<td>1.96</td>
+<td>1.94</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>-0.464418</td>
-<td>1.592826</td>
-<td>0.081777</td>
-<td>1.331370</td>
+<td>-0.46</td>
+<td>1.59</td>
+<td>0.08</td>
+<td>1.33</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>0.050515</td>
-<td>-0.693920</td>
-<td>0.814082</td>
-<td>1.011092</td>
+<td>0.05</td>
+<td>-0.69</td>
+<td>0.81</td>
+<td>1.01</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>0.686231</td>
-<td>0.465077</td>
-<td>3.438021</td>
-<td>0.531865</td>
+<td>0.69</td>
+<td>0.47</td>
+<td>3.44</td>
+<td>0.53</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>-1.756791</td>
-<td>-0.771811</td>
-<td>-5.977299</td>
-<td>3.363037</td>
+<td>-1.76</td>
+<td>-0.77</td>
+<td>-5.98</td>
+<td>3.36</td>
 </tr>
 </tbody>
 </table>
@@ -384,7 +384,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Lets take a look at the variance inflation factors below</p>
-<div id="4d34acc9" class="cell" data-execution_count="2">
+<div id="8a3adca8" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.<span class="bu">filter</span>(like<span class="op">=</span><span class="st">'x'</span>)</span>
@@ -425,7 +425,7 @@ window.Quarto = {
 </div>
 <p>Based on this, we supposedly should remove <span class="math inline">\(X_1\)</span> from our regression (VIFs of 5-10 are considered high).</p>
 <p>If we look at the correlation, we reach the same conclusions - <span class="math inline">\(X_1\)</span> has high correlation with <span class="math inline">\(X_3\)</span> so supposedly <em>“they provide the same information and only 1 is useful”</em></p>
-<div id="3ef3c05c" class="cell" data-execution_count="3">
+<div id="9a8daa34" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X.corr().loc[<span class="st">'x3'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>x1    0.990898
@@ -438,14 +438,14 @@ Name: x3, dtype: float64</code></pre>
 <section id="does-it-work" class="level1">
 <h1>Does it work?</h1>
 <p>We’re going to fit two regressions - one that follows the advice of throwing out variables with high VIFs or correlation - and another that is informed by domain knowledge.</p>
-<div id="5469b811" class="cell" data-execution_count="4">
+<div id="65129dc8" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vif/correlation informed variable selection</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"y ~ x2 + x3"</span>, data<span class="op">=</span>df).fit()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># domain knowledge informed variable selection</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>m2 <span class="op">=</span> sm.OLS.from_formula(<span class="st">"y ~ x1 + x2 + x3"</span>, data<span class="op">=</span>df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="d3a21050" class="cell" data-execution_count="5">
+<div id="40878a2c" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_ci(model, ax, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="va">None</span>):</span>
@@ -466,8 +466,7 @@ Name: x3, dtype: float64</code></pre>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>ax.set_yticks([])</span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Estimated effect of X3 -&gt; y"</span>, xlabel<span class="op">=</span><span class="st">"Beta Coefficient"</span>)</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">"multicollinearity.png"</span>)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
