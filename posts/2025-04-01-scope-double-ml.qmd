@@ -165,7 +165,7 @@ This is the fun part. We'll use Double Machine Learning as an example of why   `
 
 
 ### Double ML background
-For some quick background, Double ML is a procedure for estimating unbiased Average Treatment Effects (ATE) where $A$ is the treatment, $y$ is the outcome, $X$ are covariates, and `*` represents residuals, ie $A^* = (A-\hat{A})$
+For some quick background, Double ML is a procedure for estimating unbiased Average Treatment Effects (ATE) where $A$ is the treatment, $y$ is the outcome, $X$ are covariates, and `*` represents residuals, ie $A^* = (A-\hat{A})$. It is comprised of 3 models:
 
 1. __Model 1: Propensity Model__, $E[A|X]$: Debiases the treatment with propensity scores
 2. __Model 2: Outcome Model__ $E[y|X]$: Denoises the Outcome
