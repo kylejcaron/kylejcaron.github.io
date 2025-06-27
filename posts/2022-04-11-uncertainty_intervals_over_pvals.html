@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -110,6 +110,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -231,78 +234,141 @@ window.Quarto = {
 <p>If you want to follow along with the code, <a href="https://github.com/kylejcaron/case_studies/blob/main/Uncertainty%20intervals%20over%20p%20values.ipynb">see here</a>.</p>
 <section id="the-experiment-design" class="level2">
 <h2 class="anchored" data-anchor-id="the-experiment-design">The experiment design</h2>
-<p>Given the stakeholders want to rule out a drop in conversion, and ruling out small differences requires large sample sizes, we decide to design an experiment with good power to detect the presence of a 1/2% absolute drop (if one were to truly exist)</p>
-<p>We ran a power analysis and found that in order to have a 90% probability of detecting (power=0.9) a 1/2% absolute drop in conversion rate with 80 percent confidence ( 𝛼=0.2 ), we need N=32500 per group</p>
+<p>Given the stakeholders want to rule out a drop in conversion, and ruling out small differences requires large sample sizes, we decide to design an experiment with good power to detect the presence of a 0.5% absolute drop (if one were to truly exist)</p>
+<p>We ran a power analysis and found that in order to have a 90% probability of detecting (power=0.9) a 0.5% absolute drop in conversion rate with 80 percent confidence ( 𝛼=0.2 ), we need N=32500 per group</p>
 <blockquote class="blockquote">
 <p>Statisticians might not love this interpretation of a power analysis, but its a useful and interpretable translation and tends to coincide with what we’re aiming for anyway. In reality, frequentist power analyses assume that the null hypothesis is correct, which isn’t quite what we want, not to mention, frequentist power analyses use backwards probabilities which are just plain confusing - <a href="https://www.fharrell.com/post/pvalprobs/">see here to for more</a></p>
 </blockquote>
 <p>Note that we’re prioritizing power here for a reason. If 𝛼 is false positive rate, and power is probability of detection, then don’t we want to prioritize our probability of detecting a drop if one truly exists? A false negative here would be more expensive then a false positive</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> <span class="fl">0.1</span> <span class="co"># historical conversion rate</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>abs_delta <span class="op">=</span> <span class="fl">0.005</span> <span class="co"># minimum detectable effect to test for</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Statsmodels requires an effect size </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># (aka an effect normalized by its standard deviation)</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>stdev <span class="op">=</span> np.sqrt( pA<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span>pA) ) <span class="co"># bernoulli stdev, sigma = sqrt(p(1-p))</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ES <span class="op">=</span> abs_delta <span class="op">/</span> stdev </span>
+<p>Running the code below leads us to conclude are sample size should be roughly 32,500 users per group.</p>
+<div id="45c4bd0a" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> mtick</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, Math, Latex</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate required sample size</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>sm.stats.tt_ind_solve_power(</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>ES, </span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.2</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    power<span class="op">=</span><span class="fl">0.9</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    alternative<span class="op">=</span><span class="st">"smaller"</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Running the code above leads us to conclude are sample size should be roughly 32,500 users per group.</p>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> <span class="fl">0.1</span> <span class="co"># historical conversion rate</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>abs_delta <span class="op">=</span> <span class="fl">0.005</span> <span class="co"># minimum detectable effect to test for</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Statsmodels requires an effect size </span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># (aka an effect normalized by its standard deviation)</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>stdev <span class="op">=</span> np.sqrt( pA<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span>pA) ) <span class="co"># bernoulli stdev, sigma = sqrt(p(1-p))</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>ES <span class="op">=</span> abs_delta <span class="op">/</span> stdev </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate required sample size</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>sample_size <span class="op">=</span> sm.stats.tt_ind_solve_power(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>ES, </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.2</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    power<span class="op">=</span><span class="fl">0.9</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    alternative<span class="op">=</span><span class="st">"smaller"</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">int</span>(sample_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>32456</code></pre>
+</div>
+</div>
 <section id="the-experiment" class="level3">
 <h3 class="anchored" data-anchor-id="the-experiment">The experiment</h3>
-<p>I’m going to simulate fake data for this experiment where * The <strong>control</strong> has a <strong><em>true</em></strong> conversion rate of 10% * the <strong>variant</strong> has a <strong><em>true</em></strong> conversion rate of 9.25%</p>
+<p>I’m going to simulate fake data for this experiment where</p>
+<ul>
+<li>The <strong>control</strong> has a <strong><em>true</em></strong> conversion rate of 10%</li>
+<li>the <strong>variant</strong> has a <strong><em>true</em></strong> conversion rate of 9.25%</li>
+</ul>
 <p>For examples sake we’ll pretend we don’t know that the variant is worse</p>
-<details>
-<summary>
-Click here for code
-</summary>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Settings</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1325</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">32500</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>pB <span class="op">=</span> <span class="fl">0.0925</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulation</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_experiment(pA, pB, N_per_group):</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"group"</span>:[<span class="st">"A"</span>]<span class="op">*</span>N <span class="op">+</span> [<span class="st">"B"</span>]<span class="op">*</span>N,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"convert"</span>:np.r_[</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>             np.random.binomial(<span class="dv">1</span>, p<span class="op">=</span>pA, size<span class="op">=</span>N),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>             np.random.binomial(<span class="dv">1</span>, p<span class="op">=</span>pB, size<span class="op">=</span>N)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        ]</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> simulate_experiment(pA, pB, N)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="3f7d13c5" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Settings</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">14</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>np.random.seed(SEED)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">32500</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>pB <span class="op">=</span> <span class="fl">0.0925</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulation</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_experiment(pA, pB, N_per_group):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"group"</span>:[<span class="st">"A"</span>]<span class="op">*</span>N <span class="op">+</span> [<span class="st">"B"</span>]<span class="op">*</span>N,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"convert"</span>:np.r_[</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>             np.random.binomial(<span class="dv">1</span>, p<span class="op">=</span>pA, size<span class="op">=</span>N),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>             np.random.binomial(<span class="dv">1</span>, p<span class="op">=</span>pB, size<span class="op">=</span>N)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> simulate_experiment(pA, pB, N)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_experiment(df):</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        df.groupby(<span class="st">"group"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        .convert.agg([<span class="st">'mean'</span>, <span class="st">'sum'</span>, <span class="st">'count'</span>])</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        .set_axis([<span class="st">'Conversion Rate'</span>, <span class="st">'Conversions'</span>, <span class="st">'Sample Size'</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>df.pipe(summarize_experiment).style.<span class="bu">format</span>({<span class="st">"Conversion Rate"</span>: <span class="st">"</span><span class="sc">{:.2%}</span><span class="st">"</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<p><br></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/img/uncertainty_fig1.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<style type="text/css">
+</style>
+
+<table id="T_9608b" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_9608b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Conversion Rate</th>
+<th id="T_9608b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Conversions</th>
+<th id="T_9608b_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Sample Size</th>
+</tr>
+<tr class="even">
+<th class="index_name level0" data-quarto-table-cell-role="th">group</th>
+<th class="blank col0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col1" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col2" data-quarto-table-cell-role="th">&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_9608b_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">A</td>
+<td id="T_9608b_row0_col0" class="data row0 col0">9.78%</td>
+<td id="T_9608b_row0_col1" class="data row0 col1">3179</td>
+<td id="T_9608b_row0_col2" class="data row0 col2">32500</td>
+</tr>
+<tr class="even">
+<td id="T_9608b_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">B</td>
+<td id="T_9608b_row1_col0" class="data row1 col0">9.43%</td>
+<td id="T_9608b_row1_col1" class="data row1 col1">3066</td>
+<td id="T_9608b_row1_col2" class="data row1 col2">32500</td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>Looking at the data above, we’re seeing a better conversion rate in group B. We run a two-proportions z-test and we find that there’s a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pval_from_summary(tab):</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    _, pval <span class="op">=</span> sm.stats.proportions_ztest(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        count<span class="op">=</span>tab[<span class="st">"converts"</span>][::<span class="op">-</span><span class="dv">1</span>], </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        nobs<span class="op">=</span>tab[<span class="st">"N"</span>][::<span class="op">-</span><span class="dv">1</span>],</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        alternative<span class="op">=</span><span class="st">"smaller"</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pval</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>(df.pipe(summarize_experiment)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>   .pipe(pval_from_summary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><span class="math display">\[ p = 0.38 \]</span></p>
+</div>
+<p>Looking at the data above, we’re seeing a slightly worse conversion rate in the variant, but barely. We run a two-proportions z-test and we find that there’s a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.</p>
+<div id="e042852d" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pval_from_summary(tab):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    _, pval <span class="op">=</span> sm.stats.proportions_ztest(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        count<span class="op">=</span>tab[<span class="st">"Conversions"</span>], </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        nobs<span class="op">=</span>tab[<span class="st">"Sample Size"</span>],</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        alternative<span class="op">=</span><span class="st">"two-sided"</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pval</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>pval <span class="op">=</span> (df.pipe(summarize_experiment)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>   .pipe(pval_from_summary))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>display(Math(<span class="vs">rf"p = </span><span class="sc">{</span><span class="bu">round</span>(pval, <span class="dv">3</span>)<span class="sc">}</span><span class="vs">"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><span class="math inline">\(\displaystyle p = 0.133\)</span></p>
+</div>
+</div>
 <p>We recommend to our stakeholders to roll out the variant since it “does no harm”</p>
-<p><strong>There are some serious red flags here</strong></p>
+<p><span style="color: red;"><strong>There are some serious red flags here</strong></span></p>
 <ul>
 <li>First of all, p-values are all about the null hypothesis. So just because we don’t find a significant drop in conversion rate, that doesnt mean one doesnt exist. It just means we didnt find evidence for it in this test</li>
 <li>There was no visualization of the uncertainty in the result</li>
@@ -312,27 +378,85 @@ Click here for code
 <section id="understanding-uncertainty-with-the-beta-distribution" class="level2">
 <h2 class="anchored" data-anchor-id="understanding-uncertainty-with-the-beta-distribution">Understanding Uncertainty with the Beta Distribution</h2>
 <p>For binary outcomes, the beta distribution is highly effective for understanding uncertainty.</p>
-<p>It has 2 parameters * <strong>alpha</strong>, the number of successes * <strong>beta</strong>, the number of failures</p>
+<p>It has 2 parameters</p>
+<ul>
+<li><strong>alpha</strong>, the number of successes</li>
+<li><strong>beta</strong>, the number of failures</li>
+</ul>
 <p>It’s output is easy to interpret: Its a distribution of plausible probabilities that lead to the outcome.</p>
 <p>So we can simply count our successes and failures from out observed data, plug it into a beta distribution to simulate outcomes, and visualize it as a density plot to understand uncertainty</p>
-<div class="quarto-figure quarto-figure-center">
+<div id="25d989ac" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(SEED)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> df.query(<span class="st">"group=='A'"</span>).convert.values</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> df.query(<span class="st">"group=='B'"</span>).convert.values</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># sample uncertainty</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> np.random.beta(A.<span class="bu">sum</span>()<span class="op">+</span><span class="dv">1</span>, <span class="bu">len</span>(A)<span class="op">-</span>A.<span class="bu">sum</span>()<span class="op">+</span><span class="dv">1</span>, size<span class="op">=</span>samples)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>pB <span class="op">=</span> np.random.beta(B.<span class="bu">sum</span>()<span class="op">+</span><span class="dv">1</span>, <span class="bu">len</span>(B)<span class="op">-</span> B.<span class="bu">sum</span>()<span class="op">+</span><span class="dv">1</span>, size<span class="op">=</span>samples)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>sns.histplot(pA, label<span class="op">=</span><span class="st">'Control'</span>, stat<span class="op">=</span><span class="st">'probability'</span>,ax<span class="op">=</span>ax)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>sns.histplot(pB, label<span class="op">=</span><span class="st">'Variant'</span>, stat<span class="op">=</span><span class="st">'probability'</span>,ax<span class="op">=</span>ax)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Estimated Conversion Rates for Control and Variant"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Conversion Rate"</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>ax.xaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
 <figure class="figure">
-<p><img src="../assets/img/uncertainty_fig2.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="2022-04-11-uncertainty_intervals_over_pvals_files/figure-html/cell-5-output-1.png" width="604" height="449" class="figure-img"></p>
 </figure>
+</div>
+</div>
 </div>
 <p>It’s also easy to work with - if we want to understand the plausible differences between groups, we can just take the differences in our estimates</p>
 <p><span class="math display">\[
 \delta = \hat{p_B} - \hat{p_A}
 \]</span></p>
-<div class="quarto-figure quarto-figure-center">
+<div id="c064a18c" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(SEED)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>sns.histplot(pB <span class="op">-</span> pA, label<span class="op">=</span><span class="st">'Control'</span>, stat<span class="op">=</span><span class="st">'probability'</span>,ax<span class="op">=</span>ax)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Avg Treatment Effect Estimate"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">"Avg Treatment Effect (Absolute)"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, ls<span class="op">=</span><span class="st">'--'</span>, color<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>ax.xaxis.set_major_formatter(mtick.PercentFormatter(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
 <figure class="figure">
-<p><img src="../assets/img/uncertainty_fig3.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="2022-04-11-uncertainty_intervals_over_pvals_files/figure-html/cell-6-output-1.png" width="597" height="449" class="figure-img"></p>
 </figure>
 </div>
+</div>
+</div>
 <p>With visualization, we get a very different picture than our non-significant p-value. We see that there’s plenty of plausibility that the control could be worse.</p>
-<p>We can further calculate the probability of a drop, <span class="math inline">\(P(B &lt; A)\)</span>, and find that theres a greater than 60% probability that the variant is worse than the control</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># P(B &lt; A)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(pB_hat <span class="op">&lt;</span> pA_hat).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can further calculate the probability of a drop greater than 0.5%, <span class="math inline">\(P(B &lt; A)\)</span>, and find that theres a greater than 60% probability that the variant is worse than the control</p>
+<div id="62e91591" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># P(B - A &lt; -0.5%) </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>contrast <span class="op">=</span> (pB <span class="op">-</span> pA)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> (contrast <span class="op">&lt;</span> <span class="op">-</span><span class="fl">0.005</span>).mean()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>display(Math(<span class="ss">f"P(\delta \: &lt; -0.5\%) = </span><span class="sc">{</span>prob<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">\%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><span class="math inline">\(\displaystyle P(\delta \: &lt; -0.5\%) = 25.5\%\)</span></p>
+</div>
+</div>
 <p><span class="math display">\[
 P(B &lt; A) = 0.62
 \]</span></p>

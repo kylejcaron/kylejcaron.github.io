@@ -2,7 +2,6 @@
   {
     "listing": "/blog.html",
     "items": [
-      "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
@@ -21,7 +20,6 @@
   {
     "listing": "/archive.html",
     "items": [
-      "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
@@ -40,7 +38,6 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
       "/posts/numpyro_dim_labelling/2025-02-23-numpyro-dim_labels.html",
