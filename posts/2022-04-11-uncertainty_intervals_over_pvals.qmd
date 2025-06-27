@@ -12,15 +12,26 @@ Take the following example for instance. Let's say we're running a "Do no harm" 
 If you want to follow along with the code, [see here](https://github.com/kylejcaron/case_studies/blob/main/Uncertainty%20intervals%20over%20p%20values.ipynb).
 
 ## The experiment design
-Given the stakeholders want to rule out a drop in conversion, and ruling out small differences requires large sample sizes, we decide to design an experiment with good power to detect the presence of a 1/2% absolute drop (if one were to truly exist)
+Given the stakeholders want to rule out a drop in conversion, and ruling out small differences requires large sample sizes, we decide to design an experiment with good power to detect the presence of a 0.5% absolute drop (if one were to truly exist)
 
-We ran a power analysis and found that in order to have a 90% probability of detecting (power=0.9) a 1/2% absolute drop in conversion rate with 80 percent confidence ( 𝛼=0.2 ), we need N=32500 per group
+We ran a power analysis and found that in order to have a 90% probability of detecting (power=0.9) a 0.5% absolute drop in conversion rate with 80 percent confidence ( 𝛼=0.2 ), we need N=32500 per group
 
 > Statisticians might not love this interpretation of a power analysis, but its a useful and interpretable translation and tends to coincide with what we're aiming for anyway. In reality, frequentist power analyses assume that the null hypothesis is correct, which isn't quite what we want, not to mention, frequentist power analyses use backwards probabilities which are just plain confusing - [see here to for more](https://www.fharrell.com/post/pvalprobs/)
 
 Note that we're prioritizing power here for a reason. If  𝛼  is false positive rate, and power is probability of detection, then don't we want to prioritize our probability of detecting a drop if one truly exists? A false negative here would be more expensive then a false positive
 
-```python
+Running the code below leads us to conclude are sample size should be roughly 32,500 users per group.
+
+```{python}
+import statsmodels.api as sm
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+from IPython.display import display, Math, Latex
+
+
 pA = 0.1 # historical conversion rate
 abs_delta = 0.005 # minimum detectable effect to test for
 
@@ -30,29 +41,31 @@ stdev = np.sqrt( pA*(1-pA) ) # bernoulli stdev, sigma = sqrt(p(1-p))
 ES = abs_delta / stdev 
 
 # estimate required sample size
-sm.stats.tt_ind_solve_power(
+sample_size = sm.stats.tt_ind_solve_power(
     -ES, 
     alpha=0.2,
     power=0.9,
     alternative="smaller"
 )
+int(sample_size)
 ```
 
-Running the code above leads us to conclude are sample size should be roughly 32,500 users per group.
 
 ### The experiment
 
 I'm going to simulate fake data for this experiment where
- * The __control__ has a __*true*__ conversion rate of 10% 
- * the __variant__ has a __*true*__ conversion rate of 9.25%
+
+* The __control__ has a __*true*__ conversion rate of 10% 
+* the __variant__ has a __*true*__ conversion rate of 9.25%
 
 For examples sake we'll pretend we don't know that the variant is worse
 
-<details><summary markdown="span">Click here for code</summary>
+```{python}
+#| code-fold: true
 
-```python
 # Settings
-np.random.seed(1325)
+SEED = 14
+np.random.seed(SEED)
 N = 32500
 pA = 0.1
 pB = 0.0925
@@ -71,36 +84,38 @@ def simulate_experiment(pA, pB, N_per_group):
     return df
 
 df = simulate_experiment(pA, pB, N)
+
+def summarize_experiment(df):
+    return (
+        df.groupby("group")
+        .convert.agg(['mean', 'sum', 'count'])
+        .set_axis(['Conversion Rate', 'Conversions', 'Sample Size'], axis=1)
+    )
+
+df.pipe(summarize_experiment).style.format({"Conversion Rate": "{:.2%}"})
 ```
-</details>
-<br/>
 
 
-![](/assets/img/uncertainty_fig1.png){fig-align="center"}
+Looking at the data above, we're seeing a slightly worse conversion rate in the variant, but barely. We run a two-proportions z-test and we find that there's a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.
 
-
-Looking at the data above, we're seeing a better conversion rate in group B. We run a two-proportions z-test and we find that there's a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.
-
-```python
+```{python}
 def pval_from_summary(tab):
     
     _, pval = sm.stats.proportions_ztest(
-        count=tab["converts"][::-1], 
-        nobs=tab["N"][::-1],
-        alternative="smaller"
+        count=tab["Conversions"], 
+        nobs=tab["Sample Size"],
+        alternative="two-sided"
     )
     return pval
 
-(df.pipe(summarize_experiment)
+pval = (df.pipe(summarize_experiment)
    .pipe(pval_from_summary))
+display(Math(rf"p = {round(pval, 3)}"))
 ```
-
-$$ p = 0.38 $$
-
 
 We recommend to our stakeholders to roll out the variant since it "does no harm"
 
-__There are some serious red flags here__
+<span style="color: red;">__There are some serious red flags here__</span>
 
  * First of all, p-values are all about the null hypothesis. So just because we don't find a significant drop in conversion rate, that doesnt mean one doesnt exist. It just means we didnt find evidence for it in this test
  * There was no visualization of the uncertainty in the result
@@ -111,14 +126,37 @@ __There are some serious red flags here__
 For binary outcomes, the beta distribution is highly effective for understanding uncertainty.
 
 It has 2 parameters
- * __alpha__, the number of successes 
- * __beta__, the number of failures
+
+* __alpha__, the number of successes 
+* __beta__, the number of failures
  
 It's output is easy to interpret: Its a distribution of plausible probabilities that lead to the outcome.
 
 So we can simply count our successes and failures from out observed data, plug it into a beta distribution to simulate outcomes, and visualize it as a density plot to understand uncertainty
 
-![](/assets/img/uncertainty_fig2.png){fig-align="center"}
+```{python}
+#| code-fold: true
+np.random.seed(SEED)
+samples = 10000
+
+A = df.query("group=='A'").convert.values
+B = df.query("group=='B'").convert.values
+
+# sample uncertainty
+pA = np.random.beta(A.sum()+1, len(A)-A.sum()+1, size=samples)
+pB = np.random.beta(B.sum()+1, len(B)- B.sum()+1, size=samples)
+
+# Plot
+fig, ax = plt.subplots()
+sns.histplot(pA, label='Control', stat='probability',ax=ax)
+sns.histplot(pB, label='Variant', stat='probability',ax=ax)
+ax.legend()
+ax.set_title("Estimated Conversion Rates for Control and Variant")
+ax.set_xlabel("Conversion Rate")
+ax.xaxis.set_major_formatter(mtick.PercentFormatter(1,2))
+
+plt.show()
+```
 
 It's also easy to work with - if we want to understand the plausible differences between groups, we can just take the differences in our estimates
 
@@ -126,24 +164,37 @@ $$
 \delta = \hat{p_B} - \hat{p_A}
 $$
 
-![](/assets/img/uncertainty_fig3.png){fig-align="center"}
+```{python}
+#| code-fold: true
+np.random.seed(SEED)
+samples = 10000
+
+fig, ax = plt.subplots()
+sns.histplot(pB - pA, label='Control', stat='probability',ax=ax)
+ax.legend()
+ax.set(
+    title="Avg Treatment Effect Estimate",
+    xlabel="Avg Treatment Effect (Absolute)"
+)
+ax.axvline(0, ls='--', color='k')
+ax.xaxis.set_major_formatter(mtick.PercentFormatter(1,2))
+plt.show()
+```
 
 With visualization, we get a very different picture than our non-significant p-value. We see that there's plenty of plausibility that the control could be worse.
 
-We can further calculate the probability of a drop, $P(B < A)$, and find that theres a greater than 60% probability that the variant is worse than the control
+We can further calculate the probability of a drop greater than 0.5%, $P(B < A)$, and find that theres a greater than 60% probability that the variant is worse than the control
 
-```python
-# P(B < A)
-(pB_hat < pA_hat).mean()
+```{python}
+# P(B - A < -0.5%) 
+contrast = (pB - pA)
+prob = (contrast < -0.005).mean()
+display(Math(f"P(\delta \: < -0.5\%) = {prob*100:.1f}\%"))
 ```
-
-$$
-P(B < A) = 0.62
-$$
 
 Remember when we designed the experiment? Considering our main goal was to do no harm, we might not feel so confident in that now, and rightly so, we know the variants worse since we simulated it. 
 
-Unless we feel very confident in our choice of testing for a 1/2% drop and know that we can afford anything up to that, then we we really shouldnt roll out this variant without further evaluation
+Unless the expected cost of this change isn't that high in one of the worst case scenarios of that uncertainty interval, we shouldnt feel very confident in rolling out this variant without further consideration.
 
 This is particularly important with higher uncertainty As we can see in the example below, where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate
 
