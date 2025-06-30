@@ -115,11 +115,11 @@ display(Math(rf"p = {round(pval, 3)}"))
 
 We recommend to our stakeholders to roll out the variant since it "does no harm"
 
-<span style="color: red;">__There are some serious red flags here__</span>
-
+::: {.callout-important}
+## There are some serious red flags here
  * First of all, p-values are all about the null hypothesis. So just because we don't find a significant drop in conversion rate, that doesnt mean one doesnt exist. It just means we didnt find evidence for it in this test
- * There was no visualization of the uncertainty in the result
-
+ * Second, there was no visualization of the uncertainty in the result
+:::
 
 ## Understanding Uncertainty with the Beta Distribution
 
@@ -183,7 +183,7 @@ plt.show()
 
 With visualization, we get a very different picture than our non-significant p-value. We see that there's plenty of plausibility that the control could be worse.
 
-We can further calculate the probability of a drop greater than 0.5%, $P(B < A)$, and find that theres a greater than 60% probability that the variant is worse than the control
+We can further calculate the probability of a drop greater than 0.5%, $P(\delta \: < -0.5\%)$
 
 ```{python}
 # P(B - A < -0.5%) 
@@ -196,7 +196,7 @@ Remember when we designed the experiment? Considering our main goal was to do no
 
 Unless the expected cost of this change isn't that high in one of the worst case scenarios of that uncertainty interval, we shouldnt feel very confident in rolling out this variant without further consideration.
 
-This is particularly important with higher uncertainty As we can see in the example below, where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate
+This is particularly important with higher uncertainty. We can see this more clearly in another example below where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate.
 
 ![](/assets/img/uncertainty_fig4.png){fig-align="center"}
 
