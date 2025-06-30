@@ -12,26 +12,6 @@ categories:
  - Survival Analysis
 ---
 
-# Introduction
-
-__The Problem:__ You work at a rental service that is suffering from high periods of churn. You've found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. __How can we determine how much stock to reorder?__
-
-The idea of this project is to borrow ideas from first principles modeling - think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
-
-Products with extreme stockouts have misleading demand estimates under classic demand models. 
-
-> __The basis of these ideas is really simple. If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that the observed demand would've been atleast 5 rentals if stock levels didn't constrain it.__
-
- Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information. 
-
-The idea is to start simple(-ish) and add complexity. We'll first model a single product and test different ordering policies, and then begin modeling multiple products. 
-
-The original code including the full simulation of the dataset can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
-
-# Part 1: Looking at the data
-
----
-
 ```{python}
 #| code-fold: true
 import numpy as np
@@ -40,6 +20,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import arviz as az
 import matplotlib.ticker as mtick
+import scipy.stats as stats
 
 import jax
 from jax import random 
@@ -65,9 +46,296 @@ plt.rcParams.update({
 })
 # Global vars
 SEED = 100
+J_PRODUCTS, MAX_PERIODS = 1000, 10000
 BASE_URL = 'https://raw.githubusercontent.com/kylejcaron/case_studies/main/censored_demand'
+```
 
-# Load in csv data
+# TLDR
+
+When trying to decide how much inventory to buy we care more about Demand, not observed sales (or rentals in this example). __Demand and sales are not the same thing.__
+
+```{python}
+#| code-fold: true
+
+# A quick simulation of sales,demand,stock for a product
+np.random.seed(SEED)
+lambd = 15
+stock = 50
+t=51
+return_dist = stats.lognorm(2.9, 0.7)
+returns = np.zeros(10000)
+demand = np.repeat(10, t)
+
+stock_i = []
+rentals_i = []
+for i in range(t):
+
+    # return stock
+    stock += returns[i]
+    returns[i] = 0.
+
+    # track stock level
+    stock_i.append(stock)
+
+    # rentals
+    rentals = min(demand[i], stock)
+    rentals_i.append(rentals)
+    returns += (np.arange(10000) == np.floor(i+return_dist.rvs(int(rentals)))[:,None]).sum(0)
+    stock -= rentals
+
+
+fig, ax = plt.subplots(figsize=(9,5))
+ax.plot(stock_i, color='r', label='Stock')
+ax.plot(demand, label='Demand', color='gray', ls='--', lw=4)
+ax.plot(rentals_i, label='Rentals', color='k', lw=2)
+ax.fill_between(x=np.arange(t), y1=0, y2=stock_i, alpha=0.3, color='r' )
+ax.set(title="Demand vs. Rentals\nfor a Single Product", xlabel='Days Since Product Launch', ylabel='Count')
+ax.legend(fontsize=12)
+
+
+
+ax.annotate(
+    'We briefly observe Demand\nduring excess Stock periods',
+    xy=(3, 10), xytext=(5, 30),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+
+ax.annotate(
+    'Observed Rentals are\nconstrained by Stock',
+    xy=(26, 2), xytext=(24, 20),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+plt.show()
+```
+
+In the plot above we see a new rental product that quickly stocks out - there isn't enough supply to meet demand. This makes it difficult to measure demand, since we barely get a chance to observe it.
+
+The rest of the blog post goes on to show:
+
+* The right way to account for stockouts so that we estimate demand, not just sales, even under extreme stockouts
+* How to model rentals and returns properly
+* Building a simulation engine and an optimizer that recommends how much to buy
+
+We will eventually build the dynamic bayesian network below:
+
+```{dot}
+digraph Inventory2SliceGrid {
+    rankdir=TB;
+    splines=false;
+    node [shape=circle, fontsize=12, width=1.1, fixedsize=true, style=filled, fillcolor=white];
+    graph [outputorder=edgesfirst,];
+
+    // Nodes with manual ranks to enforce vertical positioning
+    Rentals_t   [label=<Rentals<SUB>t</SUB>>];
+    Returns_t   [label=<Returns<SUB>t</SUB>>];
+    Stock_t     [label=<Stock<SUB>t</SUB>>];
+    Demand_t    [label=<Demand<SUB>t</SUB>>];
+ 
+    Rentals_t1  [label=<Rentals<SUB>t+1</SUB>>];
+    Returns_t1  [label=<Returns<SUB>t+1</SUB>>];
+    Stock_t1    [label=<Stock<SUB>t+1</SUB>>];
+    Demand_t1    [label=<Demand<SUB>t+1</SUB>>];
+
+    Rentals_d  [style="invis", width=0.01];
+    Returns_d  [style="invis", width=0.01];
+    Stock_d    [style="invis", width=0.01];
+    Demand_d   [style="invis", width=0.01];
+
+
+    Rentals_t2  [label=<Rentals<SUB>t+n</SUB>>];
+    Returns_t2  [label=<Returns<SUB>t+n</SUB>>];
+    Stock_t2    [label=<Stock<SUB>t+n</SUB>>];
+    Demand_t2   [label=<Demand<SUB>t+n</SUB>>];
+
+    // dummys
+    Dummy   [style="invis"];
+    Dummy_t1   [style="invis"];
+    Dummy_d   [style="invis", width=0.01];
+    Dummy_t2   [style="invis"];
+    
+    // Intra-slice influences
+    Demand_t -> Rentals_t
+    Stock_t -> Rentals_t;
+    Returns_t -> Stock_t;
+
+    Returns_t1 -> Stock_t1;
+    Stock_t1 -> Rentals_t1;
+    Demand_t1 -> Rentals_t1
+
+    Demand_d -> Rentals_d [style="invis"];
+    Stock_d -> Rentals_d [style="invis"];
+    Returns_d -> Stock_d [style="invis"];
+
+    Returns_t2 -> Stock_t2;
+    Stock_t2 -> Rentals_t2;
+    Demand_t2 -> Rentals_t2
+
+    //spacing
+    Stock_t -> Dummy [style="invis"];
+    Dummy -> Rentals_t [style="invis"];
+
+    Stock_t1 -> Dummy_t1 [style="invis"];
+    Dummy_t1 -> Rentals_t1 [style="invis"];
+
+    Stock_d -> Dummy_d [style="invis"];
+    Dummy_d -> Rentals_d [style="invis"];
+
+    Stock_t2 -> Dummy_t2 [style="invis"];
+    Dummy_t2 -> Rentals_t2 [style="invis"];
+
+    // Inter-slice transitions
+    // { rank = same; Stock_t; Stock_t1; Stock_t2; }
+    Stock_t -> Stock_t1 [constraint=false, minlen=1];
+    Stock_t1 -> Stock_d [constraint=false, minlen=1, style="invis"];
+    Stock_d -> Stock_t2 [constraint=false, minlen=1, style="invis"];
+    Stock_t -> Stock_t2 [constraint=false, minlen=1, style="dashed"];
+    Rentals_t -> Stock_t1 [constraint=false, minlen=1];
+
+
+
+    // // Returns affect all future stock levels (dotted lines)
+    Rentals_t -> Returns_t1 [constraint=false];
+    Rentals_t -> Returns_t2 [constraint=false, color="#888888", style="dashed"];
+    Rentals_t1 -> Returns_t2 [constraint=false, color="#888888", style="dashed"];
+
+    // Group nodes by time slice
+    subgraph cluster_t {
+        label="Time t";
+        style=dashed;
+        Rentals_t; Returns_t; Stock_t; Demand_t; Dummy;
+    }
+
+    subgraph cluster_t1 {
+        label="Time t+1";
+        style=dashed;
+        Rentals_t1; Returns_t1; Stock_t1; Demand_t1; Dummy_t1;
+    }
+
+    subgraph cluster_d {
+        label="...";
+        style="invis";
+        Rentals_d; Returns_d; Stock_d; Demand_d; Dummy_d;
+    }
+
+    subgraph cluster_t2 {
+        label="Time t+n";
+        style=dashed;
+        Rentals_t2; Returns_t2; Stock_t2; Demand_t2; Dummy_t2;
+    }
+}
+```
+
+With this model, we can counterfactually estimate what would happen if we ordered different amounts.
+
+![](/assets/img/reorder_simulation_figure.png){fig-align="center"}
+
+Finally, this allows us to estimate the optimal ordering policy.
+
+# Introduction
+
+__The Problem:__ You work at a rental service that is suffering from high periods of churn. You've found that stockouts are one of the biggest reasons for churn - despite having plenty of products, they tend to only be available 60-80% of the time. __How can we determine how much stock to reorder?__
+
+The idea of this project is to borrow ideas from first principles modeling - think about the data generating process and model each step of it. This example borrows ideas from discrete choice literature, survival analysis, demand forecasting, and simulation. 
+
+Products with extreme stockouts have misleading demand estimates under classic demand models. 
+
+```{python}
+#| code-fold: true
+
+fig, ax = plt.subplots(facecolor='none')  
+fig.patch.set_facecolor('white')   # Figure background
+ax.set_facecolor('white')          # Axes background
+ax.spines['bottom'].set_visible(True)
+ax.spines['bottom'].set_color('black')
+ax.spines['bottom'].set_linewidth(1)
+
+ax.spines['left'].set_visible(True)
+ax.spines['left'].set_color('black')
+ax.spines['left'].set_linewidth(1)
+
+# Plot bars
+ax.bar(
+    1, 20,
+    color='lightgray',
+    edgecolor='dimgray',
+    hatch='//',
+    linewidth=0.5,
+    width=0.75,
+    alpha=0.5,
+    label='Demand'
+)
+ax.bar(1, 5, width=0.75, label='Rentals', color='#4C72B0')
+
+# Dashed stock level line
+ax.hlines(5, 0.25, 1.75, color='k', ls='--', label='Stock Levels')
+
+# Axis setup
+ax.set_xlim(0, 2.5)
+ax.set_ylim(0, 25)
+ax.set_yticks(range(0, 26, 5))
+ax.set_xticks([])
+ax.text(1, -2, "2023-07-09", ha='center', va='top')
+
+# Add annotations
+ax.annotate(
+    'Rentals\n(Observed)',
+    xy=(1, 2.5), xytext=(1.5, 1),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+ax.annotate(
+    'Available Stock',
+    xy=(1.75, 5), xytext=(1.7, 7),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+ax.annotate(
+    'Unobserved\nDemand',
+    xy=(1, 12.5), xytext=(1.5, 15),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+ax.set(title="Demand != Observed Rentals", ylabel='Rentals')
+ax.legend(loc='upper right', bbox_to_anchor=(1., 1))
+plt.tight_layout()
+plt.show()
+```
+
+
+::: {.callout-tip}
+## Key Point
+
+If we only have 5 units of a product in stock, and we saw 5 sales (or rentals in this case) that day, then we know that the observed demand would've been __*atleast*__ 5 rentals if stock levels didn't constrain it.
+:::
+
+Typical demand modeling might only look at the count of rentals each day, while censored demand modeling would look at both rental counts and stock levels, and incoporate both of these pieces of information. The model changes the framing from *"rental demand is 5 units"* to *"rental demand is __atleast__ 5 units"*.
+
+The idea is to start simple(-ish) and add complexity. We'll first model a single product and test different ordering policies, and then begin modeling multiple products. 
+
+The original code including the full simulation of the dataset can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
+
+# Part 1: Looking at the data
+
+---
+
+We have three datasets:
+ 
+ * `rentals` showing rental events and when those rentals were returned for a single product
+ * `stock` showing available stock levels for that product over time
+ * `product_purchases` showing how much was bought for each product and when
+
+
+```{python}
+#| code-fold: true
+
+ # Load in csv data
 rentals = (pd.read_csv(f"{BASE_URL}/data/rentals.csv")
            .assign(date=lambda d: pd.to_datetime(d.date))
           )
@@ -76,14 +344,7 @@ stock = (pd.read_csv(f"{BASE_URL}/data/stock_levels.csv")
         )
 purchases = (pd.read_csv(f"{BASE_URL}/data/product_purchases.csv")
            .assign(date=lambda d: pd.to_datetime(d.date)))
-J_PRODUCTS, MAX_PERIODS = 1000, 10000
 ```
-
-We have three datasets:
- 
- * `rentals` showing rental events and when those rentals were returned for a single product
- * `stock` showing available stock levels for that product over time
- * `product_purchases` showing how much was bought for each product and when
 
 ```{python}
 rentals.head()
@@ -249,9 +510,120 @@ $$
 
 When we think of the __data generating process__ for rental demand and stock levels it is the following: 
 
- 1. Customers come in and rent $y \sim \text{min}(\text{Poisson}(\lambda), \text{stock})$ units each day
- 2. Those units tend to have some learnable distribution of rental duration, $t \sim \text{LogNormal}(\theta, \sigma)$
- 3. The stock levels vary as those rentals occur and get returned from steps (1) and (2)
+ 1. Demand occurs as $\text{Demand} \sim \text{Poisson}(\lambda)$
+ 2. Customers come in and rent $\text{Rentals} = \text{min}(\text{Demand}, \text{stock})$ units each day
+ 3. Those units tend to have some learnable distribution of rental duration, $\Delta t \sim \text{LogNormal}(\theta, \sigma)$
+ 4. The stock levels vary as those rentals occur and get returned from steps (2) and (3)
+
+A dynamic bayesian net of the process is below:
+```{dot}
+digraph Inventory2SliceGrid {
+    rankdir=TB;
+    splines=false;
+    node [shape=circle, fontsize=12, width=1.1, fixedsize=true, style=filled, fillcolor=white];
+    graph [outputorder=edgesfirst,];
+
+    // Nodes with manual ranks to enforce vertical positioning
+    Rentals_t   [label=<Rentals<SUB>t</SUB>>];
+    Returns_t   [label=<Returns<SUB>t</SUB>>];
+    Stock_t     [label=<Stock<SUB>t</SUB>>];
+    Demand_t    [label=<Demand<SUB>t</SUB>>];
+ 
+    Rentals_t1  [label=<Rentals<SUB>t+1</SUB>>];
+    Returns_t1  [label=<Returns<SUB>t+1</SUB>>];
+    Stock_t1    [label=<Stock<SUB>t+1</SUB>>];
+    Demand_t1    [label=<Demand<SUB>t+1</SUB>>];
+
+    Rentals_d  [style="invis", width=0.01];
+    Returns_d  [style="invis", width=0.01];
+    Stock_d    [style="invis", width=0.01];
+    Demand_d   [style="invis", width=0.01];
+
+
+    Rentals_t2  [label=<Rentals<SUB>t+n</SUB>>];
+    Returns_t2  [label=<Returns<SUB>t+n</SUB>>];
+    Stock_t2    [label=<Stock<SUB>t+n</SUB>>];
+    Demand_t2   [label=<Demand<SUB>t+n</SUB>>];
+
+    // dummys
+    Dummy   [style="invis"];
+    Dummy_t1   [style="invis"];
+    Dummy_d   [style="invis", width=0.01];
+    Dummy_t2   [style="invis"];
+    
+    // Intra-slice influences
+    Demand_t -> Rentals_t
+    Stock_t -> Rentals_t;
+    Returns_t -> Stock_t;
+
+    Returns_t1 -> Stock_t1;
+    Stock_t1 -> Rentals_t1;
+    Demand_t1 -> Rentals_t1
+
+    Demand_d -> Rentals_d [style="invis"];
+    Stock_d -> Rentals_d [style="invis"];
+    Returns_d -> Stock_d [style="invis"];
+
+    Returns_t2 -> Stock_t2;
+    Stock_t2 -> Rentals_t2;
+    Demand_t2 -> Rentals_t2
+
+    //spacing
+    Stock_t -> Dummy [style="invis"];
+    Dummy -> Rentals_t [style="invis"];
+
+    Stock_t1 -> Dummy_t1 [style="invis"];
+    Dummy_t1 -> Rentals_t1 [style="invis"];
+
+    Stock_d -> Dummy_d [style="invis"];
+    Dummy_d -> Rentals_d [style="invis"];
+
+    Stock_t2 -> Dummy_t2 [style="invis"];
+    Dummy_t2 -> Rentals_t2 [style="invis"];
+
+    // Inter-slice transitions
+    // { rank = same; Stock_t; Stock_t1; Stock_t2; }
+    Stock_t -> Stock_t1 [constraint=false, minlen=1];
+    Stock_t1 -> Stock_d [constraint=false, minlen=1, style="invis"];
+    Stock_d -> Stock_t2 [constraint=false, minlen=1, style="invis"];
+    Stock_t -> Stock_t2 [constraint=false, minlen=1, style="dashed"];
+    Rentals_t -> Stock_t1 [constraint=false, minlen=1];
+
+
+
+    // // Returns affect all future stock levels (dotted lines)
+    Rentals_t -> Returns_t1 [constraint=false];
+    Rentals_t -> Returns_t2 [constraint=false, color="#888888", style="dashed"];
+    Rentals_t1 -> Returns_t2 [constraint=false, color="#888888", style="dashed"];
+
+    // Group nodes by time slice
+    subgraph cluster_t {
+        label="Time t";
+        style=dashed;
+        Rentals_t; Returns_t; Stock_t; Demand_t; Dummy;
+    }
+
+    subgraph cluster_t1 {
+        label="Time t+1";
+        style=dashed;
+        Rentals_t1; Returns_t1; Stock_t1; Demand_t1; Dummy_t1;
+    }
+
+    subgraph cluster_d {
+        label="...";
+        style="invis";
+        Rentals_d; Returns_d; Stock_d; Demand_d; Dummy_d;
+    }
+
+    subgraph cluster_t2 {
+        label="Time t+n";
+        style=dashed;
+        Rentals_t2; Returns_t2; Stock_t2; Demand_t2; Dummy_t2;
+    }
+}
+```
+
+Notice that Rentals from each time period impact returns for all future time periods (until there are no rentals left to return).
 
 This narrows the problem down - we need to identify unconstrained rental demand (how many rentals would we get if we had perfect stock), and rental duration. We can use models for both (1) and (2) and then simulate different potential outcomes.
 
@@ -280,10 +652,9 @@ It's easy to see that there are plenty of rentals that are still out with custom
 rentals.sample(10, random_state=SEED)
 ```
 
-It's important to remember that even though these items aren't returned, some have been rented out for 30, 40, 50 days, and it is important information to know that some items have been out for at least that long. A good example is that if it is possible for some items to be rented out for 200 days, but we've only observed 100 days of activity, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.
+It's important to remember that even though these items aren't returned, some have been rented out for 30, 40, 50 days already and we need to incorporate this information. If it's possible for some items to be rented out for 200 days, but we've only observed 100 days so far, then whatever we estimate for the rental duration would be underestimated if we just used basic averaging.
 
 What we can instead do is calculate the rental duration to date and then use a survival model to properly incorporate those unreturned items.
-
 
 ```{python}
 curr_date = rentals.date.max()
@@ -391,6 +762,60 @@ Great, now we have a rental duration model fit, we just need to estimate demand.
 ## Rental Demand Model
 
 ---
+
+### A quick note on seasonality
+
+For seasonal products, the censored demand problem is exacerbated. We may briefly observe demand, but we likely never get a chance to observe peak demand.
+
+```{python}
+#| code-fold: true
+
+# Months from 1 (Jan) to 12 (Dec)
+x = np.linspace(1, 12, 500)
+
+# Parameters for the normal distribution
+mu = 7      # Center at July (month 7)
+sigma = 1.5 # Spread (adjust for wider/narrower bell)
+
+# PDF of normal distribution
+y = 1 + stats.norm.pdf(x, mu, sigma)*80
+y_clipped = jnp.clip(y, 0, 5)
+
+# Plot
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(x, y, color='gray', ls='dotted', lw=2, label='Demand')
+ax.plot(x, y_clipped, color='C0', lw=3, label='Avg. Rentals')
+
+ax.hlines(5, 2,11, color='r', ls='--', label='Avg. Stock', lw=1)
+ax.fill_between(x, y_clipped, alpha=0.2, color='C0')
+
+ax.fill_between(x, y_clipped, y, alpha=0.05, color='dimgray', hatch='//')
+
+# Label months on x-axis
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+ax.set_xticks(np.arange(1, 13))
+ax.set_xticklabels(months)
+
+ax.annotate(
+    'We never observe\ntrue peak demand)',
+    xy=(7, 15), xytext=(2, 20),
+    arrowprops=dict(arrowstyle='->'),
+    ha='left'
+)
+
+ax.set_title("Demand vs. Sales for a Seasonal Product")
+ax.set_ylabel("Rentals")
+ax.set_xlabel("Month")
+plt.legend()
+plt.show()
+```
+
+We'll ignore seasonality for this example to keep things simple, but it's important to account for. Sharing information across products with hierarchy can be helpful to estimate demand for the products that are too understocked to ever observe peak demand. 
+
+::: {.callout-warning}
+This is a key reason why we can't just filter out undersupplied time periods and measure demand on oversupplied time periods - for many products we'd only end up measuring demand in their off-seasons if we did that.
+:::
 
 ### Looking at the demand data 
 
@@ -1204,4 +1629,4 @@ class MultinomialDemandInventory(RentalInventory):
         return rentals_as_arr.astype(int)
 ```
 
-This work will be continued in a follow up blog post. The code this is based off of can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
+This work may be continued in a future blog post. The code this is based off of can be found [here](https://github.com/kylejcaron/case_studies/tree/main/censored_demand).
