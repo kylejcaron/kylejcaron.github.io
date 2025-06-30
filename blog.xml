@@ -18948,7 +18948,7 @@ font-style: inherit;">=</span> pm.sample_posterior_predictive(trace_nc)</span></
 </blockquote>
 <p>Note that we’re prioritizing power here for a reason. If 𝛼 is false positive rate, and power is probability of detection, then don’t we want to prioritize our probability of detecting a drop if one truly exists? A false negative here would be more expensive then a false positive</p>
 <p>Running the code below leads us to conclude are sample size should be roughly 32,500 users per group.</p>
-<div id="45c4bd0a" class="cell" data-execution_count="1">
+<div id="d8c55eb9" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> statsmodels.api <span class="im" style="color: #00769E;
@@ -19064,7 +19064,7 @@ font-style: inherit;">int</span>(sample_size)</span></code></pre></div>
 <li>the <strong>variant</strong> has a <strong><em>true</em></strong> conversion rate of 9.25%</li>
 </ul>
 <p>For examples sake we’ll pretend we don’t know that the variant is worse</p>
-<div id="3f7d13c5" class="cell" data-execution_count="2">
+<div id="fa79ae8b" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
@@ -19192,13 +19192,13 @@ font-style: inherit;">"</span>})</span></code></pre></div>
 <style type="text/css">
 </style>
 
-<table id="T_9608b" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_c884d" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_9608b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Conversion Rate</th>
-<th id="T_9608b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Conversions</th>
-<th id="T_9608b_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Sample Size</th>
+<th id="T_c884d_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Conversion Rate</th>
+<th id="T_c884d_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Conversions</th>
+<th id="T_c884d_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Sample Size</th>
 </tr>
 <tr class="even">
 <th class="index_name level0" data-quarto-table-cell-role="th">group</th>
@@ -19209,23 +19209,23 @@ font-style: inherit;">"</span>})</span></code></pre></div>
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_9608b_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">A</td>
-<td id="T_9608b_row0_col0" class="data row0 col0">9.78%</td>
-<td id="T_9608b_row0_col1" class="data row0 col1">3179</td>
-<td id="T_9608b_row0_col2" class="data row0 col2">32500</td>
+<td id="T_c884d_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">A</td>
+<td id="T_c884d_row0_col0" class="data row0 col0">9.78%</td>
+<td id="T_c884d_row0_col1" class="data row0 col1">3179</td>
+<td id="T_c884d_row0_col2" class="data row0 col2">32500</td>
 </tr>
 <tr class="even">
-<td id="T_9608b_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">B</td>
-<td id="T_9608b_row1_col0" class="data row1 col0">9.43%</td>
-<td id="T_9608b_row1_col1" class="data row1 col1">3066</td>
-<td id="T_9608b_row1_col2" class="data row1 col2">32500</td>
+<td id="T_c884d_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">B</td>
+<td id="T_c884d_row1_col0" class="data row1 col0">9.43%</td>
+<td id="T_c884d_row1_col1" class="data row1 col1">3066</td>
+<td id="T_c884d_row1_col2" class="data row1 col2">32500</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p>Looking at the data above, we’re seeing a slightly worse conversion rate in the variant, but barely. We run a two-proportions z-test and we find that there’s a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.</p>
-<div id="e042852d" class="cell" data-execution_count="3">
+<div id="4a5a56cd" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -19277,11 +19277,22 @@ font-style: inherit;">"</span>))</span></code></pre></div>
 </div>
 </div>
 <p>We recommend to our stakeholders to roll out the variant since it “does no harm”</p>
-<p><span style="color: red;"><strong>There are some serious red flags here</strong></span></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+There are some serious red flags here
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
 <li>First of all, p-values are all about the null hypothesis. So just because we don’t find a significant drop in conversion rate, that doesnt mean one doesnt exist. It just means we didnt find evidence for it in this test</li>
-<li>There was no visualization of the uncertainty in the result</li>
+<li>Second, there was no visualization of the uncertainty in the result</li>
 </ul>
+</div>
+</div>
 </section>
 </section>
 <section id="understanding-uncertainty-with-the-beta-distribution" class="level2">
@@ -19294,7 +19305,7 @@ font-style: inherit;">"</span>))</span></code></pre></div>
 </ul>
 <p>It’s output is easy to interpret: Its a distribution of plausible probabilities that lead to the outcome.</p>
 <p>So we can simply count our successes and failures from out observed data, plug it into a beta distribution to simulate outcomes, and visualize it as a density plot to understand uncertainty</p>
-<div id="25d989ac" class="cell" data-execution_count="4">
+<div id="a6fdb023" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">np.random.seed(SEED)</span>
@@ -19414,7 +19425,7 @@ font-style: inherit;">2</span>))</span>
 </div>
 <p>It’s also easy to work with - if we want to understand the plausible differences between groups, we can just take the differences in our estimates</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Cdelta%20=%20%5Chat%7Bp_B%7D%20-%20%5Chat%7Bp_A%7D%0A"></p>
-<div id="c064a18c" class="cell" data-execution_count="5">
+<div id="8db0c60f" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">np.random.seed(SEED)</span>
@@ -19482,8 +19493,8 @@ font-style: inherit;">2</span>))</span>
 </div>
 </div>
 <p>With visualization, we get a very different picture than our non-significant p-value. We see that there’s plenty of plausibility that the control could be worse.</p>
-<p>We can further calculate the probability of a drop greater than 0.5%, <img src="https://latex.codecogs.com/png.latex?P(B%20%3C%20A)">, and find that theres a greater than 60% probability that the variant is worse than the control</p>
-<div id="62e91591" class="cell" data-execution_count="6">
+<p>We can further calculate the probability of a drop greater than 0.5%, <img src="https://latex.codecogs.com/png.latex?P(%5Cdelta%20%5C:%20%3C%20-0.5%5C%25)"></p>
+<div id="d14a03ec" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># P(B - A &lt; -0.5%) </span></span>
@@ -19518,10 +19529,9 @@ font-style: inherit;">\%"</span>))</span></code></pre></div>
 <p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20P(%5Cdelta%20%5C:%20%3C%20-0.5%5C%25)%20=%2025.5%5C%25"></p>
 </div>
 </div>
-<p><img src="https://latex.codecogs.com/png.latex?%0AP(B%20%3C%20A)%20=%200.62%0A"></p>
 <p>Remember when we designed the experiment? Considering our main goal was to do no harm, we might not feel so confident in that now, and rightly so, we know the variants worse since we simulated it.</p>
-<p>Unless we feel very confident in our choice of testing for a 1/2% drop and know that we can afford anything up to that, then we we really shouldnt roll out this variant without further evaluation</p>
-<p>This is particularly important with higher uncertainty As we can see in the example below, where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate</p>
+<p>Unless the expected cost of this change isn’t that high in one of the worst case scenarios of that uncertainty interval, we shouldnt feel very confident in rolling out this variant without further consideration.</p>
+<p>This is particularly important with higher uncertainty. We can see this more clearly in another example below where the observed conversion rate is better in the variant, but the downside risk is as high as a 4% drop in conversion rate.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://kylejcaron.github.io/assets/img/uncertainty_fig4.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
