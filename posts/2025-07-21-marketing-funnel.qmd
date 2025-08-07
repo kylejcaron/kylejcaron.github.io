@@ -1,0 +1,399 @@
+---
+layout: post
+title:  "Marketing Funnel Causality"
+image: "../assets/img/placeholder.png"
+date: "2025-07-21"
+categories:
+ - causal inference
+ - marketing
+ - PyMC
+---
+
+# Introduction
+
+The folks over at PyMC-Marketing have made an incredible tool for marketing mix optimization. In this post I'm going to explore how well it can handle causality with a simple yet tricky example: marketing funnel bias.
+
+As many marketing experts know, a marketing funnel is typically broken down into 3 stages:
+
+1. Awareness
+2. Consideration
+3. Conversion
+
+However, it turns out there's a lot of complications when trying to model this. 
+
+# Example: Have you ever seen an ad for something you were already going to buy?
+
+Let's walk through an example. Let's say you see a commerical on TV and you're interested in the product. You google it and get an ad for it (even though you were headed to the website anyway). Then, let's say you plan on buying it, but before you've had a chance to, you're doomscrolling on social media and you get an influencer ad with a coupon code for the same product - great, you buy it with 10% off!
+
+![](/assets/img/marketing_funnel.png){fig-align="center"}
+
+But which of that marketing spend was actually incremental? After all:
+
+* The paid search ad came after already searching for the specific product
+* The influencer ad came after already deciding you were going to buy the product
+
+This is an excellent example of incrementality in marketing. And it turns out that accounting for this relationship is critical in marketing. 
+
+When drawing a causal mapping of the relationship, we roughly get something like this (simplified for the example):
+
+
+
+```{dot}
+digraph Inventory2SliceGrid {
+    rankdir=TB;
+    splines=false;
+
+    // Define your nodes
+    tv_spend [label="TV Spend"]
+    paid_search_spend [label="Paid Search\nSpend"]
+
+    tv [label="TV\nExposure"]
+    paid_search [label="Paid Search\nExposure"]
+    influencer [label="Influencer\nExposure"]
+    sales [label="Sales"]
+    influencer_spend [label="Influencer\nSpend"]
+
+    // Force all non-spend nodes to be at the same vertical level
+    { rank = same; 
+      tv; paid_search; influencer; sales; influencer_spend;
+    }
+
+    // Invisible edges force the spend nodes to position above the corresponding exposure nodes
+    tv_spend -> tv [style=invis];
+    paid_search_spend -> paid_search [style=invis];
+
+    // Your actual graph edges
+    tv_spend -> tv;
+    paid_search_spend -> paid_search;
+    tv -> paid_search -> influencer -> sales -> influencer_spend;
+}
+```
+
+Notice something interesting: Sales actually impacts spend for the influencer channel. This is common for many contract-based performance marketing channels that have a pay-per-lead type of contract. 
+
+A really difficult side-effect of this is that since Influencer Spend is so tightly correlated to sales from this mechanism, non-causal marketing models severely overestimate it's contribution. That's the example we'll be walking through today.
+
+# Simulating a marketing scenario
+
+We're going to simulate this same scenario and use it as an example to see how well PyMC-marketing can handle it.
+
+The full simulated code is available in the code fold below
+
+```{python}
+#| code-fold: true
+import warnings
+warnings.filterwarnings("ignore")
+
+import arviz as az
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import pymc as pm
+import seaborn as sns
+from graphviz import Digraph
+
+from pydantic import BaseModel, field_validator
+from numpy.typing import NDArray
+from IPython.display import SVG, display
+
+from pymc_marketing.mmm import MMM, GeometricAdstock, MichaelisMentenSaturation
+from pymc_marketing.mmm.transformers import geometric_adstock, michaelis_menten
+from pymc_marketing.prior import Prior
+
+# We use a fixed random seed to ensure that our results are reproducible
+SEED = 99
+rng = np.random.default_rng(SEED)
+
+
+# date range
+min_date = pd.to_datetime("2022-01-01")
+max_date = pd.to_datetime("2024-11-06")
+date_range = pd.date_range(start=min_date, end=max_date, freq="D")
+
+df = pd.DataFrame(data={"date_week": date_range}).assign(
+    year=lambda x: x["date_week"].dt.year,
+    month=lambda x: x["date_week"].dt.month,
+    dayofyear=lambda x: x["date_week"].dt.dayofyear,
+)
+n = df.shape[0]
+df["market_growth"] = (np.linspace(start=0.0, stop=50, num=n) + 10) ** (1 / 4) - 1
+
+# ################
+# holiday effects
+# ################
+
+holiday_dates = ["12-24"]  # List of holidays as month-day strings
+std_devs = [25]  # List of standard deviations for each holiday
+holidays_coefficients = [2]
+
+# Initialize the holiday effect array
+holiday_signal = np.zeros(len(date_range))
+holiday_contributions = np.zeros(len(date_range))
+
+# Generate holiday signals
+for holiday, std_dev, holiday_coef in zip(
+    holiday_dates, std_devs, holidays_coefficients, strict=False
+):
+    # Find all occurrences of the holiday in the date range
+    holiday_occurrences = date_range[date_range.strftime("%m-%d") == holiday]
+
+    for occurrence in holiday_occurrences:
+        # Calculate the time difference in days
+        time_diff = (date_range - occurrence).days
+
+        # Generate the Gaussian basis for the holiday
+        _holiday_signal = np.exp(-0.5 * (time_diff / std_dev) ** 2)
+
+        # Add the holiday signal to the holiday effect
+        holiday_signal += _holiday_signal
+
+        holiday_contributions += _holiday_signal * holiday_coef
+
+df["holiday_signal"] = holiday_signal
+df["holiday_contributions"] = holiday_contributions
+
+# ################
+# competition effects
+# ################
+
+A = 0.5  # Amplitude
+C = 2.5  # Center of the oscillation
+omega = np.pi / (n / 2)
+df["competitor_offers"] = -A * np.cos(omega * df.index) + C
+
+# #################
+# Channels
+# ##################
+
+# x1: TV
+# x2: Google Ads
+# x3: Influencer Marketing
+
+
+class Covariate(BaseModel):
+    data: NDArray
+    effect: float
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @field_validator('data', mode='before')
+    def convert_to_array(cls, v):
+        return np.asarray(v)
+
+
+    
+def sim_channel(
+    mu, 
+    sigma, 
+    noise=0.1, 
+    smooth=14, 
+    covariates: list[Covariate] = []
+):
+    x = rng.normal(mu, sigma, size=n)
+    x_conv = np.convolve(x, np.ones(smooth)/smooth, mode="same")
+    # Replace first and last values with mean + noise
+    noise =  rng.normal(0, noise, size=smooth*2)
+    x_conv[:smooth] = x_conv.mean() + noise[:smooth]
+    x_conv[-smooth:] = x_conv.mean() + noise[smooth:]
+
+    for covariate in covariates:
+        x_conv += covariate.effect*covariate.data
+    return x_conv
+
+# Top of Funnel
+df['tv'] = sim_channel(
+    mu=5, 
+    sigma=3, 
+    covariates=[Covariate(data=holiday_signal, effect=2.5)]
+)
+# middle funnel
+df['google_ads'] = sim_channel(
+    mu=5, 
+    sigma=2, 
+    covariates=[
+        Covariate(data=holiday_signal, effect=2.1),
+        Covariate(data=df["competitor_offers"], effect=-0.5),
+        Covariate(data=df.tv, effect=1.9), 
+    ]
+)
+
+channels = ['tv', 'google_ads']
+
+# alpha:    controls decay of effect over time (larger --> longer effects)
+# lambda:   controls magnitude of michaelis mentin saturation
+# alpha_mm: controls saturation (larger -> more linear)
+params = {
+    "tv": {         "alpha":0.7,  "lam":30,  "alpha_mm": 350},
+    "google_ads": { "alpha":0.1,  "lam":20,  "alpha_mm":175},
+}
+
+
+def apply_adstock_saturation(df, channels, params):
+    for channel in channels:
+    
+        df[f'{channel}_adstock'] = (
+            geometric_adstock(x=df[channel].to_numpy(), alpha=params[channel]['alpha'], l_max=24, normalize=True)
+            .eval()
+            .flatten()
+        )
+    
+        df[f'{channel}_adstock_saturated'] = michaelis_menten(
+            x=df[f'{channel}_adstock'].to_numpy(), lam=params[channel]['lam'], alpha=params[channel]['alpha_mm'],
+        )
+    return df
+
+df = df.pipe(apply_adstock_saturation, channels=channels, params=params)
+
+# Simulating Sales
+
+
+
+def simulate_sales(df, channels, influencer_channel=True):
+    df["intercept"] = 1.5
+    df["epsilon"] = rng.normal(loc=0.0, scale=0.08, size=n)
+
+    df["sales"] = (
+        df["intercept"]
+        + df["market_growth"]  # implicit coef 1
+        - df["competitor_offers"]  # explicit coef -1
+        + df["holiday_contributions"]
+        + df["epsilon"]  # Noise
+    )
+
+    # apply channel effects
+    channel_betas = [0.5, 0.3]
+    influencer_effect=1.15
+    
+    for beta, channel in zip(channel_betas, channels):
+        if influencer_channel:
+            channel_influencer_effect = rng.normal(influencer_effect, 0.025, size=len(df))
+        else:
+            channel_influencer_effect = 1
+        df["sales"] += beta*df[f'{channel}_adstock_saturated']*channel_influencer_effect
+
+    if influencer_channel:
+        df['influencer'] = df['sales']*0.1 + rng.normal(0, 0.05, len(df))
+        channels += ['influencer']
+    return df
+
+
+df = df.pipe(simulate_sales, channels, influencer_channel=True)
+
+columns_to_keep = [
+    "date_week",
+    "sales",
+    "holiday_signal",
+] + channels 
+
+data = df[columns_to_keep].copy()
+data.head().round(3)
+```
+
+And here is a time series of sales over time.
+
+```{python}
+#| code-fold: true
+fig, ax = plt.subplots(figsize=(7,4))
+df.set_index("date_week").sales.plot(ax=ax, color='k')
+ax.set(title="Sales (Target Variable)", xlabel="date", ylabel="sales (thousands)")
+```
+
+# Modeling the problem: Correlational vs. Causal Models
+
+We're now going to fit both a correlational and causal model and compare the results.
+
+```{python}
+sample_kwargs = {"draws": 500, "chains": 2, "nuts_sampler": "numpyro"}
+X = data.drop("sales", axis=1)
+y = data["sales"]
+```
+
+## Defining the Correlational Model
+
+```{python}
+correlational_mmm = MMM(
+    sampler_config=sample_kwargs,
+    date_column="date_week",
+    adstock=GeometricAdstock(l_max=18),
+    saturation=MichaelisMentenSaturation(),
+    channel_columns=channels,
+    control_columns=["holiday_signal"],
+)
+
+# sampling options for PyMC
+correlational_mmm.fit(X=X, y=y, target_accept=0.99, random_seed=rng)
+idata_corr = correlational_mmm.sample_posterior_predictive(
+    X, extend_idata=True, combined=True, random_seed=rng
+
+```
+
+## Defining the Causal Model
+
+This is a little more tricky since we now need to define the causal model
+```{python}
+causal_dag = """
+digraph {
+    tv -> google_ads;
+    tv -> influencer;
+    tv -> sales;
+    
+    google_ads -> influencer;
+    google_ads -> sales;
+
+    influencer -> sales;
+
+    holiday_signal -> sales;
+    holiday_signal -> tv;
+    holiday_signal -> podcast;
+    holiday_signal -> google_ads;
+    holiday_signal -> influencer;
+
+    competitor_offers -> google_ads;
+
+    competitor_offers -> sales;
+    market_growth -> sales;
+}
+"""
+
+
+causal_mmm = MMM(
+    sampler_config=sample_kwargs,
+    date_column="date_week",
+    adstock=GeometricAdstock(l_max=12),
+    saturation=MichaelisMentenSaturation(),
+    channel_columns=channels,
+    control_columns=["holiday_signal"],
+    # Define the outcome node and the causal DAG
+    outcome_node="sales",
+    dag=causal_dag,
+    # Time varying intercept to account for the unobserved confounder
+    time_varying_intercept=True,
+)
+
+# causal_mmm.model_config["intercept_tvp_config"].ls_mu = 180
+# causal_mmm.model_config["intercept"] = Prior("Normal", mu=1, sigma=2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
