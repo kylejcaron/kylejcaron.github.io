@@ -2,7 +2,8 @@
 layout: post
 title: "Returns you haven't seen yet: forecasting returns as a chain of forecasts"
 date: "2026-09-29"
-description: "Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all."
+date-modified: "2026-09-30"
+description: "Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all. The sales step is a numpyro_forecast model, so any NumPyro sales forecaster plugs in."
 image: "./preview_image.png"
 categories:
  - Forecasting
@@ -24,6 +25,10 @@ This post is a [marimo](https://marimo.io) notebook with its own layout, so it l
 **[Read the post &rarr;](returns-forecasting.html)**
 
 Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post fits each step as its own small model with [ttenet](https://github.com/kylejcaron/ttenet), chains them, and shows how one call propagates any sales forecast or weather scenario through the chain without refitting.
+
+The sales step is an ordinary [numpyro_forecast](https://github.com/juanitorduz/numpyro_forecast) model, so any NumPyro sales forecaster plugs into the chain. The post shows swapping in a drifting local-level demand model without touching the return stages.
+
+ttenet is a demo package: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library.
 
 The page above is a static snapshot. To run it, including the sales and weather scenario controls, open the notebook on [molab](https://molab.marimo.io/github/kylejcaron/ttenet/blob/main/examples/retail_returns_blog.py) and click *Run it now*, or run it locally:
 
