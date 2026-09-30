@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2026-09-29">
-<meta name="description" content="Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all.">
+<meta name="description" content="Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all. The sales step is a numpyro_forecast model, so any NumPyro sales forecaster plugs in.">
 
 <title>Returns you haven’t seen yet: forecasting returns as a chain of forecasts – Kyle Caron</title>
 <style>
@@ -171,7 +171,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 <div>
   <div class="description">
-    Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all.
+    Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all. The sales step is a numpyro_forecast model, so any NumPyro sales forecaster plugs in.
   </div>
 </div>
 
@@ -186,6 +186,12 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
     </div>
   </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">September 30, 2026</p>
+    </div>
+  </div>
     
   </div>
   
@@ -198,6 +204,8 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p><a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;"> <img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts" style="width:100%; max-width:720px; border:1px solid #dcded1;"> </a></p>
 <p><strong><a href="returns-forecasting.html">Read the post →</a></strong></p>
 <p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post fits each step as its own small model with <a href="https://github.com/kylejcaron/ttenet">ttenet</a>, chains them, and shows how one call propagates any sales forecast or weather scenario through the chain without refitting.</p>
+<p>The sales step is an ordinary <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a> model, so any NumPyro sales forecaster plugs into the chain. The post shows swapping in a drifting local-level demand model without touching the return stages.</p>
+<p>ttenet is a demo package: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library.</p>
 <p>The page above is a static snapshot. To run it, including the sales and weather scenario controls, open the notebook on <a href="https://molab.marimo.io/github/kylejcaron/ttenet/blob/main/examples/retail_returns_blog.py">molab</a> and click <em>Run it now</em>, or run it locally:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/kylejcaron/ttenet <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ttenet</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--all-extras</span></span>
