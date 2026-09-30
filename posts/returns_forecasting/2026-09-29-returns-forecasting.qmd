@@ -1,0 +1,34 @@
+---
+layout: post
+title: "Returns you haven't seen yet: forecasting returns as a chain of forecasts"
+date: "2026-09-29"
+description: "Sales feed return initiations, which feed warehouse receipts. Fit the chain once, then push any sales forecast through it, uncertainty and all."
+image: "./preview_image.png"
+categories:
+ - Forecasting
+ - Survival Analysis
+ - Supply Chain
+ - Bayesian
+toc: false
+title-block-banner: false
+resources:
+ - returns-forecasting.html
+---
+
+This post is a [marimo](https://marimo.io) notebook with its own layout, so it lives on its own page.
+
+<a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;">
+<img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts" style="width:100%; max-width:720px; border:1px solid #dcded1;">
+</a>
+
+**[Read the post &rarr;](returns-forecasting.html)**
+
+Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post fits each step as its own small model with [ttenet](https://github.com/kylejcaron/ttenet), chains them, and shows how one call propagates any sales forecast or weather scenario through the chain without refitting.
+
+The page above is a static snapshot. To run it, including the sales and weather scenario controls, open the notebook on [molab](https://molab.marimo.io/github/kylejcaron/ttenet/blob/main/examples/retail_returns_blog.py) and click *Run it now*, or run it locally:
+
+```bash
+git clone https://github.com/kylejcaron/ttenet && cd ttenet
+uv sync --all-extras
+uv run marimo run examples/retail_returns_blog.py
+```
