@@ -241,7 +241,7 @@ window.Quarto = {
 </blockquote>
 <p>Note that we’re prioritizing power here for a reason. If 𝛼 is false positive rate, and power is probability of detection, then don’t we want to prioritize our probability of detecting a drop if one truly exists? A false negative here would be more expensive then a false positive</p>
 <p>Running the code below leads us to conclude are sample size should be roughly 32,500 users per group.</p>
-<div id="d8c55eb9" class="cell" data-execution_count="1">
+<div id="e90d706e" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -279,7 +279,7 @@ window.Quarto = {
 <li>the <strong>variant</strong> has a <strong><em>true</em></strong> conversion rate of 9.25%</li>
 </ul>
 <p>For examples sake we’ll pretend we don’t know that the variant is worse</p>
-<div id="fa79ae8b" class="cell" data-execution_count="2">
+<div id="b44a2486" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Settings</span></span>
@@ -317,13 +317,13 @@ window.Quarto = {
 <style type="text/css">
 </style>
 
-<table id="T_c884d" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table id="T_901fd" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_c884d_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Conversion Rate</th>
-<th id="T_c884d_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Conversions</th>
-<th id="T_c884d_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Sample Size</th>
+<th id="T_901fd_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Conversion Rate</th>
+<th id="T_901fd_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Conversions</th>
+<th id="T_901fd_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Sample Size</th>
 </tr>
 <tr class="even">
 <th class="index_name level0" data-quarto-table-cell-role="th">group</th>
@@ -334,23 +334,23 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
-<td id="T_c884d_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">A</td>
-<td id="T_c884d_row0_col0" class="data row0 col0">9.78%</td>
-<td id="T_c884d_row0_col1" class="data row0 col1">3179</td>
-<td id="T_c884d_row0_col2" class="data row0 col2">32500</td>
+<td id="T_901fd_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">A</td>
+<td id="T_901fd_row0_col0" class="data row0 col0">9.78%</td>
+<td id="T_901fd_row0_col1" class="data row0 col1">3179</td>
+<td id="T_901fd_row0_col2" class="data row0 col2">32500</td>
 </tr>
 <tr class="even">
-<td id="T_c884d_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">B</td>
-<td id="T_c884d_row1_col0" class="data row1 col0">9.43%</td>
-<td id="T_c884d_row1_col1" class="data row1 col1">3066</td>
-<td id="T_c884d_row1_col2" class="data row1 col2">32500</td>
+<td id="T_901fd_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">B</td>
+<td id="T_901fd_row1_col0" class="data row1 col0">9.43%</td>
+<td id="T_901fd_row1_col1" class="data row1 col1">3066</td>
+<td id="T_901fd_row1_col2" class="data row1 col2">32500</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p>Looking at the data above, we’re seeing a slightly worse conversion rate in the variant, but barely. We run a two-proportions z-test and we find that there’s a non-significant p-value, meaning we found insufficient evidence of the variant having lower conversion than the control.</p>
-<div id="4a5a56cd" class="cell" data-execution_count="3">
+<div id="6b0fee19" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pval_from_summary(tab):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    _, pval <span class="op">=</span> sm.stats.proportions_ztest(</span>
@@ -396,7 +396,7 @@ There are some serious red flags here
 </ul>
 <p>It’s output is easy to interpret: Its a distribution of plausible probabilities that lead to the outcome.</p>
 <p>So we can simply count our successes and failures from out observed data, plug it into a beta distribution to simulate outcomes, and visualize it as a density plot to understand uncertainty</p>
-<div id="a6fdb023" class="cell" data-execution_count="4">
+<div id="c7c204ad" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(SEED)</span>
@@ -432,7 +432,7 @@ There are some serious red flags here
 <p><span class="math display">\[
 \delta = \hat{p_B} - \hat{p_A}
 \]</span></p>
-<div id="8db0c60f" class="cell" data-execution_count="5">
+<div id="2f0b5c11" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(SEED)</span>
@@ -459,7 +459,7 @@ There are some serious red flags here
 </div>
 <p>With visualization, we get a very different picture than our non-significant p-value. We see that there’s plenty of plausibility that the control could be worse.</p>
 <p>We can further calculate the probability of a drop greater than 0.5%, <span class="math inline">\(P(\delta \: &lt; -0.5\%)\)</span></p>
-<div id="d14a03ec" class="cell" data-execution_count="6">
+<div id="324e834b" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># P(B - A &lt; -0.5%) </span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>contrast <span class="op">=</span> (pB <span class="op">-</span> pA)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> (contrast <span class="op">&lt;</span> <span class="op">-</span><span class="fl">0.005</span>).mean()</span>

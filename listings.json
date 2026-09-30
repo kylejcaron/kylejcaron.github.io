@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/returns_forecasting/2026-09-29-returns-forecasting.html",
       "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
@@ -21,6 +22,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/returns_forecasting/2026-09-29-returns-forecasting.html",
       "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
@@ -40,6 +42,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/returns_forecasting/2026-09-29-returns-forecasting.html",
       "/posts/2025-04-01-scope-double-ml.html",
       "/posts/2025-03-06-metric-choice.html",
       "/posts/2025-03-06-multicollinearity-misconceptions.html",
