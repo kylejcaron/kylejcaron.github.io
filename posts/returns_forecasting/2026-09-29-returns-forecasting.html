@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2026-09-29">
-<meta name="description" content="Configure a NumPyro sales model and two EventProcess stages, then propagate sales through return initiations and warehouse receipts. See the API, the underlying event models, and how numpyro_forecast connects the observed past to the future.">
+<meta name="description" content="Forecast warehouse returns as a chain of numpyro_forecast models: sales feed return initiations, which feed receipts. Interactive figures follow one purchase, step through the fitted chain, and compare storm scenarios.">
 
 <title>Returns you haven’t seen yet: forecasting returns as a chain of forecasts – Kyle Caron</title>
 <style>
@@ -171,7 +171,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 <div>
   <div class="description">
-    Configure a NumPyro sales model and two EventProcess stages, then propagate sales through return initiations and warehouse receipts. See the API, the underlying event models, and how numpyro_forecast connects the observed past to the future.
+    Forecast warehouse returns as a chain of numpyro_forecast models: sales feed return initiations, which feed receipts. Interactive figures follow one purchase, step through the fitted chain, and compare storm scenarios.
   </div>
 </div>
 
@@ -203,13 +203,12 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p>This post is a <a href="https://marimo.io">marimo</a> notebook with its own layout, so it lives on its own page.</p>
 <p><a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;"> <img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts, with a storm shaded on the receipts panel" style="width:100%; max-width:720px; border:1px solid #dcded1;"> </a></p>
 <p><strong><a href="returns-forecasting.html">Read the post →</a></strong></p>
-<p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post starts with the <a href="https://github.com/kylejcaron/ttenet">ttenet</a> API: a <code>RetailReturnModel</code> containing a NumPyro <code>CountProcess</code> and two <code>EventProcess</code> stages. It opens the underlying event models, then shows how one forecast call carries sales and weather uncertainty through the chain.</p>
-<p>The sales step follows the ordinary <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a> protocol. The post fits a replacement drifting local-level sales model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
-<p>ttenet is a demo package: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library.</p>
+<p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a>: sales is an ordinary numpyro_forecast model written with <code>Horizon</code> and <code>predict</code>, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales and weather uncertainty through the whole chain, draw by draw.</p>
+<p>The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
 <p>The figures on the page are interactive and run in your browser: follow one purchase through its two clocks, step through the fitted chain, and switch between storm scenarios (no storm, the storm as forecast, one that lingers). Every scenario is computed ahead of time, so nothing on the page needs a server.</p>
-<p>The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/73d29319a070b6ab68cd5fa2d47cf33fc30ad205/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
+<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/kylejcaron/ttenet <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ttenet</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 73d29319a070b6ab68cd5fa2d47cf33fc30ad205</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--all-extras</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo run examples/retail_returns_blog.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
