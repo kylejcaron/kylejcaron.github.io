@@ -30,11 +30,11 @@ The sales step is replaceable. The post fits a second, drifting local-level nump
 
 The figures on the page are interactive and run in your browser: follow one purchase through its two clocks, step through the fitted chain, and switch between storm scenarios (no storm, the storm as forecast, one that lingers). Every scenario is computed ahead of time, so nothing on the page needs a server.
 
-[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
+[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/41565f963486507c6ed1a9aa0f7349f1b34ff70b/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
 
 ```bash
 git clone https://github.com/kylejcaron/ttenet && cd ttenet
-git checkout 53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2
+git checkout 41565f963486507c6ed1a9aa0f7349f1b34ff70b
 uv sync --all-extras
 uv run marimo run examples/retail_returns_blog.py
 ```
