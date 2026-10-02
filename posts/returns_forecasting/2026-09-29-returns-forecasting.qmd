@@ -2,7 +2,7 @@
 layout: post
 title: "Returns you haven't seen yet: forecasting returns as a chain of forecasts"
 date: "2026-09-29"
-date-modified: "2026-10-01"
+date-modified: "2026-10-02"
 description: "Configure a NumPyro sales model and two EventProcess stages, then propagate sales through return initiations and warehouse receipts. See the API, the underlying event models, and how numpyro_forecast connects the observed past to the future."
 image: "./preview_image.png"
 categories:
@@ -30,11 +30,13 @@ The sales step follows the ordinary [numpyro_forecast](https://github.com/juanit
 
 ttenet is a demo package: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library.
 
-The page above is a static snapshot. To run it, including the sales and weather scenario controls, open the [published notebook on molab](https://molab.marimo.io/github/kylejcaron/ttenet/blob/c9884928100336cb28a9a30e9292d1d92d50b978/examples/retail_returns_blog.py) and click *Run it now*, or run the same revision locally:
+The figures on the page are interactive and run in your browser: follow one purchase through its two clocks, step through the fitted chain, and switch between storm scenarios (no storm, the storm as forecast, one that lingers). Every scenario is computed ahead of time, so nothing on the page needs a server.
+
+The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/73d29319a070b6ab68cd5fa2d47cf33fc30ad205/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
 
 ```bash
 git clone https://github.com/kylejcaron/ttenet && cd ttenet
-git checkout c9884928100336cb28a9a30e9292d1d92d50b978
+git checkout 73d29319a070b6ab68cd5fa2d47cf33fc30ad205
 uv sync --all-extras
 uv run marimo run examples/retail_returns_blog.py
 ```
