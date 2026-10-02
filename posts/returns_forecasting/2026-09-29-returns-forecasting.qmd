@@ -19,7 +19,7 @@ resources:
 This post is a [marimo](https://marimo.io) notebook with its own layout, so it lives on its own page.
 
 <a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;">
-<img src="preview_image.png" alt="Two fitted sales models propagated through the same return initiation and receipt stages" style="width:100%; max-width:720px; border:1px solid #dcded1;">
+<img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts, with a storm shaded on the receipts panel" style="width:100%; max-width:720px; border:1px solid #dcded1;">
 </a>
 
 **[Read the post &rarr;](returns-forecasting.html)**
