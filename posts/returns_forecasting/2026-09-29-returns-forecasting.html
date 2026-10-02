@@ -201,7 +201,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 
 <p>This post is a <a href="https://marimo.io">marimo</a> notebook with its own layout, so it lives on its own page.</p>
-<p><a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;"> <img src="preview_image.png" alt="Two fitted sales models propagated through the same return initiation and receipt stages" style="width:100%; max-width:720px; border:1px solid #dcded1;"> </a></p>
+<p><a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;"> <img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts, with a storm shaded on the receipts panel" style="width:100%; max-width:720px; border:1px solid #dcded1;"> </a></p>
 <p><strong><a href="returns-forecasting.html">Read the post →</a></strong></p>
 <p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post starts with the <a href="https://github.com/kylejcaron/ttenet">ttenet</a> API: a <code>RetailReturnModel</code> containing a NumPyro <code>CountProcess</code> and two <code>EventProcess</code> stages. It opens the underlying event models, then shows how one forecast call carries sales and weather uncertainty through the chain.</p>
 <p>The sales step follows the ordinary <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a> protocol. The post fits a replacement drifting local-level sales model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
