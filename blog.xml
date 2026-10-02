@@ -25,7 +25,7 @@
 <p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a>: sales is an ordinary numpyro_forecast model written with <code>Horizon</code> and <code>predict</code>, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales and weather uncertainty through the whole chain, draw by draw.</p>
 <p>The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
 <p>The figures on the page are interactive and run in your browser: follow one purchase through its two clocks, step through the fitted chain, and switch between storm scenarios (no storm, the storm as forecast, one that lingers). Every scenario is computed ahead of time, so nothing on the page needs a server.</p>
-<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
+<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/41565f963486507c6ed1a9aa0f7349f1b34ff70b/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">git</span> clone https://github.com/kylejcaron/ttenet <span class="kw" style="color: #003B4F;
@@ -36,7 +36,7 @@ background-color: null;
 font-style: inherit;">cd</span> ttenet</span>
 <span id="cb1-2"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">git</span> checkout 53ef7a3c622eb12fce1dcd4b1bf48dc0abbc87b2</span>
+font-style: inherit;">git</span> checkout 41565f963486507c6ed1a9aa0f7349f1b34ff70b</span>
 <span id="cb1-3"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">uv</span> sync <span class="at" style="color: #657422;
