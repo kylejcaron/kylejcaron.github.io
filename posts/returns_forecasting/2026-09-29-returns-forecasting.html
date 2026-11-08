@@ -206,10 +206,10 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a>: sales is an ordinary numpyro_forecast model written with <code>Horizon</code> and <code>predict</code>, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales and weather uncertainty through the whole chain, draw by draw.</p>
 <p>The chain is scored on four held-out weeks against four baselines: a weekday average, a settled and a naive return rate times lagged sales, and a SARIMAX with lagged sales and return initiations. It lands within 2% of the month, and its daily error is 44% lower than the best baseline’s.</p>
 <p>The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
-<p>The figures run in your browser, with no Python server: move the history slider, follow a sale day’s returns through both clocks, choose a baseline to compare, or switch between no storm, the storm as forecast, and one that lingers. All forecasts are computed ahead of time; the controls only change the view.</p>
-<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/4065a29ab87e74c946d82c4b8eb437e53bfdf352/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
+<p>The figures run in your browser, with no Python server: inspect the model’s stages and source, move the history slider, follow a sale day’s returns through both clocks, choose a baseline to compare, or switch between no storm, the storm as forecast, and one that lingers. All forecasts are computed ahead of time; the controls only change the view.</p>
+<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/470cff182d5927b3d4472adac7ecf1a1566caafd/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/kylejcaron/ttenet <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ttenet</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 4065a29ab87e74c946d82c4b8eb437e53bfdf352</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 470cff182d5927b3d4472adac7ecf1a1566caafd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--python</span> 3.13 <span class="at">--all-extras</span>   <span class="co"># JAX has no Python 3.15 wheels yet</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo run examples/retail_returns_blog.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
@@ -306,7 +306,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/kylejcaron\.github\.io\/");
+      var filterRegex = new RegExp('/' + window.location.host + '/');
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
