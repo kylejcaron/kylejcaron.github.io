@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2026-09-29">
-<meta name="description" content="Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, and run through storm scenarios without refitting.">
+<meta name="description" content="Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, with a promotion-cancellation forecast using the same fitted model.">
 
 <title>Returns you haven’t seen yet: forecasting returns as a chain of forecasts – Kyle Caron</title>
 <style>
@@ -171,7 +171,7 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 
 <div>
   <div class="description">
-    Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, and run through storm scenarios without refitting.
+    Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, with a promotion-cancellation forecast using the same fitted model.
   </div>
 </div>
 
@@ -203,13 +203,13 @@ gtag('config', 'G-N3D0DYZCY4', { 'anonymize_ip': true});
 <p>This post is a <a href="https://marimo.io">marimo</a> notebook with its own layout, so it lives on its own page.</p>
 <p><a href="returns-forecasting.html" style="display:block; margin: 1.5rem 0;"> <img src="preview_image.png" alt="One sales forecast propagated through return initiations and warehouse receipts, with a storm shaded on the receipts panel" style="width:100%; max-width:720px; border:1px solid #dcded1;"> </a></p>
 <p><strong><a href="returns-forecasting.html">Read the post →</a></strong></p>
-<p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a>: sales is an ordinary numpyro_forecast model written with <code>Horizon</code> and <code>predict</code>, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales and weather uncertainty through the whole chain, draw by draw.</p>
+<p>Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on <a href="https://github.com/juanitorduz/numpyro_forecast">numpyro_forecast</a>: sales is an ordinary numpyro_forecast model written with <code>Horizon</code> and <code>predict</code>, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales uncertainty through the fitted return stages, draw by draw, under explicit weather assumptions.</p>
 <p>The chain is scored on four held-out weeks against four baselines: a weekday average, a settled and a naive return rate times lagged sales, and a SARIMAX with lagged sales and return initiations. It lands within 2% of the month, and its daily error is 44% lower than the best baseline’s.</p>
-<p>The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.</p>
-<p>The figures run in your browser, with no Python server: inspect the model’s stages and source, move the history slider, follow a sale day’s returns through both clocks, choose a baseline to compare, or switch between no storm, the storm as forecast, and one that lingers. All forecasts are computed ahead of time; the controls only change the view.</p>
-<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/470cff182d5927b3d4472adac7ecf1a1566caafd/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
+<p>What if July’s promotion is canceled? The post keeps the fitted model and weather assumptions fixed, changes the promotion calendar, and forecasts again. It shows the lost sales, the change in warehouse workload over time, and a distribution for how many fewer receipts to expect over the next four weeks.</p>
+<p>The figures run in your browser, with no Python server: inspect the model’s stages and source, move the history slider, follow a sale day’s returns through both clocks, choose a baseline to compare, or inspect the promotion scenario and its effect on receipts. All forecasts are computed ahead of time; the controls only change the view.</p>
+<p><a href="https://github.com/kylejcaron/ttenet">ttenet</a> is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is <a href="https://github.com/kylejcaron/ttenet/blob/3d0a7b0e3ff3f40cf889bfd028fd5d43146b223d/examples/retail_returns_blog.py"><code>examples/retail_returns_blog.py</code></a>. Running it refits the model and recomputes every figure:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/kylejcaron/ttenet <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ttenet</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 470cff182d5927b3d4472adac7ecf1a1566caafd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout 3d0a7b0e3ff3f40cf889bfd028fd5d43146b223d</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--python</span> 3.13 <span class="at">--all-extras</span>   <span class="co"># JAX has no Python 3.15 wheels yet</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo run examples/retail_returns_blog.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
@@ -306,7 +306,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/kylejcaron\.github\.io");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
