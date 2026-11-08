@@ -3,7 +3,7 @@ layout: post
 title: "Returns you haven't seen yet: forecasting returns as a chain of forecasts"
 date: "2026-09-29"
 date-modified: "2026-11-08"
-description: "Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, and run through storm scenarios without refitting."
+description: "Forecast warehouse returns as a chain of numpyro_forecast models linked by time-to-event convolutions: sales feed return initiations, which feed receipts. Scored against four baselines, including SARIMAX, with a promotion-cancellation forecast using the same fitted model."
 image: "./preview_image.png"
 categories:
  - Forecasting
@@ -24,19 +24,19 @@ This post is a [marimo](https://marimo.io) notebook with its own layout, so it l
 
 **[Read the post &rarr;](returns-forecasting.html)**
 
-Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on [numpyro_forecast](https://github.com/juanitorduz/numpyro_forecast): sales is an ordinary numpyro_forecast model written with `Horizon` and `predict`, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales and weather uncertainty through the whole chain, draw by draw.
+Warehouse receipts depend on the returns customers start this week, which depend on what sold last month and what sells this month. The post treats that as a chain of forecasts and builds it on [numpyro_forecast](https://github.com/juanitorduz/numpyro_forecast): sales is an ordinary numpyro_forecast model written with `Horizon` and `predict`, and each return stage is a time-to-event model that speaks the same protocol. One forecast call then carries sales uncertainty through the fitted return stages, draw by draw, under explicit weather assumptions.
 
 The chain is scored on four held-out weeks against four baselines: a weekday average, a settled and a naive return rate times lagged sales, and a SARIMAX with lagged sales and return initiations. It lands within 2% of the month, and its daily error is 44% lower than the best baseline's.
 
-The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.
+What if July's promotion is canceled? The post keeps the fitted model and weather assumptions fixed, changes the promotion calendar, and forecasts again. It shows the lost sales, the change in warehouse workload over time, and a distribution for how many fewer receipts to expect over the next four weeks.
 
-The figures run in your browser, with no Python server: inspect the model's stages and source, move the history slider, follow a sale day's returns through both clocks, choose a baseline to compare, or switch between no storm, the storm as forecast, and one that lingers. All forecasts are computed ahead of time; the controls only change the view.
+The figures run in your browser, with no Python server: inspect the model's stages and source, move the history slider, follow a sale day's returns through both clocks, choose a baseline to compare, or inspect the promotion scenario and its effect on receipts. All forecasts are computed ahead of time; the controls only change the view.
 
-[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/470cff182d5927b3d4472adac7ecf1a1566caafd/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
+[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/3d0a7b0e3ff3f40cf889bfd028fd5d43146b223d/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
 
 ```bash
 git clone https://github.com/kylejcaron/ttenet && cd ttenet
-git checkout 470cff182d5927b3d4472adac7ecf1a1566caafd
+git checkout 3d0a7b0e3ff3f40cf889bfd028fd5d43146b223d
 uv sync --python 3.13 --all-extras   # JAX has no Python 3.15 wheels yet
 uv run marimo run examples/retail_returns_blog.py
 ```
