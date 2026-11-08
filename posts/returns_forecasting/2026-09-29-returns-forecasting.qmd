@@ -30,13 +30,13 @@ The chain is scored on four held-out weeks against four baselines: a weekday ave
 
 The sales step is replaceable. The post fits a second, drifting local-level numpyro_forecast model and propagates its forecast through the already fitted return stages. Fitting a replacement model and overriding future scenarios are separate operations: the return stages do not need to be refitted for either forecast scenario.
 
-The storm scenarios on the page run in your browser: switch between no storm, the storm as forecast, and one that lingers. The sliders and the baseline picker need Python, so on this page they show their defaults; run the notebook to use them.
+The figures run in your browser, with no Python server: move the history slider, follow a sale day's returns through both clocks, choose a baseline to compare, or switch between no storm, the storm as forecast, and one that lingers. All forecasts are computed ahead of time; the controls only change the view.
 
-[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/cd40c661a4310888c9cf9eaf6907b67e074ddae3/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
+[ttenet](https://github.com/kylejcaron/ttenet) is the small demo package that wires the stages together: a reference implementation of the idea, meant to be read, run and adapted rather than a maintained library. The notebook behind the page is [`examples/retail_returns_blog.py`](https://github.com/kylejcaron/ttenet/blob/4065a29ab87e74c946d82c4b8eb437e53bfdf352/examples/retail_returns_blog.py). Running it refits the model and recomputes every figure:
 
 ```bash
 git clone https://github.com/kylejcaron/ttenet && cd ttenet
-git checkout cd40c661a4310888c9cf9eaf6907b67e074ddae3
+git checkout 4065a29ab87e74c946d82c4b8eb437e53bfdf352
 uv sync --python 3.13 --all-extras   # JAX has no Python 3.15 wheels yet
 uv run marimo run examples/retail_returns_blog.py
 ```
