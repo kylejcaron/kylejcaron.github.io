@@ -37,6 +37,6 @@ The storm scenarios on the page run in your browser: switch between no storm, th
 ```bash
 git clone https://github.com/kylejcaron/ttenet && cd ttenet
 git checkout cd40c661a4310888c9cf9eaf6907b67e074ddae3
-uv sync --all-extras
+uv sync --python 3.13 --all-extras   # JAX has no Python 3.15 wheels yet
 uv run marimo run examples/retail_returns_blog.py
 ```
